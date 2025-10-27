@@ -8,7 +8,7 @@ from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 
 from src.core.engine import Engine
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import DocumentStoreProvider, LLMProvider
 from src.pipelines.common import clean_up_new_lines, retrieve_metadata
 from src.pipelines.generation.utils.sql import (
@@ -160,7 +160,7 @@ async def post_process(
 ## End of Pipeline
 
 
-class FollowUpSQLGeneration(BasicPipeline):
+class FollowUpSQLGeneration(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
@@ -189,7 +189,7 @@ class FollowUpSQLGeneration(BasicPipeline):
         )
 
     @observe(name="Follow-Up SQL Generation")
-    async def run(
+    async def _execute(
         self,
         query: str,
         contexts: list[str],
@@ -232,3 +232,38 @@ class FollowUpSQLGeneration(BasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        query: str,
+        contexts: list[str],
+        sql_generation_reasoning: str,
+        histories: list[AskHistory],
+        sql_samples: list[dict] | None = None,
+        instructions: list[dict] | None = None,
+        project_id: str | None = None,
+        has_calculated_field: bool = False,
+        has_metric: bool = False,
+        has_json_field: bool = False,
+        sql_functions: list[SqlFunction] | None = None,
+        use_dry_plan: bool = False,
+        allow_dry_plan_fallback: bool = True,
+    ):
+        return await self._execute(
+            query=query,
+            contexts=contexts,
+            sql_generation_reasoning=sql_generation_reasoning,
+            histories=histories,
+            sql_samples=sql_samples,
+            instructions=instructions,
+            project_id=project_id,
+            has_calculated_field=has_calculated_field,
+            has_metric=has_metric,
+            has_json_field=has_json_field,
+            sql_functions=sql_functions,
+            use_dry_plan=use_dry_plan,
+            allow_dry_plan_fallback=allow_dry_plan_fallback,
+        )
+
+
+

@@ -16,16 +16,23 @@ RUN poetry install --without dev,eval,test --no-root && rm -rf $POETRY_CACHE_DIR
 
 FROM python:3.12.0-slim-bookworm as runtime
 
-RUN apt-get update && apt install -y netcat-traditional
+RUN apt-get update && apt install -y netcat-traditional && rm -rf /var/lib/apt/lists/*
 
 ENV VIRTUAL_ENV=/app/.venv \
-    PATH="/app/.venv/bin:$PATH"
+    PATH="/app/.venv/bin:$PATH" \
+    QDRANT_HOST=qdrant \
+    WREN_AI_SERVICE_PORT=5555
+
+WORKDIR /app
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
-COPY src src
+COPY src /app/src
 COPY entrypoint.sh /app/entrypoint.sh
-COPY pyproject.toml pyproject.toml
-RUN chmod +x /app/entrypoint.sh
+COPY pyproject.toml /app/pyproject.toml
 
-ENTRYPOINT [ "/app/entrypoint.sh" ]
+# Fix line endings CRLF -> LF and make executable
+RUN chmod +x /app/entrypoint.sh && \
+    sed -i 's/\r$//' /app/entrypoint.sh
+
+ENTRYPOINT [ "/bin/bash", "/app/entrypoint.sh" ]

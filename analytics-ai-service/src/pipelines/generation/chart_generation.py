@@ -223,7 +223,7 @@ class ChartGeneration(EnhancedBasicPipeline):
         )
 
     @observe(name="Chart Generation")
-    async def run(
+    async def _execute(
         self,
         query: str,
         sql: str,
@@ -246,3 +246,24 @@ class ChartGeneration(EnhancedBasicPipeline):
                 **self._configs,
             },
         )
+
+    async def run(
+        self,
+        query: str,
+        sql: str,
+        data: dict,
+        language: str,
+        remove_data_from_chart_schema: bool = True,
+        custom_instruction: Optional[str] = None,
+    ) -> dict:
+        return await self._execute(
+            query=query,
+            sql=sql,
+            data=data,
+            language=language,
+            remove_data_from_chart_schema=remove_data_from_chart_schema,
+            custom_instruction=custom_instruction,
+        )
+
+
+

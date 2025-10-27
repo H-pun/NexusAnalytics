@@ -495,8 +495,7 @@ class DbSchemaRetrieval(EnhancedBasicPipeline):
             AsyncDriver({}, sys.modules[__name__], result_builder=base.DictResult())
         )
 
-    @observe(name="Ask Retrieval")
-    async def run(
+    async def _execute(
         self,
         query: str = "",
         tables: Optional[list[str]] = None,
@@ -516,4 +515,21 @@ class DbSchemaRetrieval(EnhancedBasicPipeline):
                 **self._components,
                 **self._configs,
             },
+        )
+
+    @observe(name="Ask Retrieval")
+    async def run(
+        self,
+        query: str = "",
+        tables: Optional[list[str]] = None,
+        project_id: Optional[str] = None,
+        histories: Optional[list[AskHistory]] = None,
+        enable_column_pruning: bool = False,
+    ):
+        return await self._execute(
+            query=query,
+            tables=tables,
+            project_id=project_id,
+            histories=histories,
+            enable_column_pruning=enable_column_pruning,
         )

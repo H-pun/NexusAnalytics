@@ -241,7 +241,7 @@ class ChartAdjustment(EnhancedBasicPipeline):
         )
 
     @observe(name="Chart Adjustment")
-    async def run(
+    async def _execute(
         self,
         query: str,
         sql: str,
@@ -265,3 +265,24 @@ class ChartAdjustment(EnhancedBasicPipeline):
                 **self._configs,
             },
         )
+
+    async def run(
+        self,
+        query: str,
+        sql: str,
+        adjustment_option: ChartAdjustmentOption,
+        chart_schema: dict,
+        data: dict,
+        language: str,
+    ) -> dict:
+        return await self._execute(
+            query=query,
+            sql=sql,
+            adjustment_option=adjustment_option,
+            chart_schema=chart_schema,
+            data=data,
+            language=language,
+        )
+
+
+

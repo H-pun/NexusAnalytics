@@ -7,7 +7,7 @@ from hamilton import base
 from hamilton.driver import Driver
 from langfuse.decorators import observe
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 
 logger = logging.getLogger("analytics-service")
@@ -76,7 +76,7 @@ def preprocess(
 ## End of Pipeline
 
 
-class PreprocessSqlData(BasicPipeline):
+class PreprocessSqlData(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
@@ -96,7 +96,7 @@ class PreprocessSqlData(BasicPipeline):
         super().__init__(Driver({}, sys.modules[__name__], adapter=base.DictResult()))
 
     @observe(name="Preprocess SQL Data")
-    def run(
+    def _execute(
         self,
         sql_data: Dict,
     ):
@@ -108,3 +108,9 @@ class PreprocessSqlData(BasicPipeline):
                 **self._configs,
             },
         )
+
+    def run(
+        self,
+        sql_data: Dict,
+    ):
+        return self._execute(sql_data=sql_data)

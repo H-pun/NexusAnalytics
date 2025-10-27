@@ -9,7 +9,7 @@ from haystack import component
 from langfuse.decorators import observe
 
 from src.core.engine import Engine
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 
 logger = logging.getLogger("analytics-service")
 
@@ -60,7 +60,7 @@ async def execute_sql(
 ## End of Pipeline
 
 
-class SQLExecutor(BasicPipeline):
+class SQLExecutor(EnhancedBasicPipeline):
     def __init__(
         self,
         engine: Engine,
@@ -75,7 +75,7 @@ class SQLExecutor(BasicPipeline):
         )
 
     @observe(name="SQL Execution")
-    async def run(
+    async def _execute(
         self, sql: str, project_id: str | None = None, limit: int = 500
     ) -> dict:
         logger.info("SQL Execution pipeline is running...")
@@ -88,3 +88,8 @@ class SQLExecutor(BasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self, sql: str, project_id: str | None = None, limit: int = 500
+    ) -> dict:
+        return await self._execute(sql=sql, project_id=project_id, limit=limit)

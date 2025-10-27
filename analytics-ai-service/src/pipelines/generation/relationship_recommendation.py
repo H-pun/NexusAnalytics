@@ -10,7 +10,7 @@ from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 from pydantic import BaseModel
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
@@ -250,7 +250,7 @@ RELATIONSHIP_RECOMMENDATION_MODEL_KWARGS = {
 }
 
 
-class RelationshipRecommendation(BasicPipeline):
+class RelationshipRecommendation(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
@@ -272,7 +272,7 @@ class RelationshipRecommendation(BasicPipeline):
         )
 
     @observe(name="Relationship Recommendation")
-    async def run(
+    async def _execute(
         self,
         mdl: dict,
         language: str = "English",
@@ -286,3 +286,13 @@ class RelationshipRecommendation(BasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        mdl: dict,
+        language: str = "English",
+    ) -> dict:
+        return await self._execute(mdl=mdl, language=language)
+
+
+

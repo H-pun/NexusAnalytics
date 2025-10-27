@@ -8,7 +8,7 @@ from hamilton.async_driver import AsyncDriver
 from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
@@ -127,7 +127,7 @@ async def generate_answer(
 ## End of Pipeline
 
 
-class SQLAnswer(BasicPipeline):
+class SQLAnswer(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
@@ -185,7 +185,7 @@ class SQLAnswer(BasicPipeline):
                 break
 
     @observe(name="SQL Answer Generation")
-    async def run(
+    async def _execute(
         self,
         query: str,
         sql: str,
@@ -209,3 +209,26 @@ class SQLAnswer(BasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        query: str,
+        sql: str,
+        sql_data: dict,
+        language: str,
+        current_time: str = Configuration().show_current_time(),
+        query_id: Optional[str] = None,
+        custom_instruction: Optional[str] = None,
+    ) -> dict:
+        return await self._execute(
+            query=query,
+            sql=sql,
+            sql_data=sql_data,
+            language=language,
+            current_time=current_time,
+            query_id=query_id,
+            custom_instruction=custom_instruction,
+        )
+
+
+

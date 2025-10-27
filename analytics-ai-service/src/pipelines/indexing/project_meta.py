@@ -86,7 +86,7 @@ class ProjectMeta(EnhancedBasicPipeline):
         )
 
     @observe(name="Project Meta Indexing")
-    async def run(
+    async def _execute(
         self, mdl_str: str, project_id: Optional[str] = None
     ) -> dict[str, Any]:
         logger.info(
@@ -101,6 +101,14 @@ class ProjectMeta(EnhancedBasicPipeline):
             },
         )
 
+    async def run(
+        self, mdl_str: str, project_id: Optional[str] = None
+    ) -> dict[str, Any]:
+        return await self._execute(mdl_str=mdl_str, project_id=project_id)
+
     @observe(name="Clean Documents for Project Meta")
     async def clean(self, project_id: Optional[str] = None) -> None:
         await self._components["cleaner"].run(project_id=project_id)
+
+
+

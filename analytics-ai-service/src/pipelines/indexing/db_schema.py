@@ -367,7 +367,7 @@ class DBSchema(EnhancedBasicPipeline):
         )
 
     @observe(name="DB Schema Indexing")
-    async def run(
+    async def _execute(
         self, mdl_str: str, project_id: Optional[str] = None
     ) -> Dict[str, Any]:
         logger.info(
@@ -383,6 +383,11 @@ class DBSchema(EnhancedBasicPipeline):
             },
         )
 
+    async def run(
+        self, mdl_str: str, project_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        return await self._execute(mdl_str=mdl_str, project_id=project_id)
+
     @observe(name="Clean Documents for DB Schema")
     async def clean(self, project_id: Optional[str] = None) -> None:
         await clean(
@@ -390,3 +395,6 @@ class DBSchema(EnhancedBasicPipeline):
             cleaner=self._components["cleaner"],
             project_id=project_id,
         )
+
+
+

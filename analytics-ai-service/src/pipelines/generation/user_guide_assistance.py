@@ -190,7 +190,7 @@ class UserGuideAssistance(EnhancedBasicPipeline):
                 break
 
     @observe(name="User Guide Assistance")
-    async def run(
+    async def _execute(
         self,
         query: str,
         language: str,
@@ -209,3 +209,20 @@ class UserGuideAssistance(EnhancedBasicPipeline):
                 **self._configs,
             },
         )
+
+    async def run(
+        self,
+        query: str,
+        language: str,
+        query_id: Optional[str] = None,
+        custom_instruction: Optional[str] = None,
+    ):
+        return await self._execute(
+            query=query,
+            language=language,
+            query_id=query_id,
+            custom_instruction=custom_instruction,
+        )
+
+
+

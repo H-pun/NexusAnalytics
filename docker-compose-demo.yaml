@@ -1,5 +1,3 @@
-version: "3"
-
 volumes:
   data:
   northwind_data:
@@ -53,7 +51,7 @@ services:
   analytics-service:
     # Build from local source instead of using online image
     build:
-      context: ./analytics-service
+      context: ./analytics-ai-service
       dockerfile: docker/Dockerfile
     # image: ghcr.io/canner/wren-ai-service:0.27.1  # Commented out - using local build
     restart: on-failure

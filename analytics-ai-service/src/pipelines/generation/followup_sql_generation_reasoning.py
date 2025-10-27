@@ -8,7 +8,7 @@ from hamilton.async_driver import AsyncDriver
 from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.pipelines.generation.utils.sql import (
@@ -135,7 +135,7 @@ def post_process(
 ## End of Pipeline
 
 
-class FollowUpSQLGenerationReasoning(BasicPipeline):
+class FollowUpSQLGenerationReasoning(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
@@ -191,7 +191,7 @@ class FollowUpSQLGenerationReasoning(BasicPipeline):
                 break
 
     @observe(name="FollowupSQL Generation Reasoning")
-    async def run(
+    async def _execute(
         self,
         query: str,
         contexts: list[str],
@@ -218,3 +218,26 @@ class FollowUpSQLGenerationReasoning(BasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        query: str,
+        contexts: list[str],
+        histories: list[AskHistory],
+        sql_samples: Optional[list[dict]] = None,
+        instructions: Optional[list[dict]] = None,
+        configuration: Configuration | dict = Configuration(),
+        query_id: Optional[str] = None,
+    ):
+        return await self._execute(
+            query=query,
+            contexts=contexts,
+            histories=histories,
+            sql_samples=sql_samples,
+            instructions=instructions,
+            configuration=configuration,
+            query_id=query_id,
+        )
+
+
+

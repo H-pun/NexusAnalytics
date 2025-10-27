@@ -191,7 +191,7 @@ class SQLGeneration(EnhancedBasicPipeline):
         )
 
     @observe(name="SQL Generation")
-    async def run(
+    async def _execute(
         self,
         query: str,
         contexts: list[str],
@@ -234,3 +234,38 @@ class SQLGeneration(EnhancedBasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        query: str,
+        contexts: list[str],
+        sql_generation_reasoning: str | None = None,
+        sql_samples: list[dict] | None = None,
+        instructions: list[dict] | None = None,
+        project_id: str | None = None,
+        has_calculated_field: bool = False,
+        has_metric: bool = False,
+        has_json_field: bool = False,
+        sql_functions: list[SqlFunction] | None = None,
+        use_dry_plan: bool = False,
+        allow_dry_plan_fallback: bool = True,
+        allow_data_preview: bool = False,
+    ):
+        return await self._execute(
+            query=query,
+            contexts=contexts,
+            sql_generation_reasoning=sql_generation_reasoning,
+            sql_samples=sql_samples,
+            instructions=instructions,
+            project_id=project_id,
+            has_calculated_field=has_calculated_field,
+            has_metric=has_metric,
+            has_json_field=has_json_field,
+            sql_functions=sql_functions,
+            use_dry_plan=use_dry_plan,
+            allow_dry_plan_fallback=allow_dry_plan_fallback,
+            allow_data_preview=allow_data_preview,
+        )
+
+
+

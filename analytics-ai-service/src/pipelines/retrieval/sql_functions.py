@@ -9,7 +9,7 @@ from hamilton.async_driver import AsyncDriver
 from langfuse.decorators import observe
 
 from src.core.engine import Engine
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import DocumentStoreProvider
 from src.pipelines.common import retrieve_metadata
 from src.providers.engine.analytics import AnalyticsIbis
@@ -79,7 +79,7 @@ def cache(
 ## End of Pipeline
 
 
-class SqlFunctions(BasicPipeline):
+class SqlFunctions(EnhancedBasicPipeline):
     def __init__(
         self,
         engine: Engine,
@@ -101,7 +101,7 @@ class SqlFunctions(BasicPipeline):
         )
 
     @observe(name="SQL Functions Retrieval")
-    async def run(
+    async def _execute(
         self,
         project_id: Optional[str] = None,
     ) -> List[SqlFunction]:
@@ -123,3 +123,9 @@ class SqlFunctions(BasicPipeline):
         }
         result = await self._pipe.execute(["cache"], inputs=input)
         return result["cache"]
+
+    async def run(
+        self,
+        project_id: Optional[str] = None,
+    ) -> List[SqlFunction]:
+        return await self._execute(project_id=project_id)

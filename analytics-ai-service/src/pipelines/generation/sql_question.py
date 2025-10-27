@@ -9,7 +9,7 @@ from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 from pydantic import BaseModel
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
@@ -144,7 +144,7 @@ SQL_QUESTION_MODEL_KWARGS = {
 }
 
 
-class SQLQuestion(BasicPipeline):
+class SQLQuestion(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
@@ -164,7 +164,7 @@ class SQLQuestion(BasicPipeline):
         )
 
     @observe(name="Sql Question Generation")
-    async def run(
+    async def _execute(
         self,
         sql: str,
         configuration: Configuration | dict = Configuration(),
@@ -182,3 +182,13 @@ class SQLQuestion(BasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        sql: str,
+        configuration: Configuration | dict = Configuration(),
+    ):
+        return await self._execute(sql=sql, configuration=configuration)
+
+
+
