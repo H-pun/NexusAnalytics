@@ -30,7 +30,7 @@ import {
 } from '@server/data';
 import { snakeCase } from 'lodash';
 import { CompactTable, ProjectData } from '../services';
-import { DuckDBPrepareOptions } from '@server/adaptors/wrenEngineAdaptor';
+import { DuckDBPrepareOptions } from '@server/adaptors/analyticsEngineAdaptor';
 import DataSourceSchemaDetector, {
   SchemaChangeType,
 } from '@server/managers/dataSourceSchemaDetector';
@@ -130,7 +130,7 @@ export class ProjectResolver {
       await ctx.modelService.deleteAllViewsByProjectId(id);
       await ctx.modelService.deleteAllModelsByProjectId(id);
       await ctx.projectService.deleteProject(id);
-      await ctx.wrenAIAdaptor.delete(id);
+      await ctx.analyticsAIAdaptor.delete(id);
 
       // telemetry
       ctx.telemetry.sendEvent(eventName, {
@@ -780,18 +780,18 @@ export class ProjectResolver {
   ): Promise<void> {
     const { initSql, extensions, configurations } = options;
     const initSqlWithExtensions = this.concatInitSql(initSql, extensions);
-    await ctx.wrenEngineAdaptor.prepareDuckDB({
+    await ctx.analyticsEngineAdaptor.prepareDuckDB({
       sessionProps: configurations,
       initSql: initSqlWithExtensions,
     } as DuckDBPrepareOptions);
 
     // check can list dataset table
-    await ctx.wrenEngineAdaptor.listTables();
+    await ctx.analyticsEngineAdaptor.listTables();
 
     // patch wren-engine config
     const config = {
       'wren.datasource.type': 'duckdb',
     };
-    await ctx.wrenEngineAdaptor.patchConfig(config);
+    await ctx.analyticsEngineAdaptor.patchConfig(config);
   }
 }

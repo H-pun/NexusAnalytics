@@ -11,11 +11,11 @@ from haystack.components.writers import DocumentWriter
 from haystack.document_stores.types import DuplicatePolicy
 from langfuse.decorators import observe
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import DocumentStoreProvider
 from src.pipelines.indexing import AsyncDocumentWriter, DocumentCleaner, MDLValidator
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 ## Start of Pipeline
@@ -35,7 +35,7 @@ def chunk(
     data_source = mdl.get("dataSource", "local_file").lower()
 
     if data_source == "duckdb":
-        # fix duckdb to local_file due to wren-ibis implementation at the moment
+        # fix duckdb to local_file due to analytics-ibis implementation at the moment
         data_source = "local_file"
 
     document = Document(
@@ -63,7 +63,7 @@ async def write(clean: dict[str, Any], writer: DocumentWriter) -> None:
 ## End of Pipeline
 
 
-class ProjectMeta(BasicPipeline):
+class ProjectMeta(EnhancedBasicPipeline):
     def __init__(
         self,
         document_store_provider: DocumentStoreProvider,

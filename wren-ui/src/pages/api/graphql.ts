@@ -48,9 +48,9 @@ const bootstrapServer = async () => {
     apiHistoryRepository,
     dashboardItemRefreshJobRepository,
     // adaptors
-    wrenEngineAdaptor,
+    analyticsEngineAdaptor,
     ibisAdaptor,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
 
     // services
     projectService,
@@ -75,7 +75,7 @@ const bootstrapServer = async () => {
     relationRepository,
     viewRepository,
     mdlService,
-    wrenEngineAdaptor,
+    analyticsEngineAdaptor,
     queryService,
   });
 
@@ -129,9 +129,9 @@ const bootstrapServer = async () => {
       config: serverConfig,
       telemetry,
       // adaptor
-      wrenEngineAdaptor,
+      analyticsEngineAdaptor,
       ibisServerAdaptor: ibisAdaptor,
-      wrenAIAdaptor,
+      analyticsAIAdaptor,
       // services
       projectService,
       modelService,

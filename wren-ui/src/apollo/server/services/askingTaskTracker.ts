@@ -11,7 +11,7 @@ import {
   IThreadResponseRepository,
   IViewRepository,
 } from '@server/repositories';
-import { IWrenAIAdaptor } from '../adaptors';
+import { IAnalyticsAIAdaptor } from '../adaptors';
 import * as Errors from '@server/utils/error';
 
 const logger = getLogger('AskingTaskTracker');
@@ -54,7 +54,7 @@ export interface IAskingTaskTracker {
 }
 
 export class AskingTaskTracker implements IAskingTaskTracker {
-  private wrenAIAdaptor: IWrenAIAdaptor;
+  private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private askingTaskRepository: IAskingTaskRepository;
   private trackedTasks: Map<string, TrackedTask> = new Map();
   private trackedTasksById: Map<number, TrackedTask> = new Map();
@@ -66,21 +66,21 @@ export class AskingTaskTracker implements IAskingTaskTracker {
   private viewRepository: IViewRepository;
 
   constructor({
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     askingTaskRepository,
     threadResponseRepository,
     viewRepository,
     pollingInterval = 1000, // 1 second
     memoryRetentionTime = 5 * 60 * 1000, // 5 minutes
   }: {
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
     askingTaskRepository: IAskingTaskRepository;
     threadResponseRepository: IThreadResponseRepository;
     viewRepository: IViewRepository;
     pollingInterval?: number;
     memoryRetentionTime?: number;
   }) {
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
     this.askingTaskRepository = askingTaskRepository;
     this.threadResponseRepository = threadResponseRepository;
     this.viewRepository = viewRepository;
@@ -94,7 +94,7 @@ export class AskingTaskTracker implements IAskingTaskTracker {
   ): Promise<{ queryId: string }> {
     try {
       // Call the AI service to create a task
-      const response = await this.wrenAIAdaptor.ask(input);
+      const response = await this.analyticsAIAdaptor.ask(input);
       const queryId = response.queryId;
 
       // validate the input
@@ -132,7 +132,7 @@ export class AskingTaskTracker implements IAskingTaskTracker {
 
         // get the latest result from the AI service
         // we get the latest result first to make it more responsive to client-side
-        const result = await this.wrenAIAdaptor.getAskResult(queryId);
+        const result = await this.analyticsAIAdaptor.getAskResult(queryId);
 
         // update the result in memory
         task.result = result;
@@ -182,7 +182,7 @@ export class AskingTaskTracker implements IAskingTaskTracker {
   }
 
   public async cancelAskingTask(queryId: string): Promise<void> {
-    await this.wrenAIAdaptor.cancelAsk(queryId);
+    await this.analyticsAIAdaptor.cancelAsk(queryId);
   }
 
   public stopPolling(): void {
@@ -254,7 +254,7 @@ export class AskingTaskTracker implements IAskingTaskTracker {
 
             // Poll for updates
             logger.info(`Polling for updates for task ${queryId}`);
-            const result = await this.wrenAIAdaptor.getAskResult(queryId);
+            const result = await this.analyticsAIAdaptor.getAskResult(queryId);
             task.lastPolled = now;
 
             // if result is not changed, we don't need to update the database

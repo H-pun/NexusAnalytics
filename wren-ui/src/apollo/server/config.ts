@@ -14,11 +14,11 @@ export interface IConfig {
 
   persistCredentialDir?: string;
 
-  // wren engine
-  wrenEngineEndpoint: string;
+  // analytics engine
+  analyticsEngineEndpoint: string;
 
-  // wren AI
-  wrenAIEndpoint: string;
+  // analytics AI
+  analyticsAIEndpoint: string;
   generationModel?: string;
 
   // ibis server
@@ -64,11 +64,11 @@ const defaultConfig = {
 
   persistCredentialDir: `${process.cwd()}/.tmp`,
 
-  // wren engine
-  wrenEngineEndpoint: 'http://localhost:8080',
+  // analytics engine
+  analyticsEngineEndpoint: 'http://localhost:8080',
 
-  // wren AI
-  wrenAIEndpoint: 'http://localhost:5555',
+  // analytics AI
+  analyticsAIEndpoint: 'http://localhost:5555',
 
   // ibis server
   experimentalEngineRustVersion: true,
@@ -101,11 +101,11 @@ const config = {
     return undefined;
   })(),
 
-  // wren engine
-  wrenEngineEndpoint: process.env.WREN_ENGINE_ENDPOINT,
+  // analytics engine
+  analyticsEngineEndpoint: process.env.ANALYTICS_ENGINE_ENDPOINT,
 
-  // wren AI
-  wrenAIEndpoint: process.env.WREN_AI_ENDPOINT,
+  // analytics AI
+  analyticsAIEndpoint: process.env.ANALYTICS_AI_ENDPOINT,
   generationModel: process.env.GENERATION_MODEL,
 
   // ibis server

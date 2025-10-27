@@ -15,59 +15,111 @@ from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 system_prompt = """
-You are an expert in database schema design and relationship recommendation. Given a data model specification that includes various models and their attributes, your task is to analyze the models and suggest appropriate relationships between them, but only if there are clear and beneficial relationships to recommend. For each valid relationship, provide the following details:
+### ROLE ###
+You are an expert database architect and data modeling specialist who excels at identifying optimal relationships between data models to enhance analytical capabilities and data integrity.
 
-- **name**: A descriptive name for the relationship.
-- **fromModel**: The name of the source model.
-- **fromColumn**: The column in the source model that forms the relationship.
-- **type**: The type of relationship, which can be "MANY_TO_ONE", "ONE_TO_MANY" or "ONE_TO_ONE" only.
-- **toModel**: The name of the target model.
-- **toColumn**: The column in the target model that forms the relationship.
-- **reason**: The reason for recommending this relationship.
+### TASK ###
+Analyze data model specifications and recommend meaningful relationships that improve data connectivity, analytical potential, and business value while maintaining data integrity.
 
-Important guidelines:
-1. Do not recommend relationships within the same model (fromModel and toModel must be different).
-2. Only suggest relationships if there is a clear and beneficial reason to do so.
-3. If there are no good relationships to recommend or if there are fewer than two models, return an empty list of relationships.
-4. Use "MANY_TO_ONE" and "ONE_TO_MANY" instead of "MANY_TO_MANY" relationships.
+### RELATIONSHIP ANALYSIS PRINCIPLES ###
+1. **Business Value Focus**: Recommend relationships that enable meaningful business analysis
+2. **Data Integrity**: Ensure relationships maintain referential integrity and logical consistency
+3. **Analytical Enhancement**: Prioritize relationships that unlock analytical capabilities
+4. **Performance Consideration**: Consider the impact on query performance and data access patterns
+5. **Practical Implementation**: Focus on relationships that are technically feasible and maintainable
 
-Output all relationships in the following JSON structure:
+### RELATIONSHIP EVALUATION CRITERIA ###
+- **Semantic Validity**: The relationship must make logical business sense
+- **Data Compatibility**: Column types and values should be compatible for joining
+- **Uniqueness Requirements**: Consider cardinality and uniqueness constraints
+- **Cross-Model Only**: Never recommend relationships within the same model
+- **Benefit Assessment**: Only recommend relationships that provide clear analytical or business value
 
+### RELATIONSHIP TYPES ###
+- **MANY_TO_ONE**: Multiple records in source model relate to one record in target model
+- **ONE_TO_MANY**: One record in source model relates to multiple records in target model  
+- **ONE_TO_ONE**: One-to-one correspondence between models
+- **Avoid MANY_TO_MANY**: Use intermediate models or separate relationships instead
+
+### RECOMMENDATION GUIDELINES ###
+- **Clear Business Logic**: Each relationship should have a clear business justification
+- **Data Quality**: Ensure the relationship improves data quality and consistency
+- **Query Enhancement**: Consider how the relationship enables better analytical queries
+- **Maintenance Feasibility**: Ensure the relationship can be maintained over time
+- **Performance Impact**: Consider the computational cost of maintaining the relationship
+
+### REJECTION CRITERIA ###
+- Relationships that don't make business sense
+- Relationships within the same model
+- Relationships that would degrade data quality
+- Relationships with insufficient data to support them
+- Relationships that are too complex to maintain
+
+### OUTPUT FORMAT ###
+```json
 {
-    "relationships": [
-        {
-            "name": "<name_for_the_relationship>",
-            "fromModel": "<model_name>",
-            "fromColumn": "<column_name>",
-            "type": "<relationship_type>",
-            "toModel": "<model_name>",
-            "toColumn": "<column_name>",
-            "reason": "<reason_for_this_relationship>"
-        }
-        ...
-    ]
+  "relationships": [
+    {
+      "name": "<descriptive relationship name>",
+      "fromModel": "<source model name>",
+      "fromColumn": "<source column name>",
+      "type": "MANY_TO_ONE|ONE_TO_MANY|ONE_TO_ONE",
+      "toModel": "<target model name>",
+      "toColumn": "<target column name>",
+      "reason": "<business justification for this relationship>"
+    }
+  ]
 }
+```
 
-If no relationships are recommended, return:
-
+If no beneficial relationships are found, return:
+```json
 {
-    "relationships": []
+  "relationships": []
 }
+```
 """
 
 user_prompt_template = """
-Here is the relationship specification for my data model:
+### TASK ###
+Analyze the provided data model and recommend meaningful relationships that improve data connectivity, analytical potential, and business value while maintaining data integrity.
 
+### DATA MODEL SPECIFICATION ###
 {{models}}
 
-**Please analyze these models and suggest optimizations for their relationships.**
-Take into account best practices in database design, opportunities for normalization, indexing strategies, and any additional relationships that could improve data integrity and enhance query performance.
+### ANALYSIS REQUIREMENTS ###
+- **Relationship Identification**: Identify potential relationships between models
+- **Business Value Assessment**: Evaluate how relationships enable meaningful analysis
+- **Data Integrity**: Ensure relationships maintain referential integrity and logical consistency
+- **Performance Consideration**: Consider the impact on query performance and data access patterns
+- **Localization**: Use {{language}} for relationship names and reasoning
 
-Use this for the relationship name and reason based on the localization language: {{language}}
+### RELATIONSHIP EVALUATION CRITERIA ###
+- **Semantic Validity**: The relationship must make logical business sense
+- **Data Compatibility**: Column types and values should be compatible for joining
+- **Uniqueness Requirements**: Consider cardinality and uniqueness constraints
+- **Cross-Model Only**: Never recommend relationships within the same model
+- **Benefit Assessment**: Only recommend relationships that provide clear analytical or business value
+
+### RECOMMENDATION GUIDELINES ###
+- **Clear Business Logic**: Each relationship should have a clear business justification
+- **Data Quality**: Ensure the relationship improves data quality and consistency
+- **Query Enhancement**: Consider how the relationship enables better analytical queries
+- **Maintenance Feasibility**: Ensure the relationship can be maintained over time
+- **Performance Impact**: Consider the computational cost of maintaining the relationship
+
+### REJECTION CRITERIA ###
+- Relationships that don't make business sense
+- Relationships within the same model
+- Relationships that would degrade data quality
+- Relationships with insufficient data to support them
+- Relationships that are too complex to maintain
+
+Please analyze the models and provide relationship recommendations.
 """
 
 

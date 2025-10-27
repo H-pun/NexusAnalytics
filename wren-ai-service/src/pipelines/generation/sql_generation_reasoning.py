@@ -8,7 +8,7 @@ from hamilton.async_driver import AsyncDriver
 from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.pipelines.generation.utils.sql import (
@@ -18,10 +18,20 @@ from src.pipelines.generation.utils.sql import (
 from src.utils import trace_cost
 from src.web.v1.services import Configuration
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 sql_generation_reasoning_user_prompt_template = """
+### TASK ###
+Create a comprehensive reasoning plan for generating SQL queries that accurately address user questions while leveraging the database schema and analytical context.
+
+### REASONING FRAMEWORK ###
+- **Question Analysis**: Break down the user's question into analytical components
+- **Schema Mapping**: Connect question elements to relevant database structures
+- **Context Integration**: Consider user instructions, examples, and requirements
+- **Logical Flow**: Create step-by-step plans that build toward accurate SQL generation
+- **Quality Assurance**: Ensure the reasoning leads to meaningful, accurate results
+
 ### DATABASE SCHEMA ###
 {% for document in documents %}
     {{ document }}
@@ -44,10 +54,19 @@ SQL:
 {% endfor %}
 {% endif %}
 
-### INPUTS ###
+### ANALYTICAL INPUTS ###
 User's Question: {{ query }}
 Language: {{ language }}
 Current Time: {{ current_time }}
+
+### REASONING GUIDELINES ###
+- **Question Decomposition**: Identify key analytical components and requirements
+- **Data Mapping**: Connect question elements to appropriate database tables and columns
+- **Time Handling**: Distinguish between absolute dates (YYYY-MM-DD) and relative timeframes
+- **Ranking Logic**: Plan for top/bottom/first/last queries using DENSE_RANK() functions
+- **Instruction Integration**: Incorporate user-specific requirements and preferences
+- **Example Learning**: Apply patterns from provided SQL samples
+- **Schema Optimization**: Leverage the database schema for efficient, accurate queries
 
 Let's think step by step.
 """
@@ -61,8 +80,15 @@ def prompt(
     sql_samples: list[dict],
     instructions: list[dict],
     prompt_builder: PromptBuilder,
-    configuration: Configuration | None = Configuration(),
+    configuration: Configuration | dict | None = None,
 ) -> dict:
+    # Handle configuration as dict or Configuration object
+    if configuration is None:
+        configuration = Configuration()
+    elif isinstance(configuration, dict):
+        # Convert dict to Configuration object
+        configuration = Configuration(**configuration)
+
     _prompt = prompt_builder.run(
         query=query,
         documents=documents,
@@ -96,7 +122,7 @@ def post_process(
 ## End of Pipeline
 
 
-class SQLGenerationReasoning(BasicPipeline):
+class SQLGenerationReasoning(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
@@ -158,9 +184,12 @@ class SQLGenerationReasoning(BasicPipeline):
         contexts: list[str],
         sql_samples: Optional[list[dict]] = None,
         instructions: Optional[list[str]] = None,
-        configuration: Configuration = Configuration(),
+        configuration: Configuration | dict = Configuration(),
         query_id: Optional[str] = None,
     ):
+        # Handle configuration as dict or Configuration object
+        if isinstance(configuration, dict):
+            configuration = Configuration(**configuration)
         logger.info("SQL Generation Reasoning pipeline is running...")
         return await self._pipe.execute(
             ["post_process"],

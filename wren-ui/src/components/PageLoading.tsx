@@ -48,7 +48,7 @@ export default function PageLoading(props: Props) {
     >
       <div className="text-center">
         <Spin indicator={defaultIndicator} />
-        <div className="mt-2 geekblue-6">Loading...</div>
+        <div className="mt-2 rust-orange-6">Loading...</div>
       </div>
     </Wrapper>
   );
@@ -58,7 +58,7 @@ export const FlexLoading = (props) => {
   const { height, tip } = props;
   return (
     <div
-      className="d-flex align-center justify-center flex-column geekblue-6"
+      className="d-flex align-center justify-center flex-column rust-orange-6"
       style={{ height: height || '100%' }}
     >
       {defaultIndicator}

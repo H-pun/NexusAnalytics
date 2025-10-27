@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from dataclasses import dataclass
 from typing import Dict, Literal, Optional
 
 from cachetools import TTLCache
@@ -10,11 +11,25 @@ from src.core.pipeline import BasicPipeline
 from src.utils import trace_metadata
 from src.web.v1.services import BaseRequest
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
+
+
+@dataclass
+class SemanticsPreparationContext:
+    """Context for semantics preparation operations"""
+
+    mdl_hash: str
+    mdl: str
+    project_id: str
+    configurations: dict
+    trace_id: Optional[str] = None
+    request_from: Literal["ui", "api"] = "ui"
 
 
 # POST /v1/semantics-preparations
 class SemanticsPreparationRequest(BaseRequest):
+    """Request model for semantics preparation endpoint"""
+
     mdl: str
     # don't recommend to use id as a field name, but it's used in the API spec
     # so we need to support as a choice, and will remove it in the future
@@ -22,6 +37,8 @@ class SemanticsPreparationRequest(BaseRequest):
 
 
 class SemanticsPreparationResponse(BaseModel):
+    """Response model for semantics preparation endpoint"""
+
     # don't recommend to use id as a field name, but it's used in the API spec
     # so we need to support as a choice, and will remove it in the future
     mdl_hash: str = Field(serialization_alias="id")
@@ -29,13 +46,19 @@ class SemanticsPreparationResponse(BaseModel):
 
 # GET /v1/semantics-preparations/{mdl_hash}/status
 class SemanticsPreparationStatusRequest(BaseModel):
+    """Request model for getting semantics preparation status"""
+
     # don't recommend to use id as a field name, but it's used in the API spec
     # so we need to support as a choice, and will remove it in the future
     mdl_hash: str = Field(validation_alias=AliasChoices("mdl_hash", "id"))
 
 
 class SemanticsPreparationStatusResponse(BaseModel):
+    """Response model for semantics preparation status"""
+
     class SemanticsPreparationError(BaseModel):
+        """Error model for semantics preparation response"""
+
         code: Literal["OTHERS"]
         message: str
 
@@ -55,31 +78,41 @@ class SemanticsPreparationService:
             str, SemanticsPreparationStatusResponse
         ] = TTLCache(maxsize=maxsize, ttl=ttl)
 
-    @observe(name="Prepare Semantics")
-    @trace_metadata
-    async def prepare_semantics(
+    def _handle_exception(
         self,
-        prepare_semantics_request: SemanticsPreparationRequest,
-        **kwargs,
-    ):
-        results = {
-            "metadata": {
-                "error_type": "",
-                "error_message": "",
-                "request_from": prepare_semantics_request.request_from,
-            },
-        }
-
+        context: SemanticsPreparationContext,
+        error_message: str,
+        code: str = "OTHERS",
+    ) -> None:
+        """Handle exceptions with proper error logging and status update"""
         try:
-            logger.info(f"MDL: {prepare_semantics_request.mdl}")
+            self._prepare_semantics_statuses[
+                context.mdl_hash
+            ] = SemanticsPreparationStatusResponse(
+                status="failed",
+                error=SemanticsPreparationStatusResponse.SemanticsPreparationError(
+                    code=code,
+                    message=error_message,
+                ),
+            )
+            logger.error(
+                f"Semantics preparation failed for {context.mdl_hash}: {error_message}"
+            )
+        except Exception as e:
+            logger.error(f"Error handling exception for {context.mdl_hash}: {e}")
 
-            input = {
-                "mdl_str": prepare_semantics_request.mdl,
-                "project_id": prepare_semantics_request.project_id,
+    async def _run_preparation_tasks(
+        self, context: SemanticsPreparationContext
+    ) -> None:
+        """Run all preparation tasks in parallel with error handling"""
+        try:
+            input_data = {
+                "mdl_str": context.mdl,
+                "project_id": context.project_id,
             }
 
             tasks = [
-                self._pipelines[name].run(**input)
+                self._pipelines[name].run(**input_data)
                 for name in [
                     "db_schema",
                     "historical_question",
@@ -90,23 +123,66 @@ class SemanticsPreparationService:
             ]
 
             await asyncio.gather(*tasks)
+        except Exception as e:
+            logger.error(f"Error running preparation tasks: {e}")
+            raise
 
+    def _update_success_status(self, context: SemanticsPreparationContext) -> None:
+        """Update cache with successful result"""
+        try:
             self._prepare_semantics_statuses[
-                prepare_semantics_request.mdl_hash
+                context.mdl_hash
             ] = SemanticsPreparationStatusResponse(
                 status="finished",
             )
         except Exception as e:
-            logger.exception(f"Failed to prepare semantics: {e}")
+            logger.error(f"Error updating success status for {context.mdl_hash}: {e}")
 
-            self._prepare_semantics_statuses[
-                prepare_semantics_request.mdl_hash
-            ] = SemanticsPreparationStatusResponse(
-                status="failed",
-                error=SemanticsPreparationStatusResponse.SemanticsPreparationError(
-                    code="OTHERS",
-                    message=f"Failed to prepare semantics: {e}",
-                ),
+    @observe(name="Prepare Semantics")
+    @trace_metadata
+    async def prepare_semantics(
+        self,
+        prepare_semantics_request: SemanticsPreparationRequest,
+        **kwargs,
+    ):
+        """Prepare semantics - clean implementation"""
+        trace_id = kwargs.get("trace_id")
+
+        # Create context for better organization
+        context = SemanticsPreparationContext(
+            mdl_hash=prepare_semantics_request.mdl_hash,
+            mdl=prepare_semantics_request.mdl,
+            project_id=prepare_semantics_request.project_id,
+            configurations=prepare_semantics_request.configurations.model_dump()
+            if prepare_semantics_request.configurations
+            else {},
+            trace_id=trace_id,
+            request_from=prepare_semantics_request.request_from,
+        )
+
+        results = {
+            "metadata": {
+                "error_type": "",
+                "error_message": "",
+                "request_from": context.request_from,
+            },
+        }
+
+        try:
+            logger.info(f"MDL: {context.mdl}")
+
+            # Step 1: Run preparation tasks
+            await self._run_preparation_tasks(context)
+
+            # Step 2: Update success status
+            self._update_success_status(context)
+
+        except Exception as e:
+            logger.error(f"Failed to prepare semantics: {e}")
+
+            self._handle_exception(
+                context,
+                f"Failed to prepare semantics: {e}",
             )
 
             results["metadata"]["error_type"] = "INDEXING_FAILED"
@@ -117,43 +193,64 @@ class SemanticsPreparationService:
     def get_prepare_semantics_status(
         self, prepare_semantics_status_request: SemanticsPreparationStatusRequest
     ) -> SemanticsPreparationStatusResponse:
-        if (
-            result := self._prepare_semantics_statuses.get(
+        """Get semantics preparation status - clean implementation"""
+        try:
+            result = self._prepare_semantics_statuses.get(
                 prepare_semantics_status_request.mdl_hash
             )
-        ) is None:
-            logger.exception(
-                f"id is not found for SemanticsPreparation: {prepare_semantics_status_request.mdl_hash}"
-            )
+
+            if result is None:
+                logger.warning(
+                    f"Semantics preparation status not found: {prepare_semantics_status_request.mdl_hash}"
+                )
+                return SemanticsPreparationStatusResponse(
+                    status="failed",
+                    error=SemanticsPreparationStatusResponse.SemanticsPreparationError(
+                        code="OTHERS",
+                        message=f"{prepare_semantics_status_request.mdl_hash} is not found",
+                    ),
+                )
+
+            return result
+        except Exception as e:
+            logger.error(f"Error getting semantics preparation status: {e}")
             return SemanticsPreparationStatusResponse(
                 status="failed",
                 error=SemanticsPreparationStatusResponse.SemanticsPreparationError(
                     code="OTHERS",
-                    message="{prepare_semantics_status_request.id} is not found",
+                    message=str(e),
                 ),
             )
-
-        return result
 
     @observe(name="Delete Semantics Documents")
     @trace_metadata
     async def delete_semantics(self, project_id: str, **kwargs):
+        """Delete semantics documents - clean implementation"""
         logger.info(f"Project ID: {project_id}, Deleting semantics documents...")
 
-        tasks = [
-            self._pipelines[name].clean(project_id=project_id)
-            for name in [
-                "db_schema",
-                "historical_question",
-                "table_description",
-                "project_meta",
+        try:
+            # Create tasks for different pipeline types
+            regular_tasks = [
+                self._pipelines[name].clean(project_id=project_id)
+                for name in [
+                    "db_schema",
+                    "historical_question",
+                    "table_description",
+                    "project_meta",
+                ]
             ]
-        ] + [
-            self._pipelines[name].clean(
-                project_id=project_id,
-                delete_all=True,
-            )
-            for name in ["sql_pairs", "instructions"]
-        ]
 
-        await asyncio.gather(*tasks)
+            delete_all_tasks = [
+                self._pipelines[name].clean(
+                    project_id=project_id,
+                    delete_all=True,
+                )
+                for name in ["sql_pairs", "instructions"]
+            ]
+
+            # Run all tasks in parallel
+            await asyncio.gather(*regular_tasks, *delete_all_tasks)
+
+        except Exception as e:
+            logger.error(f"Error deleting semantics documents: {e}")
+            raise

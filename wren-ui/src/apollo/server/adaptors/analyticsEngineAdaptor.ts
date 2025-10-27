@@ -4,10 +4,10 @@ import { getLogger } from '@server/utils';
 import * as Errors from '@server/utils/error';
 import { CompactTable, DEFAULT_PREVIEW_LIMIT } from '../services';
 
-const logger = getLogger('WrenEngineAdaptor');
+const logger = getLogger('AnalyticsEngineAdaptor');
 logger.level = 'debug';
 
-export interface WrenEngineDeployStatusResponse {
+export interface AnalyticsEngineDeployStatusResponse {
   systemStatus: string;
   version: string;
 }
@@ -26,7 +26,7 @@ export interface DescribeStatementResponse {
   columns: ColumnMetadata[];
 }
 
-export enum WrenEngineValidateStatus {
+export enum AnalyticsEngineValidateStatus {
   PASS = 'PASS',
   ERROR = 'ERROR',
   FAIL = 'FAIL',
@@ -34,13 +34,13 @@ export enum WrenEngineValidateStatus {
   SKIP = 'SKIP',
 }
 
-export interface WrenEngineValidateResponse {
+export interface AnalyticsEngineValidateResponse {
   duration: string;
   name: string;
-  status: WrenEngineValidateStatus;
+  status: AnalyticsEngineValidateStatus;
 }
 
-export interface WrenEngineValidationResponse {
+export interface AnalyticsEngineValidationResponse {
   valid: boolean;
   message?: string;
 }
@@ -50,7 +50,7 @@ export interface DryPlanOption {
   manifest?: Manifest;
 }
 
-export interface WrenEngineDryRunOption {
+export interface AnalyticsEngineDryRunOption {
   manifest?: Manifest;
   limit?: number;
 }
@@ -61,12 +61,12 @@ export interface DuckDBPrepareOptions {
 }
 
 // The response consists of an array containing columns. Each column contains a name and a type.
-export interface WrenEngineDryRunResponse {
+export interface AnalyticsEngineDryRunResponse {
   name: string;
   type: string;
 }
 
-export interface IWrenEngineAdaptor {
+export interface IAnalyticsEngineAdaptor {
   // duckdb data source related
   prepareDuckDB(options: DuckDBPrepareOptions): Promise<void>;
   queryDuckdb(sql: string): Promise<EngineQueryResponse>;
@@ -75,7 +75,7 @@ export interface IWrenEngineAdaptor {
   // metadata related, used to fetch metadata of duckdb
   listTables(): Promise<CompactTable[]>;
 
-  // config wren engine
+  // config analytics engine
   patchConfig(config: Record<string, any>): Promise<void>;
 
   // query
@@ -89,15 +89,15 @@ export interface IWrenEngineAdaptor {
     manifest: Manifest,
     modelName: string,
     columnName: string,
-  ): Promise<WrenEngineValidationResponse>;
+  ): Promise<AnalyticsEngineValidationResponse>;
   dryRun(
     sql: string,
-    options: WrenEngineDryRunOption,
-  ): Promise<WrenEngineDryRunResponse[]>;
+    options: AnalyticsEngineDryRunOption,
+  ): Promise<AnalyticsEngineDryRunResponse[]>;
 }
 
-export class WrenEngineAdaptor implements IWrenEngineAdaptor {
-  private readonly wrenEngineBaseEndpoint: string;
+export class AnalyticsEngineAdaptor implements IAnalyticsEngineAdaptor {
+  private readonly analyticsEngineBaseEndpoint: string;
   private sessionPropsUrlPath = '/v1/data-source/duckdb/settings/session-sql';
   private queryDuckdbUrlPath = '/v1/data-source/duckdb/query';
   private initSqlUrlPath = '/v1/data-source/duckdb/settings/init-sql';
@@ -106,8 +106,8 @@ export class WrenEngineAdaptor implements IWrenEngineAdaptor {
   private dryRunUrlPath = '/v1/mdl/dry-run';
   private validateUrlPath = '/v1/mdl/validate';
 
-  constructor({ wrenEngineEndpoint }: { wrenEngineEndpoint: string }) {
-    this.wrenEngineBaseEndpoint = wrenEngineEndpoint;
+  constructor({ analyticsEngineEndpoint }: { analyticsEngineEndpoint: string }) {
+    this.analyticsEngineBaseEndpoint = analyticsEngineEndpoint;
   }
 
   public async validateColumnIsValid(
@@ -135,11 +135,11 @@ export class WrenEngineAdaptor implements IWrenEngineAdaptor {
         parameters: { modelName, columnName },
       };
       const res = await axios.post(
-        `${this.wrenEngineBaseEndpoint}${this.validateUrlPath}/column_is_valid`,
+        `${this.analyticsEngineBaseEndpoint}${this.validateUrlPath}/column_is_valid`,
         payload,
       );
-      const result = res.data[0] as WrenEngineValidateResponse;
-      if (result.status === WrenEngineValidateStatus.PASS) {
+      const result = res.data[0] as AnalyticsEngineValidateResponse;
+      if (result.status === AnalyticsEngineValidateStatus.PASS) {
         return { valid: true };
       } else {
         return { valid: false, message: JSON.stringify(result) };
@@ -174,7 +174,7 @@ export class WrenEngineAdaptor implements IWrenEngineAdaptor {
     try {
       const url = new URL(
         this.sessionPropsUrlPath,
-        this.wrenEngineBaseEndpoint,
+        this.analyticsEngineBaseEndpoint,
       );
       const headers = {
         'Content-Type': 'text/plain; charset=utf-8',
@@ -192,7 +192,7 @@ export class WrenEngineAdaptor implements IWrenEngineAdaptor {
 
   public async queryDuckdb(sql: string): Promise<EngineQueryResponse> {
     try {
-      const url = new URL(this.queryDuckdbUrlPath, this.wrenEngineBaseEndpoint);
+      const url = new URL(this.queryDuckdbUrlPath, this.analyticsEngineBaseEndpoint);
       const headers = {
         'Content-Type': 'text/plain; charset=utf-8',
       };
@@ -215,7 +215,7 @@ export class WrenEngineAdaptor implements IWrenEngineAdaptor {
           value,
         };
       });
-      const url = new URL('/v1/config', this.wrenEngineBaseEndpoint);
+      const url = new URL('/v1/config', this.analyticsEngineBaseEndpoint);
       const headers = {
         'Content-Type': 'application/json',
       };
@@ -235,7 +235,7 @@ export class WrenEngineAdaptor implements IWrenEngineAdaptor {
     limit: number = DEFAULT_PREVIEW_LIMIT,
   ): Promise<EngineQueryResponse> {
     try {
-      const url = new URL(this.previewUrlPath, this.wrenEngineBaseEndpoint);
+      const url = new URL(this.previewUrlPath, this.analyticsEngineBaseEndpoint);
       const headers = {
         'Content-Type': 'application/json',
       };
@@ -271,7 +271,7 @@ export class WrenEngineAdaptor implements IWrenEngineAdaptor {
         manifest: options?.manifest,
       };
 
-      const url = new URL(this.dryPlanUrlPath, this.wrenEngineBaseEndpoint);
+      const url = new URL(this.dryPlanUrlPath, this.analyticsEngineBaseEndpoint);
       const headers = { 'Content-Type': 'application/json' };
 
       const res: AxiosResponse<string> = await axios({
@@ -296,8 +296,8 @@ export class WrenEngineAdaptor implements IWrenEngineAdaptor {
 
   public async dryRun(
     sql: string,
-    options: WrenEngineDryRunOption,
-  ): Promise<WrenEngineDryRunResponse[]> {
+    options: AnalyticsEngineDryRunOption,
+  ): Promise<AnalyticsEngineDryRunResponse[]> {
     try {
       const { manifest } = options;
       const body = {
@@ -305,10 +305,10 @@ export class WrenEngineAdaptor implements IWrenEngineAdaptor {
         manifest,
       };
       logger.debug(
-        `Dry run wren engine with body: ${JSON.stringify(sql, null, 2)}`,
+        `Dry run analytics engine with body: ${JSON.stringify(sql, null, 2)}`,
       );
-      const url = new URL(this.dryRunUrlPath, this.wrenEngineBaseEndpoint);
-      const res: AxiosResponse<WrenEngineDryRunResponse[]> = await axios({
+      const url = new URL(this.dryRunUrlPath, this.analyticsEngineBaseEndpoint);
+      const res: AxiosResponse<AnalyticsEngineDryRunResponse[]> = await axios({
         method: 'get',
         url: url.href,
         data: body,
@@ -324,15 +324,15 @@ export class WrenEngineAdaptor implements IWrenEngineAdaptor {
     }
   }
 
-  private async getDeployStatus(): Promise<WrenEngineDeployStatusResponse> {
+  private async getDeployStatus(): Promise<AnalyticsEngineDeployStatusResponse> {
     try {
       const res = await axios.get(
-        `${this.wrenEngineBaseEndpoint}/v1/mdl/status`,
+        `${this.analyticsEngineBaseEndpoint}/v1/mdl/status`,
       );
-      return res.data as WrenEngineDeployStatusResponse;
+      return res.data as AnalyticsEngineDeployStatusResponse;
     } catch (err: any) {
       logger.debug(
-        `WrenEngine: Got error when getting deploy status: ${err.message}`,
+        `AnalyticsEngine: Got error when getting deploy status: ${err.message}`,
       );
       throw err;
     }
@@ -340,7 +340,7 @@ export class WrenEngineAdaptor implements IWrenEngineAdaptor {
 
   private async initDatabase(sql) {
     try {
-      const url = new URL(this.initSqlUrlPath, this.wrenEngineBaseEndpoint);
+      const url = new URL(this.initSqlUrlPath, this.analyticsEngineBaseEndpoint);
       const headers = {
         'Content-Type': 'text/plain; charset=utf-8',
       };

@@ -40,8 +40,6 @@ export enum GeneralErrorCodes {
   DEPLOY_SQL_PAIR_ERROR = 'DEPLOY_SQL_PAIR_ERROR',
   GENERATE_QUESTIONS_ERROR = 'GENERATE_QUESTIONS_ERROR',
   INVALID_SQL_ERROR = 'INVALID_SQL_ERROR',
-
-  // wren engine error
   WREN_ENGINE_ERROR = 'WREN_ENGINE_ERROR',
 
   // asking task error
@@ -74,7 +72,7 @@ export const errorMessages = {
     "The chart couldn't be generated this time. Please try regenerating the chart or rephrasing your question for better results.",
 
   // Connector errors
-  [GeneralErrorCodes.CONNECTION_ERROR]: 'Can not connect to data source',
+  [GeneralErrorCodes.CONNECTION_ERROR]: 'Unable to establish data connection',
   // duckdb
   [GeneralErrorCodes.INIT_SQL_ERROR]:
     'The initializing SQL seems to be invalid, Please check your SQL and try again.',
@@ -82,16 +80,16 @@ export const errorMessages = {
     'The session properties seem to be invalid, Please check your session properties and try again.',
   // postgres
   [GeneralErrorCodes.CONNECTION_REFUSED]:
-    'Connection refused by the server, Please check your connection settings and try again.',
+    'Server connection denied, Please check your connection settings and try again.',
 
   // ibis service errors
   [GeneralErrorCodes.IBIS_SERVER_ERROR]:
     'Error occurred while querying ibis server, please try again later.',
 
   // calculated field validation
-  [GeneralErrorCodes.DUPLICATED_FIELD_NAME]: 'This field name already exists',
+  [GeneralErrorCodes.DUPLICATED_FIELD_NAME]: 'Field name is already in use',
   [GeneralErrorCodes.INVALID_EXPRESSION]:
-    'Invalid expression, please check your expression and try again.',
+    'Expression error, please verify your syntax and retry.',
   [GeneralErrorCodes.INVALID_CALCULATED_FIELD]:
     'Can not execute a query when using this calculated field',
 
@@ -99,7 +97,7 @@ export const errorMessages = {
   [GeneralErrorCodes.INVALID_VIEW_CREATION]: 'Invalid view creation',
 
   // dry run error
-  [GeneralErrorCodes.DRY_RUN_ERROR]: 'Dry run sql statement error',
+  [GeneralErrorCodes.DRY_RUN_ERROR]: 'Query validation failed',
   [GeneralErrorCodes.DRY_PLAN_ERROR]: 'Dry plan error',
 
   // deploy sql pair error
@@ -144,7 +142,7 @@ export const shortMessages = {
   [GeneralErrorCodes.INVALID_EXPRESSION]: 'Invalid expression',
   [GeneralErrorCodes.INVALID_CALCULATED_FIELD]: 'Invalid calculated field',
   [GeneralErrorCodes.INVALID_VIEW_CREATION]: 'Invalid view creation',
-  [GeneralErrorCodes.DRY_RUN_ERROR]: 'Dry run sql statement error',
+  [GeneralErrorCodes.DRY_RUN_ERROR]: 'Query validation failed',
   [GeneralErrorCodes.DRY_PLAN_ERROR]: 'Dry plan error',
   [GeneralErrorCodes.DEPLOY_SQL_PAIR_ERROR]: 'Deploy sql pair error',
   [GeneralErrorCodes.GENERATE_QUESTIONS_ERROR]: 'Generate questions error',
@@ -240,7 +238,6 @@ export const defaultApolloErrorHandler = (error: GraphQLError) => {
         message: error.message,
         shortMessage: shortMessages[code],
         stacktrace: error.extensions?.exception?.stacktrace,
-        other: error.extensions?.other,
       },
     };
   }

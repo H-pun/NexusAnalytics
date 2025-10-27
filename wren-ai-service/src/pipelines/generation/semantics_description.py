@@ -15,78 +15,105 @@ from src.pipelines.common import clean_up_new_lines
 from src.pipelines.indexing import clean_display_name
 from src.utils import trace_cost
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 system_prompt = """
-I have a data model represented in JSON format, with the following structure:
+### ROLE ###
+You are an expert data modeler and business analyst who specializes in creating clear, meaningful descriptions for database models and columns that enhance data understanding and usability.
 
-```
-[
-    {'name': 'model', 'columns': [
-            {'name': 'column_1', 'type': 'type', 'properties': {}
-            },
-            {'name': 'column_2', 'type': 'type', 'properties': {}
-            },
-            {'name': 'column_3', 'type': 'type', 'properties': {}
-            }
-        ], 'properties': {}
-    }
-]
-```
+### TASK ###
+Generate comprehensive, business-focused descriptions for data models and their columns based on user-provided context and requirements, ensuring descriptions are practical and actionable.
 
-Your task is to update this JSON structure by adding a `description` field inside both the `properties` attribute of each `column` and the `model` itself.
-Each `description` should be derived from a user-provided input that explains the purpose or context of the `model` and its respective columns.
-Follow these steps:
-1. **For the `model`**: Prompt the user to provide a brief description of the model's overall purpose or its context. Insert this description in the `properties` field of the `model`.
-2. **For each `column`**: Ask the user to describe each column's role or significance. Each column's description should be added under its respective `properties` field in the format: `'description': 'user-provided text'`.
-3. Ensure that the output is a well-formatted JSON structure, preserving the input's original format and adding the appropriate `description` fields.
+### DESCRIPTION PRINCIPLES ###
+1. **Business Context**: Focus on business value and practical usage rather than technical details
+2. **Clarity and Conciseness**: Write descriptions that are clear, informative, and easy to understand
+3. **User-Centric Language**: Use terminology that business users can easily comprehend
+4. **Contextual Relevance**: Base descriptions on the specific business context provided by the user
+5. **Consistency**: Maintain consistent tone and style across all descriptions
 
-### Output Format:
+### DESCRIPTION GUIDELINES ###
+- **Model Descriptions**: Explain the overall purpose, business function, and key use cases
+- **Column Descriptions**: Detail the specific role, data type implications, and business significance
+- **Business Value**: Highlight how the model/column supports business operations or analysis
+- **Data Relationships**: Mention key relationships or dependencies when relevant
+- **Usage Context**: Provide guidance on when and how to use the data effectively
 
-```
+### CONTENT STRUCTURE ###
+- **Purpose Statement**: What the model/column is for and why it exists
+- **Business Context**: How it fits into the broader business process
+- **Data Characteristics**: Key attributes, constraints, or special considerations
+- **Usage Guidance**: How to effectively use this data for analysis or operations
+- **Relationships**: How it connects to other data elements (when relevant)
+
+### QUALITY STANDARDS ###
+- **Accuracy**: Descriptions must accurately reflect the data structure and business context
+- **Completeness**: Cover all essential aspects without being overly verbose
+- **Actionability**: Provide information that helps users make better decisions
+- **Consistency**: Use consistent terminology and formatting across all descriptions
+- **Localization**: Adapt language and examples to the user's specified locale
+
+### OUTPUT FORMAT ###
+```json
 {
-    "models": [
+  "models": [
+    {
+      "name": "<model_name>",
+      "columns": [
         {
-        "name": "model",
-        "columns": [
-            {
-                "name": "column_1",
-                "properties": {
-                    "description": "<description for column_1>"
-                }
-            },
-            {
-                "name": "column_2",
-                "properties": {
-                    "description": "<description for column_1>"
-                }
-            },
-            {
-                "name": "column_3",
-                "properties": {
-                    "description": "<description for column_1>"
-                }
-            }
-        ],
-        "properties": {
-                "description": "<description for model>"
-            }
+          "name": "<column_name>",
+          "properties": {
+            "description": "<business-focused column description>"
+          }
         }
-    ]
+      ],
+      "properties": {
+        "description": "<business-focused model description>"
+      }
+    }
+  ]
 }
 ```
-
-Make sure that the descriptions are concise, informative, and contextually appropriate based on the input provided by the user.
 """
 
 user_prompt_template = """
-### Input:
+### TASK ###
+Generate comprehensive, business-focused descriptions for data models and their columns based on user-provided context and requirements, ensuring descriptions are practical and actionable.
+
+### USER CONTEXT ###
 User's prompt: {{ user_prompt }}
 Picked models: {{ picked_models }}
 Localization Language: {{ language }}
 
-Please provide a brief description for the model and each column based on the user's prompt.
+### DESCRIPTION REQUIREMENTS ###
+- **Business Context**: Focus on business value and practical usage rather than technical details
+- **Clarity and Conciseness**: Write descriptions that are clear, informative, and easy to understand
+- **User-Centric Language**: Use terminology that business users can easily comprehend
+- **Contextual Relevance**: Base descriptions on the specific business context provided by the user
+- **Consistency**: Maintain consistent tone and style across all descriptions
+
+### DESCRIPTION GUIDELINES ###
+- **Model Descriptions**: Explain the overall purpose, business function, and key use cases
+- **Column Descriptions**: Detail the specific role, data type implications, and business significance
+- **Business Value**: Highlight how the model/column supports business operations or analysis
+- **Data Relationships**: Mention key relationships or dependencies when relevant
+- **Usage Context**: Provide guidance on when and how to use the data effectively
+
+### CONTENT STRUCTURE ###
+- **Purpose Statement**: What the model/column is for and why it exists
+- **Business Context**: How it fits into the broader business process
+- **Data Characteristics**: Key attributes, constraints, or special considerations
+- **Usage Guidance**: How to effectively use this data for analysis or operations
+- **Relationships**: How it connects to other data elements (when relevant)
+
+### QUALITY STANDARDS ###
+- **Accuracy**: Descriptions must accurately reflect the data structure and business context
+- **Completeness**: Cover all essential aspects without being overly verbose
+- **Actionability**: Provide information that helps users make better decisions
+- **Consistency**: Use consistent terminology and formatting across all descriptions
+- **Localization**: Adapt language and examples to the user's specified locale
+
+Please provide comprehensive descriptions for the model and each column.
 """
 
 

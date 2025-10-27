@@ -22,11 +22,11 @@ def test_get_provider():
     assert provider.__name__ == "QdrantProvider"
 
     # engine provider
-    provider = loader.get_provider("wren_ui")
-    assert provider.__name__ == "WrenUI"
+    provider = loader.get_provider("analytics_ui")
+    assert provider.__name__ == "AnalyticsUI"
 
-    provider = loader.get_provider("wren_ibis")
-    assert provider.__name__ == "WrenIbis"
+    provider = loader.get_provider("analytics_ibis")
+    assert provider.__name__ == "AnalyticsIbis"
 
-    provider = loader.get_provider("wren_engine")
-    assert provider.__name__ == "WrenEngine"
+    provider = loader.get_provider("analytics_engine")
+    assert provider.__name__ == "AnalyticsEngine"

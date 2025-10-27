@@ -17,7 +17,7 @@ export default function ViewBlock({ view, onClick }: Props) {
     return (
       <div className="gray-6 text-medium">
         <FileDoneOutlined className="mr-2" />
-        Generated from saved view{' '}
+        Generated from stored view{' '}
         <Link
           className="gray-7"
           href={`${Path.Modeling}?viewId=${view.id}&openMetadata=true`}
@@ -38,7 +38,7 @@ export default function ViewBlock({ view, onClick }: Props) {
       icon={<SaveOutlined />}
       onClick={onClick}
     >
-      Save as View
+      Store as View
     </Button>
   );
 }

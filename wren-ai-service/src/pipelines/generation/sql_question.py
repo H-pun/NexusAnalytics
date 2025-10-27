@@ -15,33 +15,85 @@ from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
 from src.web.v1.services import Configuration
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 sql_question_system_prompt = """
+### ROLE ###
+You are an expert data analyst who specializes in translating SQL queries into clear, natural language questions that any user can understand.
+
 ### TASK ###
+Convert SQL queries into single, concise questions that capture the intent and purpose of the query in plain language.
 
-You are a data analyst great at translating any SQL query into a question that can be answered by the given SQL query.
+### TRANSLATION PRINCIPLES ###
+1. **Natural Language Focus**: Write questions as a human would ask them
+2. **Business Context**: Frame questions in terms of business value and insights
+3. **Clarity Over Technicality**: Avoid SQL terminology and database jargon
+4. **Single Sentence**: Keep questions concise and to the point
+5. **Language Consistency**: Use the exact language specified by the user
 
-### INSTRUCTIONS ###
+### LANGUAGE REQUIREMENTS ###
+- **Response Language**: Always respond in the same language as the user's question
+- **Consistent Language**: Maintain the user's specified language throughout the response
+- **No Language Mixing**: Do not switch between languages in the same response
+- **Language Detection**: Detect the user's language from their question and respond accordingly
 
-- The question should be in the language of the user provided
-- The question should be a single sentence, concise, and easy to understand
+### QUESTION STRUCTURE ###
+- Start with question words: "What", "How many", "Which", "Who", "When", "Where"
+- Focus on the business outcome, not the technical process
+- Include relevant context (time periods, categories, filters)
+- Make it actionable and specific
+
+### EXAMPLES ###
+SQL: `SELECT COUNT(*) FROM orders WHERE status = 'completed'`
+Question: "How many completed orders are there?"
+
+SQL: `SELECT AVG(price) FROM products WHERE category = 'electronics'`
+Question: "What is the average price of electronics?"
+
+SQL: `SELECT customer_name, total_spent FROM customers ORDER BY total_spent DESC LIMIT 10`
+Question: "Who are the top 10 customers by total spending?"
 
 ### OUTPUT FORMAT ###
-
-Please return the result in the following JSON format:
-
+```json
 {
-    "question": <QUESTION_STRING_IN_USER_LANGUAGE>
+    "question": "<natural language question in user's language>"
 }
+```
 """
 
 sql_question_user_prompt_template = """
+### TASK ###
+Convert the provided SQL query into a clear, natural language question that captures the intent and purpose of the query in plain language.
+
+### SQL QUERY ###
 SQL: {{sql}}
 Language: {{language}}
 
-Let's think step by step.
+### TRANSLATION GUIDELINES ###
+- **Natural Language Focus**: Write questions as a human would ask them
+- **Business Context**: Frame questions in terms of business value and insights
+- **Clarity Over Technicality**: Avoid SQL terminology and database jargon
+- **Single Sentence**: Keep questions concise and to the point
+- **Language Consistency**: Use the exact language specified by the user
+
+### QUESTION STRUCTURE ###
+- Start with question words: "What", "How many", "Which", "Who", "When", "Where"
+- Focus on the business outcome, not the technical process
+- Include relevant context (time periods, categories, filters)
+- Make it actionable and specific
+
+### EXAMPLES ###
+SQL: `SELECT COUNT(*) FROM orders WHERE status = 'completed'`
+Question: "How many completed orders are there?"
+
+SQL: `SELECT AVG(price) FROM products WHERE category = 'electronics'`
+Question: "What is the average price of electronics?"
+
+SQL: `SELECT customer_name, total_spent FROM customers ORDER BY total_spent DESC LIMIT 10`
+Question: "Who are the top 10 customers by total spending?"
+
+Let's think step by step and provide the natural language question.
 """
 
 
@@ -115,8 +167,12 @@ class SQLQuestion(BasicPipeline):
     async def run(
         self,
         sql: str,
-        configuration: Configuration = Configuration(),
+        configuration: Configuration | dict = Configuration(),
     ):
+        # Handle configuration as dict or Configuration object
+        if isinstance(configuration, dict):
+            configuration = Configuration(**configuration)
+
         logger.info("Sql Question Generation pipeline is running...")
         return await self._pipe.execute(
             ["post_process"],

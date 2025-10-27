@@ -13,11 +13,11 @@ import {
 import {
   AskResult,
   AskResultStatus,
-  WrenAILanguage,
+  AnalyticsAILanguage,
   TextBasedAnswerInput,
   TextBasedAnswerResult,
   TextBasedAnswerStatus,
-  WrenAIError,
+  AnalyticsAIError,
   AskResultType,
 } from '@/apollo/server/models/adaptor';
 import { getLogger } from '@server/utils';
@@ -44,7 +44,7 @@ const {
   apiHistoryRepository,
   projectService,
   deployService,
-  wrenAIAdaptor,
+  analyticsAIAdaptor,
   queryService,
 } = components;
 
@@ -146,15 +146,15 @@ export default async function handler(
       question,
       threadId: newThreadId,
       language:
-        language || WrenAILanguage[project.language] || WrenAILanguage.EN,
+        language || AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
     });
-    const askTask = await wrenAIAdaptor.ask({
+    const askTask = await analyticsAIAdaptor.ask({
       query: question,
       deployId: lastDeploy.hash,
       histories: transformHistoryInput(histories) as any,
       configurations: {
         language:
-          language || WrenAILanguage[project.language] || WrenAILanguage.EN,
+          language || AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       },
     });
 
@@ -165,7 +165,7 @@ export default async function handler(
     let previousStatus: AskResultStatus | null = null;
 
     while (true) {
-      askResult = await wrenAIAdaptor.getAskResult(askTask.queryId);
+      askResult = await analyticsAIAdaptor.getAskResult(askTask.queryId);
 
       // Send status change updates when AskResultStatus changes
       if (askResult.status !== previousStatus) {
@@ -206,7 +206,7 @@ export default async function handler(
     // Check for error in result
     if (askResult.error) {
       const errorMessage =
-        (askResult.error as WrenAIError).message || 'Unknown error';
+        (askResult.error as AnalyticsAIError).message || 'Unknown error';
       const additionalData: Record<string, any> = {};
 
       // Include invalid SQL if available
@@ -228,7 +228,7 @@ export default async function handler(
       // Send content block start for explanation
       sendContentBlockStart(res, ContentBlockContentType.EXPLANATION);
 
-      const stream = await wrenAIAdaptor.getAskStreamingResult(askTask.queryId);
+      const stream = await analyticsAIAdaptor.getAskStreamingResult(askTask.queryId);
 
       // Stream the content in real-time
       let explanation = '';
@@ -330,13 +330,13 @@ export default async function handler(
       threadId: newThreadId,
       configurations: {
         language:
-          language || WrenAILanguage[project.language] || WrenAILanguage.EN,
+          language || AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       },
     };
 
     // Start the summary generation task
     const summaryTask =
-      await wrenAIAdaptor.createTextBasedAnswer(textBasedAnswerInput);
+      await analyticsAIAdaptor.createTextBasedAnswer(textBasedAnswerInput);
 
     if (!summaryTask || !summaryTask.queryId) {
       throw new ApiError(
@@ -351,7 +351,7 @@ export default async function handler(
     let summaryResult: TextBasedAnswerResult;
 
     while (true) {
-      summaryResult = await wrenAIAdaptor.getTextBasedAnswerResult(
+      summaryResult = await analyticsAIAdaptor.getTextBasedAnswerResult(
         summaryTask.queryId,
       );
 
@@ -384,7 +384,7 @@ export default async function handler(
       // Send content block start
       sendContentBlockStart(res, ContentBlockContentType.SUMMARY_GENERATION);
 
-      const stream = await wrenAIAdaptor.streamTextBasedAnswer(
+      const stream = await analyticsAIAdaptor.streamTextBasedAnswer(
         summaryTask.queryId,
       );
 

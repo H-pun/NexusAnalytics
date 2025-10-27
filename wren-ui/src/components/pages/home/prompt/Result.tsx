@@ -79,7 +79,7 @@ const makeProcessing = (text: string) => (props: Props) => {
     <Wrapper>
       <div className="d-flex justify-space-between">
         <span>
-          <LoadingOutlined className="mr-2 geekblue-6 text-lg" spin />
+          <LoadingOutlined className="mr-2 rust-orange-6 text-lg" spin />
           {text}
         </span>
         <Button
@@ -199,7 +199,7 @@ const GeneralAnswer = (props: Props) => {
     <Wrapper>
       <div className="d-flex justify-space-between">
         <div className="d-flex align-start">
-          <MessageOutlined className="mr-2 mt-1 geekblue-6" />
+          <MessageOutlined className="mr-2 mt-1 rust-orange-6" />
           <b className="text-semi-bold">{originalQuestion}</b>
         </div>
         <Button

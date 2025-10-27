@@ -76,7 +76,7 @@ const nestedColumns = [
     width: 200,
     render: (resourceType: NodeType) => {
       if (resourceType === NodeType.CALCULATED_FIELD) {
-        return <Tag className="ant-tag--geekblue">Calculated Field</Tag>;
+        return <Tag className="ant-tag--rust-orange">Calculated Field</Tag>;
       }
 
       if (resourceType === NodeType.RELATION) {
@@ -116,7 +116,7 @@ const PanelHeader = (props) => {
         <div style={{ width: 150 }}>
           {!!onResolve && (
             <Popconfirm
-              title="Are you sure?"
+              title="Confirm action?"
               okText="Confirm"
               okButtonProps={{ danger: true }}
               onConfirm={resolve}
@@ -238,7 +238,7 @@ export default function SchemaChangeModal(props: Props) {
         return (
           <EllipsisWrapper showMoreCount>
             {columns.map((column) => (
-              <Tag className="ant-tag--geekblue" key={column.sourceColumnName}>
+              <Tag className="ant-tag--rust-orange" key={column.sourceColumnName}>
                 {column.displayName}
               </Tag>
             ))}
@@ -257,7 +257,7 @@ export default function SchemaChangeModal(props: Props) {
         return (
           <EllipsisWrapper showMoreCount>
             {columns.map((column) => (
-              <Tag className="ant-tag--geekblue" key={column.sourceColumnName}>
+              <Tag className="ant-tag--rust-orange" key={column.sourceColumnName}>
                 {column.displayName}
               </Tag>
             ))}

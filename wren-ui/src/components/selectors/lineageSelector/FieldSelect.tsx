@@ -30,11 +30,11 @@ const FieldBox = styled.div`
   }
 
   .ant-select-selection-placeholder {
-    color: var(--geekblue-6);
+    color: var(--rust-orange-6);
   }
 
   &:last-child {
-    border: 1px var(--geekblue-6) solid;
+    border: 1px var(--rust-orange-6) solid;
   }
 `;
 

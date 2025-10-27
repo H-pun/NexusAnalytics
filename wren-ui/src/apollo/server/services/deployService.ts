@@ -1,5 +1,5 @@
-import { WrenAIDeployStatusEnum } from '@server/models/adaptor';
-import { IWrenAIAdaptor } from '../adaptors/wrenAIAdaptor';
+import { AnalyticsAIDeployStatusEnum } from '@server/models/adaptor';
+import { IAnalyticsAIAdaptor } from '../adaptors/analyticsAIAdaptor';
 import {
   Deploy,
   DeployStatusEnum,
@@ -40,20 +40,20 @@ export interface IDeployService {
 }
 
 export class DeployService implements IDeployService {
-  private wrenAIAdaptor: IWrenAIAdaptor;
+  private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private deployLogRepository: IDeployLogRepository;
   private telemetry: PostHogTelemetry;
 
   constructor({
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     deployLogRepository,
     telemetry,
   }: {
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
     deployLogRepository: IDeployLogRepository;
     telemetry: PostHogTelemetry;
   }) {
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
     this.deployLogRepository = deployLogRepository;
     this.telemetry = telemetry;
   }
@@ -99,14 +99,14 @@ export class DeployService implements IDeployService {
 
       // deploy to AI-service
       const { status: aiStatus, error: aiError } =
-        await this.wrenAIAdaptor.deploy({
+        await this.analyticsAIAdaptor.deploy({
           manifest,
           hash,
         });
 
       // update deploy status
       const status =
-        aiStatus === WrenAIDeployStatusEnum.SUCCESS
+        aiStatus === AnalyticsAIDeployStatusEnum.SUCCESS
           ? DeployStatusEnum.SUCCESS
           : DeployStatusEnum.FAILED;
       await this.deployLogRepository.updateOne(deploy.id, {

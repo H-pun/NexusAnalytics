@@ -19,7 +19,7 @@ from tomlkit import parse
 import docker
 from eval import WREN_ENGINE_API_URL, EvalSettings
 from src.core.engine import add_quotes
-from src.providers.engine.wren import WrenEngine
+from src.providers.engine.analytics import AnalyticsEngine
 
 load_dotenv(".env", override=True)
 
@@ -175,9 +175,7 @@ async def get_contexts_from_sql(
         ) as response:
             return await response.json()
 
-    sql_analysis_results = await _get_sql_analysis(
-        sql, mdl_json, api_endpoint, timeout=timeout
-    )
+    sql_analysis_results = await _get_sql_analysis(sql, mdl_json, api_endpoint, timeout)
     contexts = _get_contexts_from_sql_analysis_results(sql_analysis_results)
     return contexts
 
@@ -231,7 +229,7 @@ def engine_config(
             "SQL Generation engine not found in pipe_components. Ensure 'sql_generation' key exists and contains 'engine' configuration."
         )
 
-    if isinstance(engine, WrenEngine):
+    if isinstance(engine, AnalyticsEngine):
         print("datasource is duckdb")
         prepare_duckdb_session_sql(engine._endpoint)
         prepare_duckdb_init_sql(engine._endpoint, mdl["catalog"], path)

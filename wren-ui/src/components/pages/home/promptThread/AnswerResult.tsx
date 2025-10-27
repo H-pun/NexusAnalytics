@@ -41,7 +41,7 @@ const adjustmentType = {
 
 const knowledgeTooltip = (
   <>
-    Store this answer as a Question-SQL pair to help Wren AI improve SQL
+    Store this answer as a Question-SQL pair to help NQRust - Analytics improve SQL
     generation.
     <br />
     <Typography.Link
@@ -93,7 +93,7 @@ const StyledTabs = styled(Tabs)`
       }
 
       [aria-label='code'] {
-        color: var(--geekblue-5);
+        color: var(--rust-orange-5);
       }
 
       [aria-label='pie-chart'] {
@@ -101,8 +101,8 @@ const StyledTabs = styled(Tabs)`
       }
 
       .adm-beta-tag {
-        background-color: var(--geekblue-2);
-        color: var(--geekblue-5);
+        background-color: var(--rust-orange-2);
+        color: var(--rust-orange-5);
       }
     }
 
@@ -122,7 +122,6 @@ export interface Props {
   motion: boolean;
   threadResponse: ThreadResponse;
   isLastThreadResponse: boolean;
-  isOpeningQuestion: boolean;
   onInitPreviewDone: () => void;
 }
 
@@ -133,7 +132,7 @@ const QuestionTitle = (props) => {
       className={clsx('d-flex bg-gray-1 rounded mt-0', className)}
       level={4}
     >
-      <MessageOutlined className="geekblue-5 mt-1 mr-3" />
+      <MessageOutlined className="rust-orange-5 mt-1 mr-3" />
       <Text className="text-medium gray-8">{question}</Text>
     </Title>
   );
@@ -187,7 +186,7 @@ const isNeedGenerateAnswer = (answerDetail: ThreadResponseAnswerDetail) => {
 };
 
 export default function AnswerResult(props: Props) {
-  const { threadResponse, isLastThreadResponse, isOpeningQuestion } = props;
+  const { threadResponse, isLastThreadResponse } = props;
 
   const {
     onOpenSaveAsViewModal,
@@ -271,17 +270,6 @@ export default function AnswerResult(props: Props) {
     isAnswerPrepared ||
     isBreakdownOnly;
 
-  const rephrasedQuestion =
-    threadResponse?.askingTask?.rephrasedQuestion || question;
-
-  const questionForSaveAsView = useMemo(() => {
-    // use rephrased question for follow-up questions, otherwise use the original question
-
-    if (isOpeningQuestion) return question;
-
-    return rephrasedQuestion;
-  }, [rephrasedQuestion, question, isOpeningQuestion]);
-
   return (
     <div style={resultStyle} data-jsid="answerResult">
       {isAdjustment && <AdjustmentInformation adjustment={adjustment} />}
@@ -346,7 +334,9 @@ export default function AnswerResult(props: Props) {
                 onClick={() =>
                   onOpenSaveToKnowledgeModal(
                     {
-                      question: rephrasedQuestion,
+                      question:
+                        threadResponse?.askingTask?.rephrasedQuestion ||
+                        question,
                       sql,
                     },
                     { isCreateMode: true },
@@ -362,14 +352,7 @@ export default function AnswerResult(props: Props) {
             </Tooltip>
             <ViewBlock
               view={view}
-              onClick={() =>
-                onOpenSaveAsViewModal(
-                  { sql, responseId: id },
-                  {
-                    rephrasedQuestion: questionForSaveAsView,
-                  },
-                )
-              }
+              onClick={() => onOpenSaveAsViewModal({ sql, responseId: id })}
             />
           </div>
           {renderRecommendedQuestions(

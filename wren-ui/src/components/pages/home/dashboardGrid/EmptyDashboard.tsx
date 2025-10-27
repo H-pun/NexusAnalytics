@@ -13,7 +13,7 @@ const StepTemplate = (props: { title: string; image: string }) => {
       >
         <div className="mb-2">
           <span
-            className="d-inline-block bg-geekblue-1 geekblue-6 rounded-pill text-sm px-2"
+            className="d-inline-block bg-rust-orange-1 rust-orange-6 rounded-pill text-sm px-2"
             style={{ lineHeight: '22px' }}
           >
             {props.title}
@@ -46,7 +46,7 @@ const EmptyDashboard = (props: {
       >
         <Logo size={48} color="var(--gray-8)" />
         <div className="text-lg text-medium text-center gray-8 mt-3">
-          No charts have been added yet
+          No charts have been created yet
         </div>
         <div className="gray-7">
           Follow these steps to pin charts to your dashboard.{' '}

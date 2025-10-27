@@ -6,30 +6,30 @@ import { ThreadResponse } from '../repositories';
 type Brand<T, B> = T & { __brand: B };
 
 export type DialectSQL = Brand<string, 'DialectSQL'>;
-export type WrenSQL = Brand<string, 'WrenSQL'>;
+export type AnalyticsSQL = Brand<string, 'AnalyticsSQL'>;
 
-export interface WrenAIError {
+export interface AnalyticsAIError {
   code: Errors.GeneralErrorCodes;
   message: string;
 }
 
-export enum WrenAIDeployStatusEnum {
+export enum AnalyticsAIDeployStatusEnum {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
 }
 
-export interface WrenAIDeployResponse {
-  status: WrenAIDeployStatusEnum;
+export interface AnalyticsAIDeployResponse {
+  status: AnalyticsAIDeployStatusEnum;
   error?: string;
 }
 
-export enum WrenAISystemStatus {
+export enum AnalyticsAISystemStatus {
   INDEXING = 'INDEXING',
   FINISHED = 'FINISHED',
   FAILED = 'FAILED',
 }
 
-export enum WrenAILanguage {
+export enum AnalyticsAILanguage {
   EN = 'English',
   ES = 'Spanish',
   FR = 'French',
@@ -44,6 +44,7 @@ export enum WrenAILanguage {
   FA_IR = 'Persian',
   AR = 'Arabic',
   NL = 'Dutch',
+  ID = 'Indonesian',
 }
 
 export interface DeployData {
@@ -109,7 +110,7 @@ export interface AskResponse<R, S> {
   type: AskResultType | null;
   status: S;
   response: R | null;
-  error: WrenAIError | null;
+  error: AnalyticsAIError | null;
 }
 
 export interface AskDetailInput {
@@ -197,7 +198,7 @@ export enum TextBasedAnswerStatus {
 export interface TextBasedAnswerResult {
   status: TextBasedAnswerStatus;
   numRowsUsedInLLM?: number;
-  error?: WrenAIError;
+  error?: AnalyticsAIError;
 }
 
 export enum ChartStatus {
@@ -252,7 +253,7 @@ export interface ChartResponse {
 export interface ChartResult {
   status: ChartStatus;
   response?: ChartResponse;
-  error?: WrenAIError;
+  error?: AnalyticsAIError;
 }
 
 export enum SqlPairStatus {
@@ -262,7 +263,7 @@ export enum SqlPairStatus {
 }
 export interface SqlPairResult {
   status: SqlPairStatus;
-  error?: WrenAIError;
+  error?: AnalyticsAIError;
 }
 
 export interface QuestionInput {
@@ -279,7 +280,7 @@ export enum QuestionsStatus {
 
 export interface QuestionsResult {
   status: QuestionsStatus;
-  error?: WrenAIError;
+  error?: AnalyticsAIError;
   questions?: string[];
   trace_id?: string;
 }
@@ -299,7 +300,7 @@ export enum InstructionStatus {
 }
 export interface InstructionResult {
   status: InstructionStatus;
-  error?: WrenAIError;
+  error?: AnalyticsAIError;
 }
 
 // ask feedback
@@ -323,7 +324,7 @@ export enum AskFeedbackStatus {
 
 export interface AskFeedbackResult {
   status: AskFeedbackStatus;
-  error?: WrenAIError;
+  error?: AnalyticsAIError;
   response: Array<{
     type: AskCandidateType.LLM;
     sql: string;

@@ -1,6 +1,6 @@
 import { DataSourceName } from '@server/types';
 import { Manifest } from '@server/mdl/type';
-import { IWrenEngineAdaptor } from '../adaptors/wrenEngineAdaptor';
+import { IAnalyticsEngineAdaptor } from '../adaptors/analyticsEngineAdaptor';
 import {
   SupportedDataSource,
   IIbisAdaptor,
@@ -78,20 +78,20 @@ export interface IQueryService {
 
 export class QueryService implements IQueryService {
   private readonly ibisAdaptor: IIbisAdaptor;
-  private readonly wrenEngineAdaptor: IWrenEngineAdaptor;
+  private readonly analyticsEngineAdaptor: IAnalyticsEngineAdaptor;
   private readonly telemetry: PostHogTelemetry;
 
   constructor({
     ibisAdaptor,
-    wrenEngineAdaptor,
+    analyticsEngineAdaptor,
     telemetry,
   }: {
     ibisAdaptor: IIbisAdaptor;
-    wrenEngineAdaptor: IWrenEngineAdaptor;
+    analyticsEngineAdaptor: IAnalyticsEngineAdaptor;
     telemetry: PostHogTelemetry;
   }) {
     this.ibisAdaptor = ibisAdaptor;
-    this.wrenEngineAdaptor = wrenEngineAdaptor;
+    this.analyticsEngineAdaptor = analyticsEngineAdaptor;
     this.telemetry = telemetry;
   }
 
@@ -111,14 +111,14 @@ export class QueryService implements IQueryService {
     if (this.useEngine(dataSource)) {
       if (dryRun) {
         logger.debug('Using wren engine to dry run');
-        await this.wrenEngineAdaptor.dryRun(sql, {
+        await this.analyticsEngineAdaptor.dryRun(sql, {
           manifest: mdl,
           limit,
         });
         return true;
       } else {
         logger.debug('Using wren engine to preview');
-        const data = await this.wrenEngineAdaptor.previewData(sql, mdl, limit);
+        const data = await this.analyticsEngineAdaptor.previewData(sql, mdl, limit);
         return data as PreviewDataResponse;
       }
     } else {

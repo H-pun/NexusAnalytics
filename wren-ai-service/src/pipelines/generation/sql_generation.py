@@ -8,7 +8,7 @@ from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 
 from src.core.engine import Engine
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import DocumentStoreProvider, LLMProvider
 from src.pipelines.common import clean_up_new_lines, retrieve_metadata
 from src.pipelines.generation.utils.sql import (
@@ -23,10 +23,20 @@ from src.pipelines.generation.utils.sql import (
 from src.pipelines.retrieval.sql_functions import SqlFunction
 from src.utils import trace_cost
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 sql_generation_user_prompt_template = """
+### TASK ###
+Generate a comprehensive SQL query that accurately addresses the user's analytical question while leveraging the database schema and following best practices.
+
+### QUERY GENERATION FRAMEWORK ###
+- **Intent Analysis**: Understand the user's analytical intent and requirements
+- **Schema Utilization**: Leverage the database schema to create accurate, efficient queries
+- **Reasoning Application**: Follow the provided reasoning plan step-by-step
+- **Best Practices**: Apply SQL best practices for performance and maintainability
+- **Result Accuracy**: Ensure the query will produce meaningful, accurate results
+
 ### DATABASE SCHEMA ###
 {% for document in documents %}
     {{ document }}
@@ -68,13 +78,20 @@ SQL:
 {% endfor %}
 {% endif %}
 
-### QUESTION ###
+### ANALYTICAL QUESTION ###
 User's Question: {{ query }}
 
 {% if sql_generation_reasoning %}
 ### REASONING PLAN ###
 {{ sql_generation_reasoning }}
 {% endif %}
+
+### GENERATION GUIDELINES ###
+- **Schema Compliance**: Use only available tables, columns, and relationships
+- **Reasoning Alignment**: Follow the provided reasoning plan systematically
+- **Query Optimization**: Create efficient queries that leverage database capabilities
+- **Error Prevention**: Avoid common SQL pitfalls and syntax issues
+- **Result Verification**: Ensure the query will produce the intended analytical results
 
 Let's think step by step.
 """
@@ -145,7 +162,7 @@ async def post_process(
 ## End of Pipeline
 
 
-class SQLGeneration(BasicPipeline):
+class SQLGeneration(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,

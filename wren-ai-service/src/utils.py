@@ -10,7 +10,7 @@ from langfuse.decorators import langfuse_context
 
 from src.config import Settings
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 class CustomFormatter(logging.Formatter):
@@ -182,7 +182,7 @@ def trace_cost(func):
     return wrapper
 
 
-def fetch_wren_ai_docs(doc_endpoint: str, is_oss: bool) -> list[dict]:
+def fetch_analytics_docs(doc_endpoint: str, is_oss: bool) -> list[dict]:
     doc_endpoint = remove_trailing_slash(doc_endpoint)
     api_endpoint = (
         f"{doc_endpoint}/oss/llms.md" if is_oss else f"{doc_endpoint}/cloud/llms.md"
@@ -193,7 +193,7 @@ def fetch_wren_ai_docs(doc_endpoint: str, is_oss: bool) -> list[dict]:
         response.raise_for_status()  # Raise exception for 4XX/5XX responses
         docs = response.text.split("\n---\n")
     except requests.RequestException as e:
-        logger.error(f"Failed to fetch Wren AI docs: {str(e)}")
+        logger.error(f"Failed to fetch Analytics docs: {str(e)}")
         return []  # Return empty list on error
 
     doc_endpoint_base = f"{doc_endpoint}/oss" if is_oss else f"{doc_endpoint}/cloud"

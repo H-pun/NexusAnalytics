@@ -13,7 +13,7 @@ import {
 import {
   AskResult,
   AskResultStatus,
-  WrenAILanguage,
+  AnalyticsAILanguage,
 } from '@/apollo/server/models/adaptor';
 import { getLogger } from '@server/utils';
 import {
@@ -29,7 +29,7 @@ import {
 const logger = getLogger('API_STREAM_GENERATE_SQL');
 logger.level = 'debug';
 
-const { apiHistoryRepository, projectService, deployService, wrenAIAdaptor } =
+const { apiHistoryRepository, projectService, deployService, analyticsAIAdaptor } =
   components;
 
 export default async function handler(
@@ -85,16 +85,16 @@ export default async function handler(
       question,
       threadId: newThreadId,
       language:
-        language || WrenAILanguage[project.language] || WrenAILanguage.EN,
+        language || AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
     });
 
-    const askTask = await wrenAIAdaptor.ask({
+    const askTask = await analyticsAIAdaptor.ask({
       query: question,
       deployId: lastDeploy.hash,
       histories: transformHistoryInput(histories) as any,
       configurations: {
         language:
-          language || WrenAILanguage[project.language] || WrenAILanguage.EN,
+          language || AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       },
     });
 
@@ -105,7 +105,7 @@ export default async function handler(
     let previousStatus: AskResultStatus | null = null;
 
     while (true) {
-      askResult = await wrenAIAdaptor.getAskResult(askTask.queryId);
+      askResult = await analyticsAIAdaptor.getAskResult(askTask.queryId);
 
       // Send status change updates when AskResultStatus changes
       if (askResult.status !== previousStatus) {

@@ -1,8 +1,9 @@
+import logging
 import uuid
 from dataclasses import asdict
 from typing import List, Literal, Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Response
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response
 from pydantic import BaseModel
 
 from src.globals import (
@@ -13,14 +14,19 @@ from src.globals import (
 )
 from src.web.v1.services import BaseRequest, InstructionsService
 
+logger = logging.getLogger("analytics-service")
 router = APIRouter()
 
 
 class PostRequest(BaseRequest):
+    """Request model for indexing instructions"""
+
     instructions: List[InstructionsService.Instruction]
 
 
 class PostResponse(BaseModel):
+    """Response model for indexing instructions"""
+
     event_id: str
 
 
@@ -31,23 +37,45 @@ async def index(
     service_container: ServiceContainer = Depends(get_service_container),
     service_metadata: ServiceMetadata = Depends(get_service_metadata),
 ) -> PostResponse:
-    event_id = str(uuid.uuid4())
-    service = service_container.instructions_service
-    service[event_id] = InstructionsService.Event(event_id=event_id)
+    """
+    Index instructions - clean implementation
 
-    index_request = InstructionsService.IndexRequest(
-        event_id=event_id, **request.model_dump()
-    )
+    Args:
+        request: Instructions indexing request
+        background_tasks: FastAPI background tasks
+        service_container: Service container dependency
+        service_metadata: Service metadata dependency
 
-    background_tasks.add_task(
-        service.index,
-        index_request,
-        service_metadata=asdict(service_metadata),
-    )
-    return PostResponse(event_id=event_id)
+    Returns:
+        PostResponse: Response with event_id
+
+    Raises:
+        HTTPException: If request processing fails
+    """
+    try:
+        event_id = str(uuid.uuid4())
+        service = service_container.instructions_service
+        service[event_id] = InstructionsService.Event(event_id=event_id)
+
+        index_request = InstructionsService.IndexRequest(
+            event_id=event_id, **request.model_dump()
+        )
+
+        background_tasks.add_task(
+            service.index,
+            index_request,
+            service_metadata=asdict(service_metadata),
+        )
+        return PostResponse(event_id=event_id)
+
+    except Exception as e:
+        logger.error(f"Error indexing instructions: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 class DeleteRequest(BaseRequest):
+    """Request model for deleting instructions"""
+
     instruction_ids: List[str]
 
 
@@ -58,25 +86,49 @@ async def delete(
     service_container: ServiceContainer = Depends(get_service_container),
     service_metadata: ServiceMetadata = Depends(get_service_metadata),
 ) -> None | InstructionsService.Error:
-    event_id = str(uuid.uuid4())
-    service = service_container.instructions_service
-    service[event_id] = InstructionsService.Event(event_id=event_id, status="deleting")
+    """
+    Delete instructions - clean implementation
 
-    delete_request = InstructionsService.DeleteRequest(
-        event_id=event_id,
-        **request.model_dump(),
-    )
+    Args:
+        request: Instructions deletion request
+        response: FastAPI response object
+        service_container: Service container dependency
+        service_metadata: Service metadata dependency
 
-    await service.delete(delete_request, service_metadata=asdict(service_metadata))
+    Returns:
+        None or InstructionsService.Error: Error if deletion fails
 
-    event: InstructionsService.Event = service[event_id]
+    Raises:
+        HTTPException: If request processing fails
+    """
+    try:
+        event_id = str(uuid.uuid4())
+        service = service_container.instructions_service
+        service[event_id] = InstructionsService.Event(
+            event_id=event_id, status="deleting"
+        )
 
-    if event.status == "failed":
-        response.status_code = 500
-        return event.error
+        delete_request = InstructionsService.DeleteRequest(
+            event_id=event_id,
+            **request.model_dump(),
+        )
+
+        await service.delete(delete_request, service_metadata=asdict(service_metadata))
+
+        event: InstructionsService.Event = service[event_id]
+
+        if event.status == "failed":
+            response.status_code = 500
+            return event.error
+
+    except Exception as e:
+        logger.error(f"Error deleting instructions: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 class GetResponse(BaseModel):
+    """Response model for getting instruction event status"""
+
     event_id: str
     status: Literal["indexing", "deleting", "finished", "failed"]
     error: Optional[dict]
@@ -88,5 +140,25 @@ async def get(
     event_id: str,
     container: ServiceContainer = Depends(get_service_container),
 ) -> GetResponse:
-    event: InstructionsService.Event = container.instructions_service[event_id]
-    return GetResponse(**event.model_dump())
+    """
+    Get instruction event status - clean implementation
+
+    Args:
+        event_id: Event identifier
+        container: Service container dependency
+
+    Returns:
+        GetResponse: Event status information
+
+    Raises:
+        HTTPException: If event not found or processing fails
+    """
+    try:
+        event: InstructionsService.Event = container.instructions_service[event_id]
+        return GetResponse(**event.model_dump())
+    except KeyError:
+        logger.warning(f"Instruction event not found: {event_id}")
+        raise HTTPException(status_code=404, detail="Instruction event not found")
+    except Exception as e:
+        logger.error(f"Error getting instruction event: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

@@ -11,7 +11,7 @@ import {
   ThreadResponse,
   ThreadResponseAdjustmentType,
 } from '@server/repositories';
-import { IWrenAIAdaptor } from '../adaptors';
+import { IAnalyticsAIAdaptor } from '../adaptors';
 import { TelemetryEvent, WrenService } from '../telemetry/telemetry';
 import { PostHogTelemetry } from '../telemetry/telemetry';
 
@@ -69,7 +69,7 @@ export interface IAdjustmentBackgroundTaskTracker {
 export class AdjustmentBackgroundTaskTracker
   implements IAdjustmentBackgroundTaskTracker
 {
-  private wrenAIAdaptor: IWrenAIAdaptor;
+  private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private askingTaskRepository: IAskingTaskRepository;
   private trackedTasks: Map<string, TrackedTask> = new Map();
   private trackedTasksById: Map<number, TrackedTask> = new Map();
@@ -82,21 +82,21 @@ export class AdjustmentBackgroundTaskTracker
 
   constructor({
     telemetry,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     askingTaskRepository,
     threadResponseRepository,
     pollingInterval = 1000, // 1 second
     memoryRetentionTime = 5 * 60 * 1000, // 5 minutes
   }: {
     telemetry: PostHogTelemetry;
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
     askingTaskRepository: IAskingTaskRepository;
     threadResponseRepository: IThreadResponseRepository;
     pollingInterval?: number;
     memoryRetentionTime?: number;
   }) {
     this.telemetry = telemetry;
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
     this.askingTaskRepository = askingTaskRepository;
     this.threadResponseRepository = threadResponseRepository;
     this.pollingInterval = pollingInterval;
@@ -109,7 +109,7 @@ export class AdjustmentBackgroundTaskTracker
   ): Promise<{ queryId: string; createdThreadResponse: ThreadResponse }> {
     try {
       // Call the AI service to create a task
-      const response = await this.wrenAIAdaptor.createAskFeedback(input);
+      const response = await this.analyticsAIAdaptor.createAskFeedback(input);
       const queryId = response.queryId;
 
       // create a new asking task
@@ -203,7 +203,7 @@ export class AdjustmentBackgroundTaskTracker
     }
 
     // call createAskFeedback on AI service
-    const response = await this.wrenAIAdaptor.createAskFeedback({
+    const response = await this.analyticsAIAdaptor.createAskFeedback({
       ...input,
       tables: adjustment.payload?.retrievedTables,
       sqlGenerationReasoning: adjustment.payload?.sqlGenerationReasoning,
@@ -280,7 +280,7 @@ export class AdjustmentBackgroundTaskTracker
   }
 
   public async cancelAdjustmentTask(queryId: string): Promise<void> {
-    await this.wrenAIAdaptor.cancelAskFeedback(queryId);
+    await this.analyticsAIAdaptor.cancelAskFeedback(queryId);
 
     // telemetry
     const eventName = TelemetryEvent.HOME_ADJUST_THREAD_RESPONSE_CANCEL;
@@ -335,7 +335,7 @@ export class AdjustmentBackgroundTaskTracker
             // Poll for updates
             logger.info(`Polling for updates for task ${queryId}`);
             const result =
-              await this.wrenAIAdaptor.getAskFeedbackResult(queryId);
+              await this.analyticsAIAdaptor.getAskFeedbackResult(queryId);
             task.lastPolled = now;
 
             // if result is not changed, we don't need to update the database

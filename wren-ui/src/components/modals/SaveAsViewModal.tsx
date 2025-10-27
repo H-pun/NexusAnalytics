@@ -10,11 +10,10 @@ const { Text } = Typography;
 type Props = ModalAction<{ sql: string }> & {
   loading?: boolean;
   defaultValue: { sql: string; responseId: number };
-  payload: { rephrasedQuestion: string };
 };
 
 export default function SaveAsViewModal(props: Props) {
-  const { visible, loading, onSubmit, onClose, defaultValue, payload } = props;
+  const { visible, loading, onSubmit, onClose, defaultValue } = props;
   const [form] = Form.useForm();
   const [validateViewMutation] = useValidateViewMutation({
     fetchPolicy: 'no-cache',
@@ -24,11 +23,7 @@ export default function SaveAsViewModal(props: Props) {
     form
       .validateFields()
       .then(async (values) => {
-        await onSubmit({
-          responseId: defaultValue.responseId,
-          ...payload,
-          ...values,
-        });
+        await onSubmit({ responseId: defaultValue.responseId, ...values });
         onClose();
       })
       .catch(console.error);
@@ -38,7 +33,7 @@ export default function SaveAsViewModal(props: Props) {
 
   return (
     <Modal
-      title="Save as View"
+      title="Store as View"
       centered
       closable
       destroyOnClose

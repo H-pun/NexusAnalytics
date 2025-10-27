@@ -45,7 +45,7 @@ export default function SelectModels(props: Props) {
   return (
     <div>
       <Title level={1} className="mb-3">
-        Select tables to create data models
+        Choose tables to build data models
       </Title>
       <Text>
         We will create data models based on selected tables to help AI better

@@ -1,0 +1,255 @@
+// Rust Theme - Modern Rounded Styling
+// Import Inter font
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+// CSS Variables for Rust Theme
+:root {
+  // Rust Orange Colors
+  --rust-orange-50: #FFF7F3;
+  --rust-orange-100: #FFE8E0;
+  --rust-orange-200: #FFD4C4;
+  --rust-orange-300: #FFBFA3;
+  --rust-orange-400: #FFA882;
+  --rust-orange-500: #FF6B35;
+  --rust-orange-600: #E55A2B;
+  --rust-orange-700: #CC4A21;
+  --rust-orange-800: #B33A17;
+  --rust-orange-900: #992A0D;
+
+  // Legacy support for styled-components
+  --geekblue-6: var(--rust-orange-600);
+
+  // Neutral Colors
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1E293B;
+  --gray-900: #0F172A;
+
+  // Border Radius
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  // Shadows
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --shadow-rust: 0 4px 12px rgba(255, 107, 53, 0.3);
+
+  // Font Family
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+// Global Styles
+* {
+  font-family: var(--font-family);
+}
+
+// Card Components
+.ant-card {
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-md) !important;
+  border: 1px solid var(--gray-200) !important;
+  overflow: hidden;
+}
+
+.ant-card-head {
+  background: var(--rust-orange-50) !important;
+  border-bottom: 2px solid var(--rust-orange-200) !important;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
+}
+
+.ant-card-head-title {
+  color: var(--rust-orange-800) !important;
+  font-weight: 600 !important;
+}
+
+// Button Components
+.ant-btn {
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, var(--rust-orange-500), var(--rust-orange-600)) !important;
+  border-color: var(--rust-orange-500) !important;
+  box-shadow: var(--shadow-rust) !important;
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, var(--rust-orange-600), var(--rust-orange-700)) !important;
+  border-color: var(--rust-orange-600) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4) !important;
+}
+
+// Input Components
+.ant-input {
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-family) !important;
+  border: 1px solid var(--gray-300) !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-input:focus {
+  border-color: var(--rust-orange-500) !important;
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2) !important;
+}
+
+// Select Components
+.ant-select {
+  font-family: var(--font-family) !important;
+}
+
+.ant-select .ant-select-selector {
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--gray-300) !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-select-focused .ant-select-selector {
+  border-color: var(--rust-orange-500) !important;
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2) !important;
+}
+
+// Modal Components
+.ant-modal {
+  border-radius: var(--radius-2xl) !important;
+  overflow: hidden;
+}
+
+.ant-modal-content {
+  border-radius: var(--radius-2xl) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+.ant-modal-header {
+  background: var(--rust-orange-50) !important;
+  border-bottom: 2px solid var(--rust-orange-200) !important;
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0 !important;
+}
+
+.ant-modal-title {
+  color: var(--rust-orange-800) !important;
+  font-weight: 600 !important;
+}
+
+// Drawer Components
+.ant-drawer-content {
+  border-radius: var(--radius-xl) 0 0 var(--radius-xl) !important;
+}
+
+.ant-drawer-header {
+  background: var(--rust-orange-50) !important;
+  border-bottom: 2px solid var(--rust-orange-200) !important;
+}
+
+.ant-drawer-title {
+  color: var(--rust-orange-800) !important;
+  font-weight: 600 !important;
+}
+
+// Form Components
+.ant-form-item-label > label {
+  color: var(--gray-700) !important;
+  font-weight: 500 !important;
+}
+
+// Table Components (Data Modeling)
+.ant-table {
+  border-radius: var(--radius-xl) !important;
+  overflow: hidden;
+  box-shadow: var(--shadow-md) !important;
+  border: 1px solid var(--gray-200) !important;
+}
+
+.ant-table-thead > tr > th {
+  background: var(--rust-orange-50) !important;
+  color: var(--rust-orange-800) !important;
+  font-weight: 600 !important;
+  border-bottom: 2px solid var(--rust-orange-200) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: var(--rust-orange-50) !important;
+}
+
+// Badge Components
+.ant-badge {
+  font-family: var(--font-family) !important;
+}
+
+.ant-tag {
+  border-radius: var(--radius-sm) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 500 !important;
+}
+
+// Typography
+.ant-typography {
+  font-family: var(--font-family) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+}
+
+// Custom Rust-themed classes
+.rust-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+  padding: 24px;
+  transition: all 0.2s ease;
+}
+
+.rust-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.rust-button {
+  background: linear-gradient(135deg, var(--rust-orange-500), var(--rust-orange-600));
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px 24px;
+  font-family: var(--font-family);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-rust);
+}
+
+.rust-button:hover {
+  background: linear-gradient(135deg, var(--rust-orange-600), var(--rust-orange-700));
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+}
+
+.rust-input {
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-family: var(--font-family);
+  transition: all 0.2s ease;
+}
+
+.rust-input:focus {
+  border-color: var(--rust-orange-500);
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+  outline: none;
+}

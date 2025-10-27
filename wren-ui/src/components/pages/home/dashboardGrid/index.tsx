@@ -52,7 +52,7 @@ const StyledDashboardGrid = styled.div`
     transition: border-color 0.2s ease;
 
     &:hover {
-      border-color: var(--geekblue-6);
+      border-color: var(--rust-orange-6);
     }
   }
 

@@ -8,11 +8,11 @@ from haystack import Document, component
 from haystack_integrations.document_stores.qdrant import QdrantDocumentStore
 from langfuse.decorators import observe
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import DocumentStoreProvider, EmbedderProvider
 from src.pipelines.common import ScoreFilter
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 @component
@@ -182,7 +182,7 @@ def formatted_output(
 ## End of Pipeline
 
 
-class Instructions(BasicPipeline):
+class Instructions(EnhancedBasicPipeline):
     def __init__(
         self,
         embedder_provider: EmbedderProvider,

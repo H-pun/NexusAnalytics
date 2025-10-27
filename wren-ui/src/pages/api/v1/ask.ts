@@ -14,12 +14,12 @@ import {
 } from '@/apollo/server/utils/apiUtils';
 import {
   AskResult,
-  WrenAILanguage,
+  AnalyticsAILanguage,
   TextBasedAnswerInput,
   TextBasedAnswerResult,
   TextBasedAnswerStatus,
   AskResultType,
-  WrenAIError,
+  AnalyticsAIError,
 } from '@/apollo/server/models/adaptor';
 import { getLogger } from '@server/utils';
 
@@ -30,7 +30,7 @@ const {
   apiHistoryRepository,
   projectService,
   deployService,
-  wrenAIAdaptor,
+  analyticsAIAdaptor,
   queryService,
 } = components;
 
@@ -81,13 +81,13 @@ export default async function handler(
       : undefined;
 
     // Step 1: Generate SQL
-    const askTask = await wrenAIAdaptor.ask({
+    const askTask = await analyticsAIAdaptor.ask({
       query: question,
       deployId: lastDeploy.hash,
       histories: transformHistoryInput(histories) as any,
       configurations: {
         language:
-          language || WrenAILanguage[project.language] || WrenAILanguage.EN,
+          language || AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       },
     });
 
@@ -95,7 +95,7 @@ export default async function handler(
     const deadline = Date.now() + MAX_WAIT_TIME;
     let askResult: AskResult;
     while (true) {
-      askResult = await wrenAIAdaptor.getAskResult(askTask.queryId);
+      askResult = await analyticsAIAdaptor.getAskResult(askTask.queryId);
       if (isAskResultFinished(askResult)) {
         break;
       }
@@ -115,7 +115,7 @@ export default async function handler(
     // Check for error in result
     if (askResult.error) {
       const errorMessage =
-        (askResult.error as WrenAIError).message || 'Unknown error';
+        (askResult.error as AnalyticsAIError).message || 'Unknown error';
       const additionalData: Record<string, any> = {};
 
       // Include invalid SQL if available
@@ -135,7 +135,7 @@ export default async function handler(
     if (askResult.type === AskResultType.GENERAL) {
       // Stream the explanation content
       let explanation = '';
-      const stream = await wrenAIAdaptor.getAskStreamingResult(askTask.queryId);
+      const stream = await analyticsAIAdaptor.getAskStreamingResult(askTask.queryId);
 
       // Collect the streamed content
       const streamPromise = new Promise<void>((resolve, reject) => {
@@ -215,13 +215,13 @@ export default async function handler(
       threadId: newThreadId,
       configurations: {
         language:
-          language || WrenAILanguage[project.language] || WrenAILanguage.EN,
+          language || AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       },
     };
 
     // Start the summary generation task
     const summaryTask =
-      await wrenAIAdaptor.createTextBasedAnswer(textBasedAnswerInput);
+      await analyticsAIAdaptor.createTextBasedAnswer(textBasedAnswerInput);
 
     if (!summaryTask || !summaryTask.queryId) {
       throw new ApiError('Failed to start summary generation task', 500);
@@ -230,7 +230,7 @@ export default async function handler(
     // Poll for the summary result
     let summaryResult: TextBasedAnswerResult;
     while (true) {
-      summaryResult = await wrenAIAdaptor.getTextBasedAnswerResult(
+      summaryResult = await analyticsAIAdaptor.getTextBasedAnswerResult(
         summaryTask.queryId,
       );
       if (
@@ -257,7 +257,7 @@ export default async function handler(
     // Step 4: Stream the content to get the summary
     let summary = '';
     if (summaryResult.status === TextBasedAnswerStatus.SUCCEEDED) {
-      const stream = await wrenAIAdaptor.streamTextBasedAnswer(
+      const stream = await analyticsAIAdaptor.streamTextBasedAnswer(
         summaryTask.queryId,
       );
 

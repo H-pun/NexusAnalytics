@@ -42,7 +42,7 @@ export default function ConnectDataSource(props: Props) {
   return (
     <>
       <Typography.Title level={1} className="mb-3">
-        Connect the data source
+        Link the data source
       </Typography.Title>
       <Typography.Text>
         Vote for your favorite data sources on{' '}

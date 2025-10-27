@@ -13,11 +13,11 @@ import { DataSourceName } from '../types';
 import {
   RecommendationQuestion,
   RecommendationQuestionStatus,
-  WrenAIError,
-  WrenAILanguage,
+  AnalyticsAIError,
+  AnalyticsAILanguage,
 } from '@server/models/adaptor';
 import { encryptConnectionInfo } from '../dataSource';
-import { IWrenAIAdaptor } from '../adaptors';
+import { IAnalyticsAIAdaptor } from '../adaptors';
 import { RecommendQuestionResultStatus } from './askingService';
 import { IMDLService } from './mdlService';
 import { ProjectRecommendQuestionBackgroundTracker } from '../backgrounds';
@@ -44,7 +44,7 @@ export interface ProjectData {
 export interface ProjectRecommendationQuestionsResult {
   status: RecommendQuestionResultStatus;
   questions: RecommendationQuestion[];
-  error: WrenAIError;
+  error: AnalyticsAIError;
 }
 export interface IProjectService {
   createProject: (projectData: ProjectData) => Promise<Project>;
@@ -83,30 +83,30 @@ export class ProjectService implements IProjectService {
   private projectRepository: IProjectRepository;
   private metadataService: IDataSourceMetadataService;
   private mdlService: IMDLService;
-  private wrenAIAdaptor: IWrenAIAdaptor;
+  private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private projectRecommendQuestionBackgroundTracker: ProjectRecommendQuestionBackgroundTracker;
   constructor({
     projectRepository,
     metadataService,
     mdlService,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     telemetry,
   }: {
     projectRepository: IProjectRepository;
     metadataService: IDataSourceMetadataService;
     mdlService: IMDLService;
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
     telemetry: ITelemetry;
   }) {
     this.projectRepository = projectRepository;
     this.metadataService = metadataService;
     this.mdlService = mdlService;
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
     this.projectRecommendQuestionBackgroundTracker =
       new ProjectRecommendQuestionBackgroundTracker({
         projectRepository,
         telemetry,
-        wrenAIAdaptor,
+        analyticsAIAdaptor,
       });
   }
   public async updateProject(
@@ -135,7 +135,7 @@ export class ProjectService implements IProjectService {
     }
     const { manifest } = await this.mdlService.makeCurrentModelMDL();
     const recommendQuestionResult =
-      await this.wrenAIAdaptor.generateRecommendationQuestions({
+      await this.analyticsAIAdaptor.generateRecommendationQuestions({
         manifest,
         ...this.getProjectRecommendationQuestionsConfig(project),
       });
@@ -173,7 +173,7 @@ export class ProjectService implements IProjectService {
         ? RecommendQuestionResultStatus[project.questionsStatus]
         : result.status;
       result.questions = project.questions || [];
-      result.error = project.questionsError as WrenAIError;
+      result.error = project.questionsError as AnalyticsAIError;
     }
     return result;
   }
@@ -272,7 +272,7 @@ export class ProjectService implements IProjectService {
       maxQuestions: config.projectRecommendationQuestionsMaxQuestions,
       regenerate: true,
       configuration: {
-        language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+        language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       },
     };
   }

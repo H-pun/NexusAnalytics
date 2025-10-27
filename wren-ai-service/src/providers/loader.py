@@ -2,7 +2,7 @@ import importlib
 import logging
 import pkgutil
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 PROVIDERS_PATH = "src.providers"

@@ -21,10 +21,7 @@ export type IPromptThreadStore = {
     onFixSQLStatement?: (responseId: number, sql: string) => Promise<void>;
     fixStatementLoading?: boolean;
   };
-  onOpenSaveAsViewModal: (
-    data: { sql: string; responseId: number },
-    payload: { rephrasedQuestion: string },
-  ) => void;
+  onOpenSaveAsViewModal: (data: { sql: string; responseId: number }) => void;
   onSelectRecommendedQuestion: ({
     question,
     sql,

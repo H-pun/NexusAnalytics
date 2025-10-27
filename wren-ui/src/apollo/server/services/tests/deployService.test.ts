@@ -19,7 +19,7 @@ describe('DeployService', () => {
 
     deployService = new DeployService({
       telemetry: mockTelemetry,
-      wrenAIAdaptor: mockWrenAIAdaptor,
+      analyticsAIAdaptor: mockWrenAIAdaptor,
       deployLogRepository: mockDeployLogRepository,
     });
   });

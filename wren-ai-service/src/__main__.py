@@ -8,8 +8,8 @@ from fastapi.responses import ORJSONResponse, RedirectResponse
 from langfuse.decorators import langfuse_context
 
 from src.config import settings
+from src.core.builder import ServiceContainerBuilder
 from src.globals import (
-    create_service_container,
     create_service_metadata,
 )
 from src.providers import generate_components
@@ -20,7 +20,7 @@ from src.utils import (
 from src.web.v1 import routers
 
 setup_custom_logger(
-    "wren-ai-service", level_str=settings.logging_level, is_dev=settings.development
+    "analytics-service", level_str=settings.logging_level, is_dev=settings.development
 )
 
 
@@ -29,7 +29,9 @@ setup_custom_logger(
 async def lifespan(app: FastAPI):
     # startup events
     pipe_components = generate_components(settings.components)
-    app.state.service_container = create_service_container(pipe_components, settings)
+    app.state.service_container = ServiceContainerBuilder(
+        settings=settings, pipe_components=pipe_components
+    ).build()
     app.state.service_metadata = create_service_metadata(pipe_components)
     init_langfuse(settings)
 
@@ -40,7 +42,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="wren-ai-service API Docs",
+    title="analytics-service API Docs",
     lifespan=lifespan,
     redoc_url=None,
     default_response_class=ORJSONResponse,

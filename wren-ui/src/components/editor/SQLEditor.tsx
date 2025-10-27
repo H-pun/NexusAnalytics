@@ -9,7 +9,7 @@ const Wrapper = styled.div`
   transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 
   &:hover {
-    border-color: var(--geekblue-5) !important;
+    border-color: var(--rust-orange-5) !important;
   }
 
   &.adm-markdown-editor-error {
@@ -20,7 +20,7 @@ const Wrapper = styled.div`
     }
   }
   &:not(.adm-markdown-editor-error).adm-markdown-editor-focused {
-    border-color: var(--geekblue-5) !important;
+    border-color: var(--rust-orange-5) !important;
     box-shadow: 0 0 0 2px rgba(47, 84, 235, 0.2);
   }
 

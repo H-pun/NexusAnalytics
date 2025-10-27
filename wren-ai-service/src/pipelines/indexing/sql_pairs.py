@@ -12,11 +12,11 @@ from haystack.document_stores.types import DocumentStore, DuplicatePolicy
 from langfuse.decorators import observe
 from pydantic import BaseModel
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import DocumentStoreProvider, EmbedderProvider
 from src.pipelines.indexing import AsyncDocumentWriter
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 class SqlPair(BaseModel):
@@ -163,7 +163,7 @@ def _load_sql_pairs(sql_pairs_path: str) -> Dict[str, Any]:
         return {}
 
 
-class SqlPairs(BasicPipeline):
+class SqlPairs(EnhancedBasicPipeline):
     def __init__(
         self,
         embedder_provider: EmbedderProvider,

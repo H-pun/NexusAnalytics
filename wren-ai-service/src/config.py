@@ -5,12 +5,12 @@ from dotenv import load_dotenv
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 class Settings(BaseSettings):
     """
-    Configuration settings for the Wren AI service.
+    Configuration settings for the Analytics service.
 
     The settings are loaded in the following order of precedence:
     1. Default values: Defined in the class attributes.
@@ -22,8 +22,8 @@ class Settings(BaseSettings):
     across different environments and deployment scenarios.
     """
 
-    host: str = Field(default="127.0.0.1", alias="WREN_AI_SERVICE_HOST")
-    port: int = Field(default=5555, alias="WREN_AI_SERVICE_PORT")
+    host: str = Field(default="127.0.0.1", alias="ANALYTICS_SERVICE_HOST")
+    port: int = Field(default=5555, alias="ANALYTICS_SERVICE_PORT")
 
     # indexing and retrieval config
     column_indexing_batch_size: int = Field(default=50)
@@ -40,7 +40,6 @@ class Settings(BaseSettings):
     allow_intent_classification: bool = Field(default=True)
     allow_sql_generation_reasoning: bool = Field(default=True)
     allow_sql_functions_retrieval: bool = Field(default=True)
-    allow_sql_diagnosis: bool = Field(default=True)
     max_histories: int = Field(default=5)
     max_sql_correction_retries: int = Field(default=3)
 
@@ -59,7 +58,7 @@ class Settings(BaseSettings):
 
     # user guide config
     is_oss: bool = Field(default=True)
-    doc_endpoint: str = Field(default="https://docs.getwren.ai")
+    doc_endpoint: str = Field(default="https://docs.getanalytics.ai")
 
     # langfuse config
     # in order to use langfuse, we also need to set the LANGFUSE_SECRET_KEY and LANGFUSE_PUBLIC_KEY in the .env or .env.dev file

@@ -44,7 +44,7 @@ export const ViewNode = ({ data }: CustomNodeProps<DiagramView>) => {
       onClick={onNodeClick}
       data-testid={`diagram__view-node__${data.originalData.displayName}`}
     >
-      <NodeHeader className="dragHandle" color="var(--green-6)">
+      <NodeHeader className="dragHandle" color="var(--rust-orange-5)">
         <span className="adm-model-header">
           <ViewIcon />
           <Text ellipsis title={data.originalData.displayName}>

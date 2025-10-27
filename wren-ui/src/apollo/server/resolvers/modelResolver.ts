@@ -802,7 +802,7 @@ export class ModelResolver {
 
   // create view from sql of a response
   public async createView(_root: any, args: any, ctx: IContext) {
-    const { name: displayName, responseId, rephrasedQuestion } = args.data;
+    const { name: displayName, responseId } = args.data;
 
     // validate view name
     const validateResult = await this.validateViewName(displayName, ctx);
@@ -842,7 +842,7 @@ export class ModelResolver {
 
       // properties from the thread response
       responseId, // helpful for mapping back to the thread response
-      question: rephrasedQuestion,
+      question: response.question,
     };
 
     const eventName = TelemetryEvent.HOME_CREATE_VIEW;
@@ -975,7 +975,7 @@ export class ModelResolver {
     let nativeSql: string;
     if (project.type === DataSourceName.DUCKDB) {
       logger.info(`Getting native sql from wren engine`);
-      nativeSql = await ctx.wrenEngineAdaptor.getNativeSQL(response.sql, {
+      nativeSql = await ctx.analyticsEngineAdaptor.getNativeSQL(response.sql, {
         manifest,
         modelingOnly: false,
       });

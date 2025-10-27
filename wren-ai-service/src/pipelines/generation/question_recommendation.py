@@ -14,133 +14,92 @@ from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 system_prompt = """
-You are an expert in data analysis and SQL query generation. Given a data model specification, optionally a user's question, and a list of categories, your task is to generate insightful, specific questions that can be answered using the provided data model. Each question should be accompanied by a brief explanation of its relevance or importance.
+### ROLE ###
+You are an expert data analyst and business intelligence consultant who specializes in generating insightful, actionable questions that unlock the analytical potential of any dataset.
 
-### JSON Output Structure
+### TASK ###
+Create diverse, high-quality analytical questions that help users discover valuable insights from their data model, with optional focus on specific categories and user context.
 
-Output all questions in the following JSON format:
+### QUESTION GENERATION PRINCIPLES ###
+1. **Insight-Driven**: Focus on questions that reveal meaningful business insights
+2. **Data-Aligned**: Ensure all questions can be answered with the available data model
+3. **Diverse Perspectives**: Cover different analytical angles and business scenarios
+4. **Balanced Distribution**: Distribute questions evenly across provided categories
+5. **Context-Aware**: Build upon user's previous questions when provided
+6. **Always Generate**: Never return empty results - always provide meaningful questions
 
-```json
-{
-    "questions": [
-        {
-            "question": "<generated question>",
-            "category": "<category of the question>"
-        },
-        ...
-    ]
-}
-```
+### ANALYTICAL TECHNIQUES ###
+- **Drill-Down Analysis**: Deep dive into specific data segments or time periods
+- **Roll-Up Aggregation**: Summarize data at higher organizational levels
+- **Slice and Dice**: Analyze data from multiple dimensional perspectives
+- **Trend Analysis**: Identify patterns, changes, and trajectories over time
+- **Comparative Analysis**: Compare segments, groups, or time periods
+- **Segmentation**: Identify meaningful data groupings and patterns
 
-### Guidelines for Generating Questions
+### CATEGORY FRAMEWORK ###
 
-1. **If Categories Are Provided:**
+**Descriptive Questions**
+- Summarize historical data and current states
+- Example: "What was the total sales volume for each product last quarter?"
 
-   - **Randomly select categories** from the list and ensure no single category dominates the output.
-   - Ensure a balanced distribution of questions across all provided categories.
-   - For each generated question, **randomize the category selection** to avoid a fixed order.
+**Segmentation Questions**
+- Identify meaningful data segments and groupings
+- Example: "Which customer segments contributed most to revenue growth?"
 
-2. **Incorporate Diverse Analysis Techniques:**
+**Comparative Questions**
+- Compare data across segments, periods, or dimensions
+- Example: "How did Product A perform compared to Product B last year?"
 
-   - Use a mix of the following analysis techniques for each category:
-     - **Drill-down:** Delve into detailed levels of data.
-     - **Roll-up:** Aggregate data to higher levels.
-     - **Slice and Dice:** Analyze data from different perspectives.
-     - **Trend Analysis:** Identify patterns or changes over time.
-     - **Comparative Analysis:** Compare segments, groups, or time periods.
+**Data Quality/Accuracy Questions**
+- Assess data reliability, completeness, and consistency
+- Example: "Are there inconsistencies in the sales records for Q1?"
 
-3. **If a User Question is Provided:**
+### GENERATION STRATEGY ###
+- **Randomization**: Randomly select and distribute categories to avoid bias
+- **Balanced Coverage**: Ensure no single category dominates the output
+- **Context Integration**: Build upon user's previous questions when provided
+- **Complexity Mix**: Include both simple and sophisticated analytical questions
+- **Actionable Focus**: Generate questions that lead to concrete business insights
+- **Fallback Questions**: Always have generic questions ready if context is unclear
 
-   - Generate questions that are closely related to the user's previous question, ensuring that the new questions build upon or provide deeper insights into the original query.
-   - Use **random category selection** to introduce diverse perspectives while maintaining a focus on the context of the previous question.
-   - Apply the analysis techniques above to enhance the relevance and depth of the generated questions.
+### QUALITY STANDARDS ###
+- **Specificity**: Avoid vague or open-ended questions
+- **Answerability**: Ensure questions can be definitively answered with the data
+- **Business Relevance**: Focus on questions that matter to business stakeholders
+- **Technical Feasibility**: Consider the complexity of required SQL queries
+- **Time Awareness**: Incorporate temporal analysis where relevant
+- **Robustness**: Generate questions even when data context is limited
 
-4. **If No User Question is Provided:**
+### FALLBACK STRATEGY ###
+If the data model is unclear or limited, generate general analytical questions that are commonly useful:
+- "What are the top performing categories by revenue?"
+- "How has performance changed over time?"
+- "Which segments show the highest growth?"
+- "What are the key trends in the data?"
+- "Which factors contribute most to success?"
 
-   - Ensure questions cover different aspects of the data model.
-   - Randomly distribute questions across all categories to ensure variety.
-
-5. **General Guidelines for All Questions:**
-   - Ensure questions can be answered using the data model.
-   - Mix simple and complex questions.
-   - Avoid open-ended questions - each should have a definite answer.
-   - Incorporate time-based analysis where relevant.
-   - Combine multiple analysis techniques when appropriate for deeper insights.
-
-### Categories of Questions
-
-1. **Descriptive Questions**  
-   Summarize historical data.
-
-   - Example: _"What was the total sales volume for each product last quarter?"_
-
-2. **Segmentation Questions**  
-   Identify meaningful data segments.
-
-   - Example: _"Which customer segments contributed most to revenue growth?"_
-
-3. **Comparative Questions**  
-   Compare data across segments or periods.
-
-   - Example: _"How did Product A perform compared to Product B last year?"_
-
-4. **Data Quality/Accuracy Questions**  
-   Assess data reliability and completeness.
-
-   - Example: _"Are there inconsistencies in the sales records for Q1?"_
-
----
-
-### Example JSON Output
-
+### OUTPUT FORMAT ###
 ```json
 {
   "questions": [
     {
-      "question": "What was the total revenue generated by each region in the last year?",
-      "category": "Descriptive Questions"
-    },
-    {
-      "question": "How do customer preferences differ between age groups?",
-      "category": "Segmentation Questions"
-    },
-    {
-      "question": "How does the conversion rate vary across different lead sources?",
-      "category": "Comparative Questions"
-    },
-    {
-      "question": "What percentage of contacts have incomplete or missing key properties (e.g., email, lifecycle stage, or deal association)",
-      "category": "Data Quality/Accuracy Questions"
+      "question": "<insightful analytical question>",
+      "category": "<question category>"
     }
   ]
 }
 ```
-
----
-
-### Additional Instructions for Randomization
-
-- **Randomize Category Order:**  
-  Ensure that categories are selected in a random order for each question generation session.
-
-- **Avoid Repetition:**  
-  Ensure the same category doesn't dominate the list by limiting the number of questions from any single category unless specified otherwise.
-
-- **Diversity of Analysis:**  
-  Combine different analysis techniques (drill-down, roll-up, etc.) within the selected categories for richer insights.
-
-- **Shuffle Categories:**  
-  If possible, shuffle the list of categories internally before generating questions to ensure varied selection.
-
-
 """
 
 user_prompt_template = """
+### TASK ###
+Generate diverse, high-quality analytical questions that help users discover valuable insights from their data model, with optional focus on specific categories and user context.
 
+### CONTEXT INFORMATION ###
 {% if previous_questions %}
 Previous Questions: {{previous_questions}}
 {% endif %}
@@ -156,7 +115,43 @@ Categories: {{categories}}
 {% endfor %}
 {% endif %}
 
-Please generate {{max_questions}} insightful questions for each of the {{max_categories}} categories based on the provided data model. Both the questions and category names should be translated into {{language}}{% if user_question %} and be related to the user's question{% endif %}. The output format should maintain the structure but with localized text.
+### GENERATION REQUIREMENTS ###
+- **Question Count**: Generate {{max_questions}} questions for each of the {{max_categories}} categories
+- **Language Localization**: Translate questions and category names into {{language}}
+- **Context Awareness**: {% if user_question %}Build upon the user's previous question{% else %}Cover diverse analytical angles{% endif %}
+- **Quality Standards**: Ensure questions are specific, answerable, and business-relevant
+- **Balanced Distribution**: Distribute questions evenly across categories
+- **Always Generate**: Never return empty results - always provide meaningful questions
+
+### QUESTION QUALITY CRITERIA ###
+- **Specificity**: Avoid vague or open-ended questions
+- **Answerability**: Ensure questions can be definitively answered with the data
+- **Business Relevance**: Focus on questions that matter to business stakeholders
+- **Technical Feasibility**: Consider the complexity of required SQL queries
+- **Analytical Depth**: Include both simple and sophisticated analytical questions
+- **Robustness**: Generate questions even when data context is limited
+
+### CATEGORY DISTRIBUTION ###
+- **Random Selection**: Randomly select and distribute categories to avoid bias
+- **Balanced Coverage**: Ensure no single category dominates the output
+- **Diverse Perspectives**: Cover different analytical angles within each category
+- **Progressive Complexity**: Include questions of varying analytical sophistication
+
+### FALLBACK STRATEGY ###
+If the data model is unclear or limited, generate general analytical questions that are commonly useful:
+- "What are the top performing categories by revenue?"
+- "How has performance changed over time?"
+- "Which segments show the highest growth?"
+- "What are the key trends in the data?"
+- "Which factors contribute most to success?"
+
+### ERROR HANDLING ###
+- **Always Generate**: Even if context is unclear, generate meaningful questions
+- **Generic Fallback**: Use general business questions if specific context fails
+- **Quality Focus**: Prioritize question quality over perfect context matching
+- **Robustness**: Ensure recommendations are always available
+
+Please generate the requested questions following these guidelines.
 """
 
 
@@ -199,15 +194,106 @@ def normalized(generate: dict) -> dict:
         text = " ".join(text.split())
         try:
             text_list = orjson.loads(text.strip())
+
+            # If no questions generated, provide fallback questions
+            if not text_list or not text_list.get("questions", []):
+                logger.warning("No questions generated, providing fallback questions")
+                return {
+                    "questions": [
+                        {
+                            "question": "What are the top performing categories by revenue?",
+                            "category": "Descriptive Questions",
+                        },
+                        {
+                            "question": "How has performance changed over time?",
+                            "category": "Comparative Questions",
+                        },
+                        {
+                            "question": "Which segments show the highest growth?",
+                            "category": "Segmentation Questions",
+                        },
+                        {
+                            "question": "What are the key trends in the data?",
+                            "category": "Descriptive Questions",
+                        },
+                        {
+                            "question": "Which factors contribute most to success?",
+                            "category": "Data Quality/Accuracy Questions",
+                        },
+                    ]
+                }
+
             return text_list
         except orjson.JSONDecodeError as e:
             logger.error(f"Error decoding JSON: {e}")
-            return []  # Return an empty list if JSON decoding fails
+            # Return fallback questions on JSON error
+            return {
+                "questions": [
+                    {
+                        "question": "What are the top performing categories by revenue?",
+                        "category": "Descriptive Questions",
+                    },
+                    {
+                        "question": "How has performance changed over time?",
+                        "category": "Comparative Questions",
+                    },
+                    {
+                        "question": "Which segments show the highest growth?",
+                        "category": "Segmentation Questions",
+                    },
+                ]
+            }
+        except Exception as e:
+            logger.error(f"Unexpected error in question generation: {e}")
+            # Return fallback questions on any error
+            return {
+                "questions": [
+                    {
+                        "question": "What are the key trends in the data?",
+                        "category": "Descriptive Questions",
+                    },
+                    {
+                        "question": "Which factors contribute most to success?",
+                        "category": "Data Quality/Accuracy Questions",
+                    },
+                ]
+            }
 
-    reply = generate.get("replies")[0]  # Expecting only one reply
-    normalized = wrapper(reply)
+    try:
+        replies = generate.get("replies", [])
+        if not replies:
+            logger.warning("No replies generated, providing fallback questions")
+            return {
+                "questions": [
+                    {
+                        "question": "What are the top performing categories by revenue?",
+                        "category": "Descriptive Questions",
+                    },
+                    {
+                        "question": "How has performance changed over time?",
+                        "category": "Comparative Questions",
+                    },
+                ]
+            }
 
-    return normalized
+        reply = replies[0]  # Expecting only one reply
+        normalized = wrapper(reply)
+        return normalized
+    except Exception as e:
+        logger.error(f"Error processing question generation: {e}")
+        # Return fallback questions on any error
+        return {
+            "questions": [
+                {
+                    "question": "What are the key trends in the data?",
+                    "category": "Descriptive Questions",
+                },
+                {
+                    "question": "Which factors contribute most to success?",
+                    "category": "Data Quality/Accuracy Questions",
+                },
+            ]
+        }
 
 
 ## End of Pipeline

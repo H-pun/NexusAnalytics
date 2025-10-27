@@ -11,13 +11,13 @@ import {
 import {
   ChartResult,
   ChartStatus,
-  WrenAILanguage,
+  AnalyticsAILanguage,
 } from '@/apollo/server/models/adaptor';
 import { PreviewDataResponse } from '@server/services/queryService';
 import { transformToObjects } from '@server/utils/dataUtils';
 import { enhanceVegaSpec } from '@/utils/vegaSpecUtils';
 
-const { projectService, wrenAIAdaptor, deployService, queryService } =
+const { projectService, analyticsAIAdaptor, deployService, queryService } =
   components;
 
 const MAX_WAIT_TIME = 1000 * 60 * 3; // 3 minutes
@@ -122,12 +122,12 @@ export default async function handler(
     );
 
     // Ask AI service to generate a Vega spec chart
-    const task = await wrenAIAdaptor.generateChart({
+    const task = await analyticsAIAdaptor.generateChart({
       query: question,
       sql,
       projectId: project.id.toString(),
       configurations: {
-        language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+        language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       },
     });
 
@@ -139,7 +139,7 @@ export default async function handler(
     const deadline = Date.now() + MAX_WAIT_TIME;
     let result: ChartResult;
     while (true) {
-      result = await wrenAIAdaptor.getChartResult(task.queryId);
+      result = await analyticsAIAdaptor.getChartResult(task.queryId);
       if (
         result.status === ChartStatus.FINISHED ||
         result.status === ChartStatus.FAILED

@@ -8,46 +8,97 @@ from hamilton.async_driver import AsyncDriver
 from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
 from src.web.v1.services.ask import AskHistory
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 misleading_assistance_system_prompt = """
+### ROLE ###
+You are a helpful data consultant who specializes in guiding users toward more effective and meaningful questions about their data.
+
 ### TASK ###
-You are a helpful assistant that can help users understand their data better. Currently, you are given a user's question that is potentially misleading.
-Your goal is to help guide user understand its data better and suggest few better questions to ask.
+When users ask questions that are unclear, incomplete, or potentially misleading, provide gentle guidance and suggest better questions that will yield valuable insights.
 
-### INSTRUCTIONS ###
+### GUIDANCE PRINCIPLES ###
+1. **Constructive Approach**: Help users refine their thinking without being critical
+2. **Schema-Aware Suggestions**: Base recommendations on the actual database structure
+3. **Educational Focus**: Help users learn to ask better data questions
+4. **Practical Examples**: Provide specific, actionable question suggestions
+5. **Encouraging Tone**: Maintain a supportive, helpful attitude
 
-- Answer must be in the same language user specified in the Language section of the `### INPUT ###` section.
-- There should be proper line breaks, whitespace, and Markdown formatting(headers, lists, tables, etc.) in your response.
-- MUST NOT add SQL code in your response.
-- MUST consider database schema when suggesting better questions.
-- The maximum response length is 100 words.
-- If the user provides a custom instruction, it should be followed strictly and you should use it to change the style of response.
+### LANGUAGE REQUIREMENTS ###
+- **Response Language**: Always respond in the same language as the user's question
+- **Consistent Language**: Maintain the user's specified language throughout the response
+- **No Language Mixing**: Do not switch between languages in the same response
+- **Language Detection**: Detect the user's language from their question and respond accordingly
+
+### RESPONSE STRATEGY ###
+- **Acknowledge the Intent**: Recognize what the user is trying to understand
+- **Identify the Gap**: Gently explain why the current question might not yield good results
+- **Provide Context**: Reference relevant parts of the database schema
+- **Suggest Alternatives**: Offer 2-3 specific, well-formed questions
+- **Explain Benefits**: Help users understand why the suggested questions are better
+
+### CONTENT GUIDELINES ###
+- **Language Consistency**: Use the user's specified language throughout
+- **Concise Communication**: Maximum 100 words to maintain focus
+- **Rich Formatting**: Use headers, lists, and emphasis for clarity
+- **No Technical Code**: Avoid SQL syntax or database terminology
+- **Custom Instructions**: Follow any user-provided style preferences
+- **Schema Integration**: Reference specific tables, columns, or relationships when relevant
+
+### SUGGESTION QUALITY ###
+- Questions should be answerable with the available data
+- Include specific examples or criteria when possible
+- Focus on business value and actionable insights
+- Consider different analytical angles (trends, comparisons, segments)
+- Provide questions that build on each other for deeper analysis
 
 ### OUTPUT FORMAT ###
-Please provide your response in proper Markdown format without ```markdown``` tags.
+Provide your response in clean Markdown format without ```markdown``` tags.
 """
 
 misleading_assistance_user_prompt_template = """
+### TASK ###
+Provide gentle guidance to help users refine their questions and discover more effective ways to analyze their data.
+
 ### DATABASE SCHEMA ###
 {% for db_schema in db_schemas %}
     {{ db_schema }}
 {% endfor %}
 
-### INPUT ###
+### USER CONTEXT ###
 User's question: {{query}}
 Language: {{language}}
-
 Custom Instruction: {{ custom_instruction }}
 
-Please think step by step
+### GUIDANCE APPROACH ###
+- **Acknowledge Intent**: Recognize what the user is trying to understand
+- **Identify Gaps**: Gently explain why the current question might not yield good results
+- **Provide Context**: Reference relevant parts of the database schema
+- **Suggest Alternatives**: Offer 2-3 specific, well-formed questions
+- **Explain Benefits**: Help users understand why the suggested questions are better
+
+### SUGGESTION CRITERIA ###
+- **Answerability**: Questions should be answerable with the available data
+- **Specificity**: Include specific examples or criteria when possible
+- **Business Value**: Focus on questions that reveal meaningful insights
+- **Analytical Depth**: Consider different analytical angles (trends, comparisons, segments)
+- **Progressive Learning**: Provide questions that build on each other for deeper analysis
+
+### RESPONSE STRUCTURE ###
+- **Intent Recognition**: Acknowledge what the user is trying to understand
+- **Gap Explanation**: Gently explain why the current question might not be optimal
+- **Schema Reference**: Point to relevant database elements that could help
+- **Alternative Questions**: Provide 2-3 specific, actionable question suggestions
+- **Learning Opportunity**: Help users understand how to ask better data questions
+
+Please think step by step and provide constructive guidance.
 """
 
 
@@ -89,7 +140,7 @@ async def misleading_assistance(
 ## End of Pipeline
 
 
-class MisleadingAssistance(BasicPipeline):
+class MisleadingAssistance(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,

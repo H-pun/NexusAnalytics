@@ -1,8 +1,8 @@
 import { IConfig } from '@server/config';
 import {
   IIbisAdaptor,
-  IWrenAIAdaptor,
-  IWrenEngineAdaptor,
+  IAnalyticsAIAdaptor,
+  IAnalyticsEngineAdaptor,
 } from '@server/adaptors';
 import {
   IModelColumnRepository,
@@ -45,9 +45,9 @@ export interface IContext {
   telemetry: ITelemetry;
 
   // adaptor
-  wrenEngineAdaptor: IWrenEngineAdaptor;
+  analyticsEngineAdaptor: IAnalyticsEngineAdaptor;
   ibisServerAdaptor: IIbisAdaptor;
-  wrenAIAdaptor: IWrenAIAdaptor;
+  analyticsAIAdaptor: IAnalyticsAIAdaptor;
 
   // services
   projectService: IProjectService;

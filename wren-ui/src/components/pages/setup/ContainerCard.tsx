@@ -19,9 +19,9 @@ export default function ContainerCard(props: Props) {
     <Container maxWidth={maxWidth}>
       <Card>
         <Steps current={step} className="mb-12">
-          <Steps.Step title="Connect" />
-          <Steps.Step title="Select Tables" />
-          <Steps.Step title="Define Relationships" />
+          <Steps.Step title="Link" />
+          <Steps.Step title="Choose Tables" />
+          <Steps.Step title="Set Relationships" />
         </Steps>
         <div className="px-12 pb-6">{props.children}</div>
       </Card>

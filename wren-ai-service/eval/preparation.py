@@ -410,7 +410,7 @@ if __name__ == "__main__":
                 get_contexts_from_sql(
                     ground_truth["sql"],
                     values["mdl"],
-                    api_endpoint=WREN_ENGINE_API_URL,
+                    WREN_ENGINE_API_URL,
                 )
             )
 
@@ -442,6 +442,14 @@ if __name__ == "__main__":
                         "instructions": instructions,
                     }
                 )
+            # else:
+            #     print(
+            #         "Warning: context is empty, ignore this question sql pair as of now..."
+            #     )
+            #     print(f"database: {db}")
+            #     print(f'question: {ground_truth["question"]}')
+            #     print(f'sql: {ground_truth["sql"]}')
+            #     print()
 
         # save eval dataset
         if candidate_eval_dataset:

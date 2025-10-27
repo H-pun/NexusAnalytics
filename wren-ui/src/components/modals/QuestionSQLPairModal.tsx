@@ -41,7 +41,7 @@ const Toolbar = (props: { dataSource: string; onClick: () => void }) => {
     <div className="d-flex justify-space-between align-center px-1">
       <span className="d-flex align-center gx-2">
         <Logo size={16} />
-        Wren SQL
+        NQRust SQL
       </span>
       <Button className="px-0" type="link" size="small" onClick={onClick}>
         <SelectOutlined />
@@ -191,7 +191,7 @@ export default function QuestionSQLPairModal(props: Props) {
   return (
     <>
       <Modal
-        title={`${isCreateMode ? 'Add' : 'Update'} question-SQL pair`}
+        title={`${isCreateMode ? 'Create' : 'Modify'} query pair`}
         centered
         closable
         confirmLoading={confirmLoading}
@@ -214,8 +214,8 @@ export default function QuestionSQLPairModal(props: Props) {
                 type="secondary"
                 className="text-sm gray-7 text-left"
               >
-                The SQL statement used here follows <b>Wren SQL</b>, which is
-                based on ANSI SQL and optimized for Wren AI.{` `}
+                The SQL statement used here follows <b>NQRust SQL</b>, which is
+                based on ANSI SQL and optimized for NQRust - Analytics.{` `}
                 <Typography.Link
                   type="secondary"
                   href="https://docs.getwren.ai/oss/guide/home/wren_sql"
@@ -275,7 +275,7 @@ export default function QuestionSQLPairModal(props: Props) {
             <Input />
           </Form.Item>
           <Form.Item
-            label="SQL statement"
+            label="Query code"
             name="sql"
             required
             rules={[

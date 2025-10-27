@@ -9,7 +9,7 @@ from haystack import Document, component
 from haystack.components.writers import DocumentWriter
 from haystack.document_stores.types import DocumentStore, DuplicatePolicy
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 @component

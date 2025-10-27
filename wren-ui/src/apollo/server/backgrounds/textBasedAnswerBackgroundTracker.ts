@@ -1,6 +1,6 @@
-import { IWrenAIAdaptor } from '../adaptors';
+import { IAnalyticsAIAdaptor } from '../adaptors';
 import {
-  WrenAILanguage,
+  AnalyticsAILanguage,
   TextBasedAnswerResult,
   TextBasedAnswerStatus,
 } from '../models/adaptor';
@@ -21,7 +21,7 @@ export class TextBasedAnswerBackgroundTracker {
   // tasks is a kv pair of task id and thread response
   private tasks: Record<number, ThreadResponse> = {};
   private intervalTime: number;
-  private wrenAIAdaptor: IWrenAIAdaptor;
+  private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private threadResponseRepository: IThreadResponseRepository;
   private projectService: IProjectService;
   private deployService: IDeployService;
@@ -29,19 +29,19 @@ export class TextBasedAnswerBackgroundTracker {
   private runningJobs = new Set();
 
   constructor({
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     threadResponseRepository,
     projectService,
     deployService,
     queryService,
   }: {
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
     threadResponseRepository: IThreadResponseRepository;
     projectService: IProjectService;
     deployService: IDeployService;
     queryService: IQueryService;
   }) {
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
     this.threadResponseRepository = threadResponseRepository;
     this.projectService = projectService;
     this.deployService = deployService;
@@ -97,13 +97,13 @@ export class TextBasedAnswerBackgroundTracker {
           }
 
           // request AI service
-          const response = await this.wrenAIAdaptor.createTextBasedAnswer({
+          const response = await this.analyticsAIAdaptor.createTextBasedAnswer({
             query: threadResponse.question,
             sql: threadResponse.sql,
             sqlData: data,
             threadId: threadResponse.threadId.toString(),
             configurations: {
-              language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+              language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
             },
           });
 
@@ -118,7 +118,7 @@ export class TextBasedAnswerBackgroundTracker {
           // polling query id to check the status
           let result: TextBasedAnswerResult;
           do {
-            result = await this.wrenAIAdaptor.getTextBasedAnswerResult(
+            result = await this.analyticsAIAdaptor.getTextBasedAnswerResult(
               response.queryId,
             );
             if (result.status === TextBasedAnswerStatus.PREPROCESSING) {

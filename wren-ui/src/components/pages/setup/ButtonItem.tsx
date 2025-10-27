@@ -19,12 +19,12 @@ const StyledButton = styled(Button)`
   }
 
   &:hover {
-    border-color: var(--geekblue-6);
+    border-color: var(--rust-orange-6);
     background-color: var(--gray-2);
   }
 
   &.is-active {
-    border-color: var(--geekblue-6) !important;
+    border-color: var(--rust-orange-6) !important;
     background-color: var(--gray-2) !important;
   }
 

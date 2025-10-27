@@ -61,7 +61,7 @@ export default function HeaderBar() {
                 $isHighlight={pathname.startsWith(Path.Modeling)}
                 onClick={() => router.push(Path.Modeling)}
               >
-                Modeling
+                Data Modeling
               </StyledButton>
               <StyledButton
                 shape="round"
@@ -77,7 +77,7 @@ export default function HeaderBar() {
                 $isHighlight={pathname.startsWith(Path.APIManagement)}
                 onClick={() => router.push(Path.APIManagementHistory)}
               >
-                API
+                API Management
               </StyledButton>
             </Space>
           )}

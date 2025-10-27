@@ -10,7 +10,7 @@ from langfuse.decorators import observe
 from src.core.pipeline import BasicPipeline
 from src.core.provider import LLMProvider
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 ## Start of Pipeline

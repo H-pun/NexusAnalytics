@@ -12,11 +12,11 @@ from haystack.document_stores.types import DuplicatePolicy
 from langfuse.decorators import observe
 from tqdm import tqdm
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import DocumentStoreProvider, EmbedderProvider
 from src.pipelines.indexing import AsyncDocumentWriter, DocumentCleaner, MDLValidator
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 @component
@@ -132,7 +132,7 @@ async def write(clean: Dict[str, Any], writer: DocumentWriter) -> None:
 ## End of Pipeline
 
 
-class HistoricalQuestion(BasicPipeline):
+class HistoricalQuestion(EnhancedBasicPipeline):
     def __init__(
         self,
         embedder_provider: EmbedderProvider,

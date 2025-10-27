@@ -12,7 +12,7 @@ from src.core.provider import EmbedderProvider
 from src.providers.loader import provider
 from src.utils import remove_trailing_slash
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 def _prepare_texts_to_embed(documents: List[Document]) -> List[str]:

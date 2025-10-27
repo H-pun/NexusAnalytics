@@ -12,7 +12,7 @@ from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 from pydantic import BaseModel
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import DocumentStoreProvider, EmbedderProvider, LLMProvider
 from src.pipelines.common import (
     build_table_ddl,
@@ -22,7 +22,7 @@ from src.pipelines.common import (
 from src.utils import trace_cost
 from src.web.v1.services.ask import AskHistory
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 table_columns_selection_system_prompt = """
@@ -449,7 +449,7 @@ RETRIEVAL_MODEL_KWARGS = {
 }
 
 
-class DbSchemaRetrieval(BasicPipeline):
+class DbSchemaRetrieval(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,

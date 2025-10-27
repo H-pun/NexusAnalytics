@@ -4,18 +4,31 @@
 @prefix: adm;
 
 // -------- Colors
-// >> Secondary
-@citrus-base: #f58433;
-@citrus-1: #fff9f0;
-@citrus-2: #ffedd9;
-@citrus-3: #ffd9b0;
-@citrus-4: #ffc187;
-@citrus-5: #ffa75e;
-@citrus-6: @citrus-base;
-@citrus-7: #cf6421;
-@citrus-8: #a84713;
-@citrus-9: #822f08;
-@citrus-10: #5c1d05;
+// >> Rust Orange (Primary)
+@rust-orange-base: #FF6B35;
+@rust-orange-1: #FFF7F3;
+@rust-orange-2: #FFE8E0;
+@rust-orange-3: #FFD4C4;
+@rust-orange-4: #FFBFA3;
+@rust-orange-5: #FFA882;
+@rust-orange-6: @rust-orange-base;
+@rust-orange-7: #E55A2B;
+@rust-orange-8: #CC4A21;
+@rust-orange-9: #B33A17;
+@rust-orange-10: #992A0D;
+
+// >> Rust Orange (Secondary - for compatibility)
+@citrus-base: @rust-orange-base;
+@citrus-1: @rust-orange-1;
+@citrus-2: @rust-orange-2;
+@citrus-3: @rust-orange-3;
+@citrus-4: @rust-orange-4;
+@citrus-5: @rust-orange-5;
+@citrus-6: @rust-orange-6;
+@citrus-7: @rust-orange-7;
+@citrus-8: @rust-orange-8;
+@citrus-9: @rust-orange-9;
+@citrus-10: @rust-orange-10;
 
 // >> Neutral
 @gray-1: #fff;
@@ -33,12 +46,27 @@
 @gray-13: #000;
 
 @preset-colors: pink, magenta, red, volcano, orange, yellow, gold, cyan, lime,
-  green, blue, geekblue, purple, citrus, gray;
+  green, blue, geekblue, purple, citrus, rust-orange, gray;
+
+// CSS Variables for styled-components compatibility
+:root {
+  --rust-orange-50: @rust-orange-1;
+  --rust-orange-100: @rust-orange-2;
+  --rust-orange-200: @rust-orange-3;
+  --rust-orange-300: @rust-orange-4;
+  --rust-orange-400: @rust-orange-5;
+  --rust-orange-500: @rust-orange-6;
+  --rust-orange-600: @rust-orange-7;
+  --rust-orange-700: @rust-orange-8;
+  --rust-orange-800: @rust-orange-9;
+  --rust-orange-900: @rust-orange-10;
+  --geekblue-6: @rust-orange-6;
+}
 
 @black: @gray-13;
 @white: @gray-1;
 
-@primary-color: @geekblue-6;
+@primary-color: @rust-orange-6;
 
 @text-color: @gray-10;
 @heading-color: @gray-9;
@@ -68,15 +96,18 @@
 @breadcrumb-last-item-color: @text-color;
 @table-padding-vertical: 12px;
 @table-header-cell-split-color: transparent;
-@border-radius-base: 4px;
+@border-radius-base: 20px;
+@border-radius-sm: 12px;
+@border-radius-lg: 24px;
 
 // Typography
-@typography-title-font-weight: 700;
+@font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+@typography-title-font-weight: 600;
 @heading-1-size: ceil(@font-size-base * 2.85);
-// @heading-2-size: ceil(@font-size-base * 2.14);
-// @heading-3-size: ceil(@font-size-base * 1.71);
-// @heading-4-size: ceil(@font-size-base * 1.42);
-// @heading-5-size: ceil(@font-size-base * 1.14);
+@heading-2-size: ceil(@font-size-base * 2.14);
+@heading-3-size: ceil(@font-size-base * 1.71);
+@heading-4-size: ceil(@font-size-base * 1.42);
+@heading-5-size: ceil(@font-size-base * 1.14);
 
 // Avatar
 @avatar-size-xs: 16px;

@@ -18,7 +18,7 @@ if Path(".env.dev").exists():
 async def force_deploy():
     async with aiohttp.ClientSession() as session:
         async with session.post(
-            f"{os.getenv("WREN_UI_ENDPOINT", "http://wren-ui:3000")}/api/graphql",
+            f"{os.getenv("ANALYTICS_UI_ENDPOINT", "http://analytics-ui:3000")}/api/graphql",
             json={
                 "query": "mutation Deploy($force: Boolean) { deploy(force: $force) }",
                 "variables": {"force": True},
@@ -29,5 +29,5 @@ async def force_deploy():
             print(f"Forcing deployment: {res}")
 
 
-if os.getenv("ENGINE", "wren_ui") == "wren_ui":
+if os.getenv("ENGINE", "analytics_ui") == "analytics_ui":
     asyncio.run(force_deploy())

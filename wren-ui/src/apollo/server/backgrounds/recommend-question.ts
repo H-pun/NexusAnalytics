@@ -1,6 +1,6 @@
 import { IProjectRepository } from '../repositories/projectRepository';
 import { RecommendationQuestionStatus } from '@server/models/adaptor';
-import { IWrenAIAdaptor } from '../adaptors/wrenAIAdaptor';
+import { IAnalyticsAIAdaptor } from '../adaptors/analyticsAIAdaptor';
 import { IThreadRepository, Project, Thread } from '../repositories';
 import {
   ITelemetry,
@@ -24,7 +24,7 @@ export class ProjectRecommendQuestionBackgroundTracker {
   // tasks is a kv pair of task id and thread response
   private tasks: Record<number, Project> = {};
   private intervalTime: number;
-  private wrenAIAdaptor: IWrenAIAdaptor;
+  private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private projectRepository: IProjectRepository;
   private runningJobs = new Set();
   private telemetry: ITelemetry;
@@ -32,17 +32,17 @@ export class ProjectRecommendQuestionBackgroundTracker {
 
   constructor({
     telemetry,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     projectRepository,
   }: {
     telemetry: ITelemetry;
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
     projectRepository: IProjectRepository;
   }) {
     this.logger = getLogger('PRQ Background Tracker');
     this.logger.level = 'debug';
     this.telemetry = telemetry;
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
     this.projectRepository = projectRepository;
     this.intervalTime = 1000;
     this.start();
@@ -63,7 +63,7 @@ export class ProjectRecommendQuestionBackgroundTracker {
         // get the latest result from AI service
 
         const result =
-          await this.wrenAIAdaptor.getRecommendationQuestionsResult(
+          await this.analyticsAIAdaptor.getRecommendationQuestionsResult(
             project.queryId,
           );
 
@@ -174,7 +174,7 @@ export class ThreadRecommendQuestionBackgroundTracker {
   // tasks is a kv pair of task id and thread response
   private tasks: Record<number, Thread> = {};
   private intervalTime: number;
-  private wrenAIAdaptor: IWrenAIAdaptor;
+  private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private threadRepository: IThreadRepository;
   private runningJobs = new Set();
   private telemetry: ITelemetry;
@@ -182,17 +182,17 @@ export class ThreadRecommendQuestionBackgroundTracker {
 
   constructor({
     telemetry,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     threadRepository,
   }: {
     telemetry: ITelemetry;
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
     threadRepository: IThreadRepository;
   }) {
     this.logger = getLogger('TRQ Background Tracker');
     this.logger.level = 'debug';
     this.telemetry = telemetry;
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
     this.threadRepository = threadRepository;
     this.intervalTime = 1000;
     this.start();
@@ -213,7 +213,7 @@ export class ThreadRecommendQuestionBackgroundTracker {
         // get the latest result from AI service
 
         const result =
-          await this.wrenAIAdaptor.getRecommendationQuestionsResult(
+          await this.analyticsAIAdaptor.getRecommendationQuestionsResult(
             thread.queryId,
           );
 

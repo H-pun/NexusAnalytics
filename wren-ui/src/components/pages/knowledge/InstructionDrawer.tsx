@@ -43,7 +43,7 @@ export default function InstructionDrawer(props: Props) {
             defaultValue?.questions.map((question, index) => (
               <div key={`${question}-${index}`} className="my-2">
                 <Tag className="bg-gray-1 border-gray-5">
-                  <QuestionOutlined className="geekblue-6" />
+                  <QuestionOutlined className="rust-orange-6" />
                   <Text className="gray-9">{question}</Text>
                 </Tag>
               </div>

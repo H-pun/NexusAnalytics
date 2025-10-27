@@ -131,6 +131,7 @@ export const typeDefs = gql`
     FA_IR
     AR
     NL
+    ID
   }
 
   type DataSource {
@@ -436,7 +437,6 @@ export const typeDefs = gql`
   input CreateViewInput {
     name: String!
     responseId: Int!
-    rephrasedQuestion: String!
   }
 
   input ValidateViewInput {

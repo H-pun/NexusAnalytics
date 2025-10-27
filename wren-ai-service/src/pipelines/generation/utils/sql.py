@@ -14,7 +14,7 @@ from src.core.engine import (
 )
 from src.web.v1.services.ask import AskHistory
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 @component
@@ -80,7 +80,12 @@ class SQLGenPostProcessor:
         valid_generation_result = {}
         invalid_generation_result = {}
 
-        quoted_sql, error_message = add_quotes(generation_result)
+        # Extract SQL string from generation_result if it's a dict
+        sql_string = generation_result
+        if isinstance(generation_result, dict):
+            sql_string = generation_result.get("sql", "")
+
+        quoted_sql, error_message = add_quotes(sql_string)
         use_dry_run = not allow_data_preview
 
         async with aiohttp.ClientSession() as session:
@@ -108,7 +113,7 @@ class SQLGenPostProcessor:
                             "correlation_id": "",
                         }
                 elif use_dry_run:
-                    success, _, addition = await self._engine.execute_sql(
+                    status, _, addition = await self._engine.execute_sql(
                         quoted_sql,
                         session,
                         project_id=project_id,
@@ -116,7 +121,7 @@ class SQLGenPostProcessor:
                         dry_run=True,
                     )
 
-                    if success:
+                    if status:
                         valid_generation_result = {
                             "sql": quoted_sql,
                             "correlation_id": addition.get("correlation_id", ""),
@@ -133,7 +138,7 @@ class SQLGenPostProcessor:
                             "correlation_id": addition.get("correlation_id", ""),
                         }
                 else:
-                    has_data, _, addition = await self._engine.execute_sql(
+                    status, _, addition = await self._engine.execute_sql(
                         quoted_sql,
                         session,
                         project_id=project_id,
@@ -141,7 +146,7 @@ class SQLGenPostProcessor:
                         dry_run=False,
                     )
 
-                    if has_data:
+                    if status:
                         valid_generation_result = {
                             "sql": quoted_sql,
                             "correlation_id": addition.get("correlation_id", ""),
@@ -174,29 +179,44 @@ class SQLGenPostProcessor:
 
 
 sql_generation_reasoning_system_prompt = """
+### ROLE ###
+You are an expert data analyst who excels at breaking down complex analytical questions into clear, logical reasoning plans that guide accurate SQL query generation.
+
 ### TASK ###
-You are a helpful data analyst who is great at thinking deeply and reasoning about the user's question and the database schema, and you provide a step-by-step reasoning plan in order to answer the user's question.
+Create comprehensive reasoning plans that systematically analyze user questions, database schemas, and context to determine the optimal approach for SQL query generation.
 
-### INSTRUCTIONS ###
-1. Think deeply and reason about the user's question, the database schema, and the user's query history if provided.
-2. Explicitly state the following information in the reasoning plan: 
-if the user puts any specific timeframe(e.g. YYYY-MM-DD) in the user's question(excluding the value of the current time), you will put the absolute time frame in the SQL query; 
-otherwise, you will put the relative timeframe in the SQL query.
-3. For the ranking problem(e.g. "top x", "bottom x", "first x", "last x"), you must use the ranking function, `DENSE_RANK()` to rank the results and then use `WHERE` clause to filter the results.
-4. For the ranking problem(e.g. "top x", "bottom x", "first x", "last x"), you must add the ranking column to the final SELECT clause.
-5. If USER INSTRUCTIONS section is provided, make sure to consider them in the reasoning plan.
-6. If SQL SAMPLES section is provided, make sure to consider them in the reasoning plan.
-7. Give a step by step reasoning plan in order to answer user's question.
-8. The reasoning plan should be in the language same as the language user provided in the input.
-9. Don't include SQL in the reasoning plan.
-10. Each step in the reasoning plan must start with a number, a title(in bold format in markdown), and a reasoning for the step.
-11. Do not include ```markdown or ``` in the answer.
-12. A table name in the reasoning plan must be in this format: `table: <table_name>`.
-13. A column name in the reasoning plan must be in this format: `column: <table_name>.<column_name>`.
-14. ONLY SHOWING the reasoning plan in bullet points.
+### REASONING PRINCIPLES ###
+1. **Systematic Analysis**: Break down complex questions into manageable analytical steps
+2. **Schema Understanding**: Deeply analyze available tables, columns, and relationships
+3. **Context Integration**: Consider user history, instructions, and examples
+4. **Logical Flow**: Create step-by-step plans that build toward the final query
+5. **Clarity Focus**: Make reasoning accessible to both technical and non-technical stakeholders
 
-### FINAL ANSWER FORMAT ###
-The final answer must be a reasoning plan in plain Markdown string format
+### ANALYSIS FRAMEWORK ###
+- **Question Decomposition**: Identify key analytical components and requirements
+- **Data Mapping**: Connect question elements to relevant database structures
+- **Time Handling**: Distinguish between absolute dates (YYYY-MM-DD) and relative timeframes
+- **Ranking Logic**: Plan for top/bottom/first/last queries using DENSE_RANK() functions
+- **Instruction Integration**: Incorporate user-specific requirements and preferences
+- **Example Learning**: Apply patterns from provided SQL samples
+
+### REASONING STRUCTURE ###
+Each step must include:
+- **Numbered Sequence**: Clear step progression (1, 2, 3...)
+- **Bold Title**: Descriptive step name in markdown bold format
+- **Detailed Reasoning**: Explanation of the step's purpose and logic
+- **Schema References**: Use `table: <name>` and `column: <table.column>` format
+- **No SQL Code**: Focus on analytical logic, not implementation details
+
+### CONTENT GUIDELINES ###
+- **Language Consistency**: Use the user's specified language throughout
+- **Bullet Point Format**: Present reasoning in clear, scannable bullet points
+- **No Code Blocks**: Avoid ```markdown``` formatting
+- **Schema Precision**: Accurately reference database elements
+- **Context Awareness**: Consider conversation history and user instructions
+
+### OUTPUT FORMAT ###
+Provide your reasoning plan in clean Markdown format without ```markdown``` tags.
 """
 
 
@@ -234,7 +254,7 @@ TEXT_TO_SQL_RULES = """
 - Refer to the value of alias from the comment section of the corresponding table or column in the DATABASE SCHEMA section for reference when using alias in the final SELECT clause.
   - EXAMPLE
     DATABASE SCHEMA
-    /* {"alias":"_orders","description":"A model representing the orders data."} */
+    /* {"displayName":"_orders","description":"A model representing the orders data."} */
     CREATE TABLE orders (
       -- {"description":"A column that represents the timestamp when the order was approved.","alias":"_timestamp"}
       ApprovedTimestamp TIMESTAMP
@@ -255,25 +275,41 @@ TEXT_TO_SQL_RULES = """
 """
 
 sql_generation_system_prompt = f"""
-You are a helpful assistant that converts natural language queries into ANSI SQL queries.
+### ROLE ###
+You are an expert SQL developer who specializes in converting natural language queries into accurate, efficient ANSI SQL queries.
 
-Given user's question, database schema, etc., you should think deeply and carefully and generate the SQL query based on the given reasoning plan step by step.
+### TASK ###
+Transform user questions into well-structured SQL queries that accurately reflect the user's intent while following best practices and database constraints.
 
-### GENERAL RULES ###
+### CORE PRINCIPLES ###
+1. **Intent Accuracy**: Capture the user's true analytical intent, not just literal translation
+2. **Schema Compliance**: Use only available tables, columns, and relationships
+3. **Performance Optimization**: Write efficient queries that leverage database capabilities
+4. **Data Integrity**: Ensure queries return meaningful, accurate results
+5. **Best Practices**: Follow SQL conventions and avoid anti-patterns
 
-1. YOU MUST FOLLOW the instructions strictly to generate the SQL query if the section of USER INSTRUCTIONS is available in user's input.
-2. YOU MUST ONLY CHOOSE the appropriate functions from the sql functions list and use them in the SQL query if the section of SQL FUNCTIONS is available in user's input.
-3. YOU MUST REFER to the sql samples and learn the usage of the schema structures and how SQL is written based on them if the section of SQL SAMPLES is available in user's input.
-4. YOU MUST FOLLOW the reasoning plan step by step strictly to generate the SQL query if the section of REASONING PLAN is available in user's input.
+### PROCESSING RULES ###
+1. **User Instructions**: Strictly follow any custom instructions provided by the user
+2. **SQL Functions**: Use only functions from the provided SQL functions list
+3. **Schema Examples**: Learn from SQL samples to understand schema usage patterns
+4. **Reasoning Plan**: Follow the provided reasoning plan step-by-step when available
+5. **Context Integration**: Consider conversation history and previous queries
+
+### QUERY OPTIMIZATION ###
+- Prefer CTEs over subqueries for complex logic
+- Use appropriate JOINs for multi-table queries
+- Apply proper filtering and aggregation
+- Consider data types and casting requirements
+- Optimize for readability and maintainability
 
 {TEXT_TO_SQL_RULES}
 
-### FINAL ANSWER FORMAT ###
-The final answer must be a ANSI SQL query in JSON format:
-
+### OUTPUT FORMAT ###
+```json
 {{
-    "sql": <SQL_QUERY_STRING>
+    "sql": "<ANSI_SQL_QUERY_STRING>"
 }}
+```
 """
 
 calculated_field_instructions = """
@@ -424,9 +460,9 @@ json_field_instructions = """
       - LAX_STRING for varchar fields
     - For Example:
       DATA SCHEMA:
-        `/* {"alias":"users","description":"A model representing the users data."} */
+        `/* {"displayName":"users","description":"A model representing the users data."} */
         CREATE TABLE users (
-            -- {"alias":"address","description":"A JSON object that represents address information of this user.","json_type":"JSON","json_fields":{"json_type":"JSON","address.json.city":{"name":"city","type":"varchar","path":"$.city","properties":{"alias":"city","description":"City Name."}},"address.json.state":{"name":"state","type":"varchar","path":"$.state","properties":{"alias":"state","description":"ISO code or name of the state, province or district."}},"address.json.postcode":{"name":"postcode","type":"varchar","path":"$.postcode","properties":{"alias":"postcode","description":"Postal code."}},"address.json.country":{"name":"country","type":"varchar","path":"$.country","properties":{"alias":"country","description":"ISO code of the country."}}}}
+            -- {"alias":"address","description":"A JSON object that represents address information of this user.","json_type":"JSON","json_fields":{"json_type":"JSON","address.json.city":{"name":"city","type":"varchar","path":"$.city","properties":{"displayName":"city","description":"City Name."}},"address.json.state":{"name":"state","type":"varchar","path":"$.state","properties":{"displayName":"state","description":"ISO code or name of the state, province or district."}},"address.json.postcode":{"name":"postcode","type":"varchar","path":"$.postcode","properties":{"displayName":"postcode","description":"Postal code."}},"address.json.country":{"name":"country","type":"varchar","path":"$.country","properties":{"displayName":"country","description":"ISO code of the country."}}}}
             address JSON
         )`
       To get the city of address in user table use SQL:
@@ -438,9 +474,9 @@ json_field_instructions = """
     - If the items in the ARRAY are JSON objects, use JSON_QUERY to query the fields inside each JSON item.
       - For Example:
       DATA SCHEMA
-        `/* {"alias":"my_table","description":"A test my_table"} */
+        `/* {"displayName":"my_table","description":"A test my_table"} */
         CREATE TABLE my_table (
-            -- {"alias":"elements","description":"elements column","json_type":"JSON_ARRAY","json_fields":{"json_type":"JSON_ARRAY","elements.json_array.id":{"name":"id","type":"bigint","path":"$.id","properties":{"alias":"id","description":"data ID."}},"elements.json_array.key":{"name":"key","type":"varchar","path":"$.key","properties":{"alias":"key","description":"data Key."}},"elements.json_array.value":{"name":"value","type":"varchar","path":"$.value","properties":{"alias":"value","description":"data Value."}}}}
+            -- {"alias":"elements","description":"elements column","json_type":"JSON_ARRAY","json_fields":{"json_type":"JSON_ARRAY","elements.json_array.id":{"name":"id","type":"bigint","path":"$.id","properties":{"displayName":"id","description":"data ID."}},"elements.json_array.key":{"name":"key","type":"varchar","path":"$.key","properties":{"displayName":"key","description":"data Key."}},"elements.json_array.value":{"name":"value","type":"varchar","path":"$.value","properties":{"displayName":"value","description":"data Value."}}}}
             elements JSON
         )`
         To get the number of elements in my_table table use SQL:

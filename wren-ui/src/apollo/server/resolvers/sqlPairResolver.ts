@@ -2,7 +2,7 @@ import { IContext } from '@server/types/context';
 import { SqlPair } from '@server/repositories';
 import * as Errors from '@server/utils/error';
 import { TelemetryEvent, TrackTelemetry } from '@server/telemetry/telemetry';
-import { DialectSQL, WrenSQL } from '@server/models/adaptor';
+import { DialectSQL, AnalyticsSQL } from '@server/models/adaptor';
 import { safeFormatSQL } from '@server/utils/sqlFormat';
 
 export class SqlPairResolver {
@@ -97,21 +97,21 @@ export class SqlPairResolver {
       };
     },
     ctx: IContext,
-  ): Promise<WrenSQL> {
+  ): Promise<AnalyticsSQL> {
     const project = await ctx.projectService.getCurrentProject();
     const lastDeployment = await ctx.deployService.getLastDeployment(
       project.id,
     );
     const manifest = lastDeployment.manifest;
 
-    const wrenSQL = await ctx.sqlPairService.modelSubstitute(
+    const AnalyticsSQL = await ctx.sqlPairService.modelSubstitute(
       arg.data.sql as DialectSQL,
       {
         project,
         manifest,
       },
     );
-    return safeFormatSQL(wrenSQL, { language: 'postgresql' }) as WrenSQL;
+    return safeFormatSQL(AnalyticsSQL, { language: 'postgresql' }) as AnalyticsSQL;
   }
 
   private async validateSql(sql: string, ctx: IContext) {

@@ -5,7 +5,7 @@
  */
 
 import { IIbisAdaptor } from '../adaptors/ibisAdaptor';
-import { IWrenEngineAdaptor } from '../adaptors/wrenEngineAdaptor';
+import { IAnalyticsEngineAdaptor } from '../adaptors/analyticsEngineAdaptor';
 import { Project } from '../repositories';
 import { DataSourceName } from '../types';
 import { getLogger } from '@server/utils';
@@ -53,23 +53,23 @@ export interface IDataSourceMetadataService {
 
 export class DataSourceMetadataService implements IDataSourceMetadataService {
   private readonly ibisAdaptor: IIbisAdaptor;
-  private readonly wrenEngineAdaptor: IWrenEngineAdaptor;
+  private readonly analyticsEngineAdaptor: IAnalyticsEngineAdaptor;
 
   constructor({
     ibisAdaptor,
-    wrenEngineAdaptor,
+    analyticsEngineAdaptor,
   }: {
     ibisAdaptor: IIbisAdaptor;
-    wrenEngineAdaptor: IWrenEngineAdaptor;
+    analyticsEngineAdaptor: IAnalyticsEngineAdaptor;
   }) {
     this.ibisAdaptor = ibisAdaptor;
-    this.wrenEngineAdaptor = wrenEngineAdaptor;
+    this.analyticsEngineAdaptor = analyticsEngineAdaptor;
   }
 
   public async listTables(project): Promise<CompactTable[]> {
     const { type: dataSource, connectionInfo } = project;
     if (dataSource === DataSourceName.DUCKDB) {
-      const tables = await this.wrenEngineAdaptor.listTables();
+      const tables = await this.analyticsEngineAdaptor.listTables();
       return tables;
     }
     return await this.ibisAdaptor.getTables(dataSource, connectionInfo);

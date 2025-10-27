@@ -9,7 +9,7 @@ from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 
 from src.core.engine import Engine
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import DocumentStoreProvider, LLMProvider
 from src.pipelines.common import clean_up_new_lines, retrieve_metadata
 from src.pipelines.generation.utils.sql import (
@@ -21,43 +21,64 @@ from src.pipelines.generation.utils.sql import (
 from src.pipelines.retrieval.sql_functions import SqlFunction
 from src.utils import trace_cost
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 sql_correction_system_prompt = f"""
+### ROLE ###
+You are an expert SQL developer and database architect who specializes in debugging and correcting SQL syntax errors while preserving the original query's intent and semantics.
+
 ### TASK ###
-You are an ANSI SQL expert with exceptional logical thinking skills and debugging skills, you need to fix the syntactically incorrect ANSI SQL query.
+Analyze syntactically incorrect SQL queries and their error messages to generate corrected, valid SQL that maintains the original query's purpose and data retrieval logic.
 
-### SQL CORRECTION INSTRUCTIONS ###
+### CORRECTION PRINCIPLES ###
+1. **Semantic Preservation**: Maintain the original query's intent and data selection logic
+2. **Syntax Compliance**: Ensure the corrected query follows proper ANSI SQL syntax
+3. **Error Resolution**: Address the specific syntax errors identified in the error message
+4. **Best Practices**: Apply SQL best practices while fixing the immediate issues
+5. **Minimal Changes**: Make only necessary corrections without over-engineering
 
-1. First, think hard about the error message, and firgure out the root cause first(please use the DATABASE SCHEMA, SQL FUNCTIONS and USER INSTRUCTIONS to help you figure out the root cause).
-2. Then, generate the syntactically correct ANSI SQL query to correct the error.
+### DEBUGGING APPROACH ###
+- **Error Analysis**: Carefully analyze the error message to understand the specific syntax issue
+- **Query Structure**: Examine the overall query structure for logical flow and completeness
+- **Syntax Validation**: Ensure all SQL keywords, operators, and clauses are properly formatted
+- **Schema Compliance**: Verify that table and column references are correct
+- **Logic Verification**: Confirm that the corrected query will produce the intended results
 
-### SQL RULES ###
-Make sure you follow the SQL Rules strictly.
+### COMMON CORRECTION AREAS ###
+- **Missing Keywords**: Add missing SELECT, FROM, WHERE, or other required keywords
+- **Syntax Errors**: Fix incorrect operator usage, missing parentheses, or malformed clauses
+- **Join Issues**: Correct JOIN syntax, ON clauses, and table relationships
+- **Aggregation Problems**: Fix GROUP BY, HAVING, and aggregate function usage
+- **Subquery Syntax**: Correct nested query structure and referencing
+- **Data Type Issues**: Address type mismatches and casting problems
+
+### QUALITY ASSURANCE ###
+- **Syntax Validation**: Ensure the corrected query is syntactically valid
+- **Logic Verification**: Confirm the query logic matches the original intent
+- **Performance Consideration**: Maintain or improve query efficiency where possible
+- **Readability**: Ensure the corrected query is clear and maintainable
+- **Standards Compliance**: Follow ANSI SQL standards and best practices
 
 {TEXT_TO_SQL_RULES}
 
-### FINAL ANSWER FORMAT ###
-The final answer must be in JSON format:
-
+### OUTPUT FORMAT ###
+```json
 {{
-    "sql": <CORRECTED_SQL_QUERY_STRING>
+    "sql": "<corrected_sql_query_string>"
 }}
+```
 """
 
 sql_correction_user_prompt_template = """
+### TASK ###
+Analyze the provided SQL query and error message to generate a corrected, valid SQL query that maintains the original query's intent and data retrieval logic.
+
+### CONTEXT INFORMATION ###
 {% if documents %}
 ### DATABASE SCHEMA ###
 {% for document in documents %}
     {{ document }}
-{% endfor %}
-{% endif %}
-
-{% if sql_functions %}
-### SQL FUNCTIONS ###
-{% for function in sql_functions %}
-{{ function }}
 {% endfor %}
 {% endif %}
 
@@ -68,11 +89,33 @@ sql_correction_user_prompt_template = """
 {% endfor %}
 {% endif %}
 
-### QUESTION ###
+### SQL CORRECTION CONTEXT ###
 SQL: {{ invalid_generation_result.sql }}
 Error Message: {{ invalid_generation_result.error }}
 
-Let's think step by step.
+### CORRECTION GUIDELINES ###
+- **Error Analysis**: Carefully analyze the error message to understand the specific syntax issue
+- **Query Structure**: Examine the overall query structure for logical flow and completeness
+- **Syntax Validation**: Ensure all SQL keywords, operators, and clauses are properly formatted
+- **Schema Compliance**: Verify that table and column references are correct
+- **Logic Verification**: Confirm that the corrected query will produce the intended results
+
+### COMMON CORRECTION AREAS ###
+- **Missing Keywords**: Add missing SELECT, FROM, WHERE, or other required keywords
+- **Syntax Errors**: Fix incorrect operator usage, missing parentheses, or malformed clauses
+- **Join Issues**: Correct JOIN syntax, ON clauses, and table relationships
+- **Aggregation Problems**: Fix GROUP BY, HAVING, and aggregate function usage
+- **Subquery Syntax**: Correct nested query structure and referencing
+- **Data Type Issues**: Address type mismatches and casting problems
+
+### QUALITY ASSURANCE ###
+- **Syntax Validation**: Ensure the corrected query is syntactically valid
+- **Logic Verification**: Confirm the query logic matches the original intent
+- **Performance Consideration**: Maintain or improve query efficiency where possible
+- **Readability**: Ensure the corrected query is clear and maintainable
+- **Standards Compliance**: Follow ANSI SQL standards and best practices
+
+Let's think step by step and provide the corrected SQL query.
 """
 
 
@@ -125,7 +168,7 @@ async def post_process(
 ## End of Pipeline
 
 
-class SQLCorrection(BasicPipeline):
+class SQLCorrection(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,

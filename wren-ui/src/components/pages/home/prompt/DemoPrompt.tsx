@@ -7,7 +7,7 @@ const DemoBlock = styled.div`
   user-select: none;
   height: 150px;
   &:hover {
-    border-color: var(--geekblue-6) !important;
+    border-color: var(--rust-orange-6) !important;
     transition: border-color ease 0.2s;
   }
 `;

@@ -7,11 +7,11 @@ import aiohttp
 import sqlglot
 from pydantic import BaseModel
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 class EngineConfig(BaseModel):
-    provider: str = "wren_ui"
+    provider: str = "analytics_ui"
     config: dict = {}
 
 

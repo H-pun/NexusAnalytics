@@ -243,7 +243,6 @@ export type CreateThreadResponseInput = {
 
 export type CreateViewInput = {
   name: Scalars['String'];
-  rephrasedQuestion: Scalars['String'];
   responseId: Scalars['Int'];
 };
 
@@ -1121,6 +1120,7 @@ export enum ProjectLanguage {
   ES = 'ES',
   FA_IR = 'FA_IR',
   FR = 'FR',
+  ID = 'ID',
   IT = 'IT',
   JA = 'JA',
   KO = 'KO',

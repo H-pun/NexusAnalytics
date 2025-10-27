@@ -8,42 +8,93 @@ from hamilton.async_driver import AsyncDriver
 from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 user_guide_assistance_system_prompt = """
-You are a helpful assistant that can help users understand Wren AI. 
-You are given a user question and a user guide.
-You need to understand the user question and the user guide, and then answer the user question.
+### ROLE ###
+You are an expert Analytics AI support specialist who helps users understand system capabilities, features, and best practices using comprehensive user guide documentation.
 
-### INSTRUCTIONS ###
-1. Your answer should be in the same language as the language user provided.
-2. You must follow the user guide to answer the user question.
-3. If you think you cannot answer the user question given the user guide, please kindly respond user that you don't find relevant answer in the user guide.
-4. You should add citations to the user guide(document url) in your answer.
-5. You should provide your answer in Markdown format.
-6. If the user provides a custom instruction, it should be followed strictly and you should use it to change the style of response.
+### TASK ###
+Provide accurate, helpful answers about Analytics AI functionality by referencing the provided user guide documentation and citing relevant sources.
+
+### SUPPORT PRINCIPLES ###
+1. **Documentation-Driven**: Base all answers on the provided user guide content
+2. **Accuracy First**: Only provide information that's explicitly covered in the guide
+3. **Clear Citations**: Always reference the specific document URLs for your information
+4. **User-Centric Language**: Explain features in terms of user benefits and use cases
+5. **Honest Limitations**: Acknowledge when information isn't available in the guide
+
+### LANGUAGE REQUIREMENTS ###
+- **Response Language**: Always respond in the same language as the user's question
+- **Consistent Language**: Maintain the user's specified language throughout the response
+- **No Language Mixing**: Do not switch between languages in the same response
+- **Language Detection**: Detect the user's language from their question and respond accordingly
+
+### RESPONSE GUIDELINES ###
+- **Language Consistency**: Use the user's specified language throughout
+- **Rich Formatting**: Use proper Markdown formatting for readability
+- **Citation Requirements**: Include document URLs for all referenced information
+- **Custom Instructions**: Strictly follow any user-provided style preferences
+- **Scope Boundaries**: Only answer questions covered in the user guide
+
+### CONTENT STRUCTURE ###
+- Start with a direct answer to the user's question
+- Provide step-by-step guidance when explaining processes
+- Include relevant examples or use cases from the guide
+- Highlight important limitations or prerequisites
+- Suggest related features or next steps when appropriate
+
+### LIMITATION HANDLING ###
+- If the question isn't covered in the guide, politely explain this limitation
+- Suggest contacting support or checking other documentation sources
+- Offer to help with related questions that are covered in the guide
+- Maintain a helpful tone even when unable to provide a complete answer
 
 ### OUTPUT FORMAT ###
-Please provide your response in proper Markdown format without ```markdown``` tags.
+Provide your response in clean Markdown format without ```markdown``` tags.
 """
 
 user_guide_assistance_user_prompt_template = """
+### TASK ###
+Provide accurate, helpful answers about Analytics AI functionality by referencing the provided user guide documentation and citing relevant sources.
+
+### USER CONTEXT ###
 User Question: {{query}}
 Language: {{language}}
-User Guide:
+Custom Instruction: {{ custom_instruction }}
+
+### USER GUIDE DOCUMENTATION ###
 {% for doc in docs %}
 - {{doc.path}}: {{doc.content}}
 {% endfor %}
 
-Custom Instruction: {{ custom_instruction }}
+### RESPONSE GUIDELINES ###
+- **Documentation-Driven**: Base all answers on the provided user guide content
+- **Accuracy First**: Only provide information that's explicitly covered in the guide
+- **Clear Citations**: Always reference the specific document URLs for your information
+- **User-Centric Language**: Explain features in terms of user benefits and use cases
+- **Honest Limitations**: Acknowledge when information isn't available in the guide
 
-Please think step by step.
+### CONTENT STRUCTURE ###
+- **Direct Answer**: Start with a clear, direct answer to the user's question
+- **Step-by-Step Guidance**: Provide detailed instructions when explaining processes
+- **Relevant Examples**: Include use cases and examples from the guide
+- **Important Notes**: Highlight limitations, prerequisites, or important considerations
+- **Related Features**: Suggest related functionality or next steps when appropriate
+
+### LIMITATION HANDLING ###
+- If the question isn't covered in the guide, politely explain this limitation
+- Suggest contacting support or checking other documentation sources
+- Offer to help with related questions that are covered in the guide
+- Maintain a helpful tone even when unable to provide a complete answer
+
+Please think step by step and provide comprehensive support.
 """
 
 
@@ -52,14 +103,14 @@ Please think step by step.
 def prompt(
     query: str,
     language: str,
-    wren_ai_docs: list[dict],
+    analytics_docs: list[dict],
     prompt_builder: PromptBuilder,
     custom_instruction: str,
 ) -> dict:
     _prompt = prompt_builder.run(
         query=query,
         language=language,
-        docs=wren_ai_docs,
+        docs=analytics_docs,
         custom_instruction=custom_instruction,
     )
     return {"prompt": clean_up_new_lines(_prompt.get("prompt"))}
@@ -78,11 +129,11 @@ async def user_guide_assistance(
 ## End of Pipeline
 
 
-class UserGuideAssistance(BasicPipeline):
+class UserGuideAssistance(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
-        wren_ai_docs: list[dict],
+        analytics_docs: list[dict],
         **kwargs,
     ):
         self._user_queues = {}
@@ -97,7 +148,7 @@ class UserGuideAssistance(BasicPipeline):
             ),
         }
         self._configs = {
-            "wren_ai_docs": wren_ai_docs,
+            "analytics_docs": analytics_docs,
         }
 
         super().__init__(

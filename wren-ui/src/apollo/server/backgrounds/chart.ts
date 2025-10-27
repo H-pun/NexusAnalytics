@@ -1,5 +1,5 @@
 import { ChartStatus } from '@server/models/adaptor';
-import { IWrenAIAdaptor } from '@server/adaptors/wrenAIAdaptor';
+import { IAnalyticsAIAdaptor } from '@server/adaptors/analyticsAIAdaptor';
 import {
   IThreadResponseRepository,
   ThreadResponse,
@@ -25,22 +25,22 @@ const isFinalized = (status: ChartStatus) => {
 export class ChartBackgroundTracker {
   private tasks: Record<number, ThreadResponse> = {};
   private intervalTime: number;
-  private wrenAIAdaptor: IWrenAIAdaptor;
+  private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private threadResponseRepository: IThreadResponseRepository;
   private runningJobs = new Set();
   private telemetry: PostHogTelemetry;
 
   constructor({
     telemetry,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     threadResponseRepository,
   }: {
     telemetry: PostHogTelemetry;
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
     threadResponseRepository: IThreadResponseRepository;
   }) {
     this.telemetry = telemetry;
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
     this.threadResponseRepository = threadResponseRepository;
     this.intervalTime = 1000;
     this.start();
@@ -63,7 +63,7 @@ export class ChartBackgroundTracker {
           const chartDetail = threadResponse.chartDetail;
 
           // get the latest result from AI service
-          const result = await this.wrenAIAdaptor.getChartResult(
+          const result = await this.analyticsAIAdaptor.getChartResult(
             chartDetail.queryId,
           );
 
@@ -147,22 +147,22 @@ export class ChartBackgroundTracker {
 export class ChartAdjustmentBackgroundTracker {
   private tasks: Record<number, ThreadResponse> = {};
   private intervalTime: number;
-  private wrenAIAdaptor: IWrenAIAdaptor;
+  private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private threadResponseRepository: IThreadResponseRepository;
   private runningJobs = new Set();
   private telemetry: PostHogTelemetry;
 
   constructor({
     telemetry,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     threadResponseRepository,
   }: {
     telemetry: PostHogTelemetry;
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
     threadResponseRepository: IThreadResponseRepository;
   }) {
     this.telemetry = telemetry;
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
     this.threadResponseRepository = threadResponseRepository;
     this.intervalTime = 1000;
     this.start();
@@ -185,7 +185,7 @@ export class ChartAdjustmentBackgroundTracker {
           const chartDetail = threadResponse.chartDetail;
 
           // get the latest result from AI service
-          const result = await this.wrenAIAdaptor.getChartAdjustmentResult(
+          const result = await this.analyticsAIAdaptor.getChartAdjustmentResult(
             chartDetail.queryId,
           );
 

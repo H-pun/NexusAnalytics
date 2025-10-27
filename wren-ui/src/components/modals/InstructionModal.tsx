@@ -49,7 +49,7 @@ export default function InstructionModal(props: Props) {
 
   return (
     <Modal
-      title={`${isCreateMode ? 'Add' : 'Update'} an instruction`}
+      title={`${isCreateMode ? 'Create' : 'Modify'} a rule`}
       centered
       closable
       confirmLoading={loading}
@@ -65,7 +65,7 @@ export default function InstructionModal(props: Props) {
     >
       <Form form={form} preserve={false} layout="vertical">
         <Form.Item
-          label="Instruction details"
+          label="Rule specifications"
           name="instruction"
           rules={[
             {
@@ -76,14 +76,14 @@ export default function InstructionModal(props: Props) {
         >
           <Input.TextArea
             autoFocus
-            placeholder="Enter a rule that Wren AI should follow when generating SQL queries."
+            placeholder="Define guidelines for NQRust - Analytics to follow when creating database queries."
             maxLength={1000}
             rows={3}
             showCount
           />
         </Form.Item>
         <Form.Item
-          label="Apply instruction to"
+          label="Rule scope"
           name="isDefault"
           required={false}
           rules={[
@@ -94,10 +94,10 @@ export default function InstructionModal(props: Props) {
           ]}
           extra={
             <>
-              Choose whether this instruction applies to{' '}
+              Select whether this rule applies to{' '}
               <span className="gray-7">all queries</span> or{' '}
               <span className="gray-7">
-                only when similar user questions are detected
+                only when matching user patterns are identified
               </span>
               .
             </>
@@ -105,18 +105,18 @@ export default function InstructionModal(props: Props) {
         >
           <Radio.Group>
             <Radio.Button value={true}>
-              Global (applies to all questions)
+              Universal (affects all queries)
             </Radio.Button>
             <Radio.Button value={false}>
-              Matched to specific questions
+              Targeted (specific patterns only)
             </Radio.Button>
           </Radio.Group>
         </Form.Item>
         {!isDefault && (
           <Form.Item
-            label="Matching questions"
+            label="Trigger patterns"
             required
-            extra="Wren AI will match user queries based on similarity and apply this instruction when relevant."
+            extra="NQRust - Analytics will identify similar user queries and apply this rule when appropriate."
           >
             <Form.List name="questions" initialValue={['']}>
               {(fields, { add, remove }) => (
@@ -140,7 +140,7 @@ export default function InstructionModal(props: Props) {
                           ]}
                         >
                           <Input
-                            placeholder="Enter an example question that should trigger this instruction."
+                            placeholder="Provide a sample query that should activate this rule."
                             maxLength={100}
                             showCount
                           />

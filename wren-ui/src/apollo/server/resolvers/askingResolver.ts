@@ -1,6 +1,6 @@
 import {
-  WrenAIError,
-  WrenAILanguage,
+  AnalyticsAIError,
+  AnalyticsAILanguage,
   AskResultStatus,
   AskResultType,
   RecommendationQuestionStatus,
@@ -43,7 +43,7 @@ export interface Task {
 export interface AdjustmentTask {
   queryId: string;
   status: AskFeedbackStatus;
-  error: WrenAIError | null;
+  error: AnalyticsAIError | null;
   sql: string;
   traceId: string;
   invalidSql?: string;
@@ -55,7 +55,7 @@ export interface AskingTask {
   candidates: Array<{
     sql: string;
   }>;
-  error: WrenAIError | null;
+  error: AnalyticsAIError | null;
   rephrasedQuestion?: string;
   intentReasoning?: string;
   sqlGenerationReasoning?: string;
@@ -79,7 +79,7 @@ export interface RecommendedQuestionsTask {
     sql: string;
   }[];
   status: RecommendationQuestionStatus;
-  error: WrenAIError | null;
+  error: AnalyticsAIError | null;
 }
 
 export class AskingResolver {
@@ -183,7 +183,7 @@ export class AskingResolver {
     const data = { question };
     const task = await askingService.createAskingTask(data, {
       threadId,
-      language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+      language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
     });
     ctx.telemetry.sendEvent(TelemetryEvent.HOME_ASK_CANDIDATE, {
       question,
@@ -458,7 +458,7 @@ export class AskingResolver {
     const project = await ctx.projectService.getCurrentProject();
 
     const task = await askingService.rerunAskingTask(responseId, {
-      language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+      language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
     });
     ctx.telemetry.sendEvent(TelemetryEvent.HOME_RERUN_ASKING_TASK, {
       responseId,
@@ -507,7 +507,7 @@ export class AskingResolver {
         sqlGenerationReasoning: data.sqlGenerationReasoning,
       },
       {
-        language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+        language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       },
     );
   }
@@ -535,7 +535,7 @@ export class AskingResolver {
       responseId,
       project.id,
       {
-        language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+        language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       },
     );
     return true;
@@ -571,7 +571,7 @@ export class AskingResolver {
     const askingService = ctx.askingService;
     const breakdownDetail = await askingService.generateThreadResponseBreakdown(
       responseId,
-      { language: WrenAILanguage[project.language] || WrenAILanguage.EN },
+      { language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN },
     );
     return breakdownDetail;
   }
@@ -585,7 +585,7 @@ export class AskingResolver {
     const { responseId } = args;
     const askingService = ctx.askingService;
     return askingService.generateThreadResponseAnswer(responseId, {
-      language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+      language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
     });
   }
 
@@ -598,7 +598,7 @@ export class AskingResolver {
     const { responseId } = args;
     const askingService = ctx.askingService;
     return askingService.generateThreadResponseChart(responseId, {
-      language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+      language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
     });
   }
 
@@ -611,7 +611,7 @@ export class AskingResolver {
     const { responseId, data } = args;
     const askingService = ctx.askingService;
     return askingService.adjustThreadResponseChart(responseId, data, {
-      language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+      language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
     });
   }
 

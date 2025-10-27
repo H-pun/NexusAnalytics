@@ -19,10 +19,19 @@ from src.utils import trace_cost
 from src.web.v1.services import Configuration
 from src.web.v1.services.ask import AskHistory
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 sql_generation_reasoning_user_prompt_template = """
+### TASK ###
+Create a comprehensive reasoning plan for generating SQL queries that address follow-up questions while building upon the established conversation context and analytical framework.
+
+### CONTEXT INTEGRATION ###
+- **Conversation Continuity**: Build upon previous queries and their results
+- **Analytical Progression**: Understand how the new question extends or refines previous analysis
+- **Schema Utilization**: Leverage the database schema to support the analytical requirements
+- **Reasoning Clarity**: Create clear, step-by-step plans that guide accurate SQL generation
+
 ### DATABASE SCHEMA ###
 {% for document in documents %}
     {{ document }}
@@ -45,7 +54,7 @@ SQL:
 {% endfor %}
 {% endif %}
 
-### User's QUERY HISTORY ###
+### CONVERSATION HISTORY ###
 {% for history in histories %}
 Question:
 {{ history.question }}
@@ -53,10 +62,18 @@ SQL:
 {{ history.sql }}
 {% endfor %}
 
-### QUESTION ###
+### FOLLOW-UP QUESTION ###
 User's Question: {{ query }}
 Language: {{ language }}
 Current Time: {{ current_time }}
+
+### REASONING GUIDELINES ###
+- **Context Analysis**: Consider how this question relates to previous queries and results
+- **Schema Mapping**: Connect question elements to appropriate database structures
+- **Analytical Flow**: Create logical steps that build toward the final query
+- **Time Handling**: Distinguish between absolute dates and relative timeframes
+- **Ranking Logic**: Plan for top/bottom/first/last queries using appropriate functions
+- **Instruction Integration**: Incorporate user-specific requirements and preferences
 
 Let's think step by step.
 """
@@ -71,8 +88,15 @@ def prompt(
     sql_samples: list[dict],
     instructions: list[dict],
     prompt_builder: PromptBuilder,
-    configuration: Configuration | None = Configuration(),
+    configuration: Configuration | dict | None = None,
 ) -> dict:
+    # Handle configuration as dict or Configuration object
+    if configuration is None:
+        configuration = Configuration()
+    elif isinstance(configuration, dict):
+        # Convert dict to Configuration object
+        configuration = Configuration(**configuration)
+
     _prompt = prompt_builder.run(
         query=query,
         documents=documents,
@@ -174,9 +198,12 @@ class FollowUpSQLGenerationReasoning(BasicPipeline):
         histories: list[AskHistory],
         sql_samples: Optional[list[dict]] = None,
         instructions: Optional[list[dict]] = None,
-        configuration: Configuration = Configuration(),
+        configuration: Configuration | dict = Configuration(),
         query_id: Optional[str] = None,
     ):
+        # Handle configuration as dict or Configuration object
+        if isinstance(configuration, dict):
+            configuration = Configuration(**configuration)
         logger.info("Followup SQL Generation Reasoning pipeline is running...")
         return await self._pipe.execute(
             ["post_process"],

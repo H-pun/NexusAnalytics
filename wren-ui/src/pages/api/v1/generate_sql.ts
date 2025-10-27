@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { components } from '@/common';
 import { ApiType } from '@server/repositories/apiHistoryRepository';
-import { AskResult, WrenAILanguage } from '@/apollo/server/models/adaptor';
+import { AskResult, AnalyticsAILanguage } from '@/apollo/server/models/adaptor';
 import * as Errors from '@/apollo/server/utils/error';
 import { getLogger } from '@server/utils';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,8 +23,8 @@ const {
   apiHistoryRepository,
   projectService,
   deployService,
-  wrenAIAdaptor,
-  wrenEngineAdaptor,
+  analyticsAIAdaptor,
+  analyticsEngineAdaptor,
   ibisAdaptor,
 } = components;
 
@@ -76,13 +76,13 @@ export default async function handler(
     const histories = threadId
       ? await apiHistoryRepository.findAllBy({ threadId })
       : undefined;
-    const task = await wrenAIAdaptor.ask({
+    const task = await analyticsAIAdaptor.ask({
       query: question,
       deployId: lastDeploy.hash,
       histories: transformHistoryInput(histories) as any,
       configurations: {
         language:
-          language || WrenAILanguage[project.language] || WrenAILanguage.EN,
+          language || AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       },
     });
 
@@ -90,7 +90,7 @@ export default async function handler(
     const deadline = Date.now() + MAX_WAIT_TIME;
     let result: AskResult;
     while (true) {
-      result = await wrenAIAdaptor.getAskResult(task.queryId);
+      result = await analyticsAIAdaptor.getAskResult(task.queryId);
       if (isAskResultFinished(result)) {
         break;
       }
@@ -119,7 +119,7 @@ export default async function handler(
     if (returnSqlDialect && sql) {
       let nativeSql: string;
       if (project.type === DataSourceName.DUCKDB) {
-        nativeSql = await wrenEngineAdaptor.getNativeSQL(sql, {
+        nativeSql = await analyticsEngineAdaptor.getNativeSQL(sql, {
           manifest: lastDeploy.manifest,
           modelingOnly: false,
         });

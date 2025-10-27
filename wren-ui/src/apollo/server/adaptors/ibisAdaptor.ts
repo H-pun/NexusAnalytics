@@ -18,9 +18,9 @@ import {
   toIbisConnectionInfo,
   toMultipleIbisConnectionInfos,
 } from '../dataSource';
-import { DialectSQL, WrenSQL } from '../models/adaptor';
+import { DialectSQL, AnalyticsSQL } from '../models/adaptor';
 
-export type { WrenSQL };
+export type { AnalyticsSQL };
 
 const logger = getLogger('IbisAdaptor');
 logger.level = 'debug';
@@ -156,13 +156,13 @@ export interface IbisQueryOptions extends IbisBaseOptions {
 export interface IbisDryPlanOptions {
   dataSource: DataSourceName;
   mdl: Manifest;
-  // TODO: replace sql type with WrenSQL
+  // TODO: replace sql type with AnalyticsSQL
   sql: string;
 }
 
 export interface IIbisAdaptor {
   query: (
-    // TODO: replace query type with WrenSQL
+    // TODO: replace query type with AnalyticsSQL
     query: string,
     options: IbisQueryOptions,
   ) => Promise<IbisQueryResponse>;
@@ -193,7 +193,7 @@ export interface IIbisAdaptor {
       catalog?: string;
       schema?: string;
     },
-  ) => Promise<WrenSQL>;
+  ) => Promise<AnalyticsSQL>;
   getVersion: (
     dataSource: DataSourceName,
     connectionInfo: WREN_AI_CONNECTION_INFO,
@@ -424,7 +424,7 @@ export class IbisAdaptor implements IIbisAdaptor {
       catalog?: string;
       schema?: string;
     },
-  ): Promise<WrenSQL> {
+  ): Promise<AnalyticsSQL> {
     const { dataSource, mdl, catalog, schema } = options;
     let connectionInfo = options.connectionInfo;
     connectionInfo = this.updateConnectionInfo(connectionInfo);
@@ -447,7 +447,7 @@ export class IbisAdaptor implements IIbisAdaptor {
           headers,
         },
       );
-      return res.data as WrenSQL;
+      return res.data as AnalyticsSQL;
     } catch (e) {
       logger.debug(
         `Model substitution error: ${e.response?.data || e.message}`,
@@ -551,8 +551,6 @@ export class IbisAdaptor implements IIbisAdaptor {
       e.response?.data ||
       e.message ||
       defaultMessage;
-
-    const errorData = e.response?.data;
     throw Errors.create(Errors.GeneralErrorCodes.IBIS_SERVER_ERROR, {
       customMessage: errorMessageBuilder
         ? errorMessageBuilder(customMessage)
@@ -561,7 +559,6 @@ export class IbisAdaptor implements IIbisAdaptor {
       other: {
         correlationId: e.response?.headers['x-correlation-id'],
         processTime: e.response?.headers['x-process-time'],
-        ...errorData,
       },
     });
   }

@@ -32,7 +32,7 @@ WREN_ENGINE_ENDPOINT = os.getenv("WREN_ENGINE_ENDPOINT", "http://localhost:8080"
 DATA_SOURCES = ["bigquery", "duckdb"]
 TIMEOUT_SECONDS = 60
 ddl_converter = DDLChunker()
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 async def is_sql_valid(

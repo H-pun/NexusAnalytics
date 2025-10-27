@@ -15,7 +15,7 @@ export const getColumnSearchProps = (props: {
   },
   filterIcon: (filtered: boolean) => (
     <SearchOutlined
-      style={{ color: filtered ? 'var(--geekblue-6)' : undefined }}
+      style={{ color: filtered ? 'var(--rust-orange-6)' : undefined }}
     />
   ),
   filteredValue: props.filteredValue,
@@ -31,7 +31,7 @@ export const getColumnDateFilterProps = (props: {
   },
   filterIcon: (filtered: boolean) => (
     <CalendarOutlined
-      style={{ color: filtered ? 'var(--geekblue-6)' : undefined }}
+      style={{ color: filtered ? 'var(--rust-orange-6)' : undefined }}
     />
   ),
   filteredValue: props.filteredValue,

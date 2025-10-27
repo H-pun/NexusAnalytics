@@ -27,7 +27,7 @@ from tqdm import tqdm
 from src.core.provider import DocumentStoreProvider
 from src.providers.loader import provider
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 def convert_haystack_documents_to_qdrant_points(

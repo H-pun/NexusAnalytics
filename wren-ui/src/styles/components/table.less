@@ -1,6 +1,10 @@
 // override antd styles
 .ant-table {
   border: 1px @gray-4 solid;
+  border-radius: 20px;
+  overflow: hidden;
+  font-family: var(--font-family);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 
   .ant-table-row:last-child .ant-table-cell {
     border-bottom: none;
@@ -18,22 +22,37 @@
 
   .ant-table-expanded-row {
     > .ant-table-cell {
-      background-color: @gray-3;
+      background-color: @rust-orange-1;
     }
+  }
+
+  .ant-table-thead > tr > th {
+    background: @rust-orange-1;
+    color: @rust-orange-8;
+    font-weight: 600;
+    border-bottom: 2px solid @rust-orange-3;
+  }
+
+  .ant-table-tbody > tr.ant-table-row:hover > td,
+  .ant-table-tbody > tr > td.ant-table-cell-row-hover {
+    background: @rust-orange-1;
   }
 
   .adm-nested-table {
     .ant-table {
       border: none;
-      border-radius: 0;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
       .ant-table-thead > tr > th {
-        background: @gray-2;
+        background: @rust-orange-2;
+        color: @rust-orange-8;
+        font-weight: 600;
       }
 
       .ant-table-tbody > tr.ant-table-row:hover > td,
       .ant-table-tbody > tr > td.ant-table-cell-row-hover {
-        background: @gray-2;
+        background: @rust-orange-2;
       }
     }
   }

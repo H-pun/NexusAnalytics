@@ -62,7 +62,7 @@ const StyledTree = styled(Tree)`
       transition: background-color ease-out 0.12s;
 
       &-selected {
-        color: var(--geekblue-6);
+        color: var(--rust-orange-6);
         background-color: var(--gray-4);
       }
 
@@ -218,7 +218,7 @@ export const StyledTreeNodeLink = styled(Link)`
   }
   &.adm-treeNode--selected {
     background-color: var(--gray-4);
-    color: var(--geekblue-6);
+    color: var(--rust-orange-6);
   }
 `;
 

@@ -7,7 +7,7 @@ import {
   AskResult,
   AskResultStatus,
   AskResultType,
-  WrenAIError,
+  AnalyticsAIError,
   TextBasedAnswerResult,
   TextBasedAnswerStatus,
 } from '@/apollo/server/models/adaptor';
@@ -38,7 +38,7 @@ export const validateAskResult = (
   // Check for error in result
   if (result.error) {
     const errorMessage =
-      (result.error as WrenAIError).message || 'Unknown error';
+      (result.error as AnalyticsAIError).message || 'Unknown error';
     const additionalData: Record<string, any> = {};
 
     // Include invalid SQL if available

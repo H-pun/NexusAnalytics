@@ -21,8 +21,8 @@ import {
   DashboardItemRefreshJobRepository,
 } from '@server/repositories';
 import {
-  WrenEngineAdaptor,
-  WrenAIAdaptor,
+  AnalyticsEngineAdaptor,
+  AnalyticsAIAdaptor,
   IbisAdaptor,
 } from '@server/adaptors';
 import {
@@ -77,11 +77,11 @@ export const initComponents = () => {
     new DashboardItemRefreshJobRepository(knex);
 
   // adaptors
-  const wrenEngineAdaptor = new WrenEngineAdaptor({
-    wrenEngineEndpoint: serverConfig.wrenEngineEndpoint,
+  const analyticsEngineAdaptor = new AnalyticsEngineAdaptor({
+    analyticsEngineEndpoint: serverConfig.analyticsEngineEndpoint,
   });
-  const wrenAIAdaptor = new WrenAIAdaptor({
-    wrenAIBaseEndpoint: serverConfig.wrenAIEndpoint,
+  const analyticsAIAdaptor = new AnalyticsAIAdaptor({
+    analyticsAIBaseEndpoint: serverConfig.analyticsAIEndpoint,
   });
   const ibisAdaptor = new IbisAdaptor({
     ibisServerEndpoint: serverConfig.ibisServerEndpoint,
@@ -90,15 +90,15 @@ export const initComponents = () => {
   // services
   const metadataService = new DataSourceMetadataService({
     ibisAdaptor,
-    wrenEngineAdaptor,
+    analyticsEngineAdaptor,
   });
   const queryService = new QueryService({
     ibisAdaptor,
-    wrenEngineAdaptor,
+    analyticsEngineAdaptor,
     telemetry,
   });
   const deployService = new DeployService({
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     deployLogRepository,
     telemetry,
   });
@@ -114,18 +114,18 @@ export const initComponents = () => {
     projectRepository,
     metadataService,
     mdlService,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     telemetry,
   });
   const askingTaskTracker = new AskingTaskTracker({
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     askingTaskRepository,
     threadResponseRepository,
     viewRepository,
   });
   const askingService = new AskingService({
     telemetry,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     deployService,
     projectService,
     viewRepository,
@@ -143,25 +143,25 @@ export const initComponents = () => {
   });
   const sqlPairService = new SqlPairService({
     sqlPairRepository,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     ibisAdaptor,
   });
   const instructionService = new InstructionService({
     instructionRepository,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
   });
 
   // background trackers
   const projectRecommendQuestionBackgroundTracker =
     new ProjectRecommendQuestionBackgroundTracker({
       telemetry,
-      wrenAIAdaptor,
+      analyticsAIAdaptor,
       projectRepository,
     });
   const threadRecommendQuestionBackgroundTracker =
     new ThreadRecommendQuestionBackgroundTracker({
       telemetry,
-      wrenAIAdaptor,
+      analyticsAIAdaptor,
       threadRepository,
     });
   const dashboardCacheBackgroundTracker = new DashboardCacheBackgroundTracker({
@@ -198,8 +198,8 @@ export const initComponents = () => {
     dashboardItemRefreshJobRepository,
 
     // adaptors
-    wrenEngineAdaptor,
-    wrenAIAdaptor,
+    analyticsEngineAdaptor,
+    analyticsAIAdaptor,
     ibisAdaptor,
 
     // services

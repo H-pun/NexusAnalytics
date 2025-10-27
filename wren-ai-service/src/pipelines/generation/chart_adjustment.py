@@ -8,7 +8,7 @@ from hamilton.async_driver import AsyncDriver
 from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.pipelines.generation.utils.chart import (
@@ -20,32 +20,67 @@ from src.pipelines.generation.utils.chart import (
 from src.utils import trace_cost
 from src.web.v1.services.chart_adjustment import ChartAdjustmentOption
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 chart_adjustment_system_prompt = f"""
-### TASK ###
+### ROLE ###
+You are an expert data visualization specialist who excels at refining and optimizing chart configurations based on user feedback and data characteristics.
 
-You are a data analyst great at visualizing data using vega-lite! Given the user's question, SQL, sample data, sample column values, original vega-lite schema and adjustment options, 
-you need to re-generate vega-lite schema in JSON and provide suitable chart type.
-Besides, you need to give a concise and easy-to-understand reasoning to describe why you provide such vega-lite schema based on the question, SQL, sample data, sample column values, original vega-lite schema and adjustment options.
+### TASK ###
+Analyze user adjustment requests and modify existing Vega-Lite chart schemas to better serve the user's visualization goals while maintaining data integrity and visual clarity.
+
+### ADJUSTMENT PRINCIPLES ###
+1. **User Intent Respect**: Honor the user's specific adjustment requests when technically feasible
+2. **Data Compatibility**: Ensure adjustments work with the actual data structure and values
+3. **Visual Effectiveness**: Maintain or improve the chart's ability to communicate insights
+4. **Technical Validity**: Generate valid Vega-Lite schemas that will render correctly
+5. **Contextual Awareness**: Consider the original question and data context when making changes
+
+### ADJUSTMENT EVALUATION ###
+- **Feasible Adjustments**: Implement when data supports the requested changes
+- **Alternative Suggestions**: Offer better options when user requests aren't optimal
+- **Rejection with Explanation**: Decline adjustments that would misrepresent data or break functionality
+- **Data-Driven Decisions**: Prioritize what the data can actually show over user preferences
+
+### REASONING REQUIREMENTS ###
+- Explain how the adjustment improves the visualization
+- Address any limitations or trade-offs in the new configuration
+- Highlight what insights the adjusted chart will better reveal
+- If rejecting adjustments, clearly explain why and suggest alternatives
+- Consider the impact on readability and user comprehension
+
+### LANGUAGE REQUIREMENTS ###
+- **Response Language**: Always respond in the same language as the user's question
+- **Consistent Language**: Maintain the user's specified language throughout the response
+- **No Language Mixing**: Do not switch between languages in the same response
+- **Language Detection**: Detect the user's language from their question and respond accordingly
+- **CRITICAL**: If user asks in English, respond ONLY in English. If user asks in Chinese, respond ONLY in Chinese
+- **NO LANGUAGE CONFUSION**: Do not mix languages or respond in wrong language
 
 {chart_generation_instructions}
-- If you think the adjustment options are not suitable for the data, you can return an empty string for the schema and chart type and give reasoning to explain why.
+
+### REJECTION CRITERIA ###
+- Adjustments that would misrepresent the data
+- Changes that break Vega-Lite syntax or functionality
+- Modifications that make the chart less readable or informative
+- Requests that don't align with the data structure or question intent
 
 ### OUTPUT FORMAT ###
-
-Please provide your chain of thought reasoning, chart type and the vega-lite schema in JSON format.
-
+```json
 {{
-    "reasoning": <REASON_TO_CHOOSE_THE_SCHEMA_IN_STRING_FORMATTED_IN_LANGUAGE_PROVIDED_BY_USER>,
-    "chart_type": "line" | "multi_line" | "bar" | "pie" | "grouped_bar" | "stacked_bar" | "area" | "",
-    "chart_schema": <VEGA_LITE_JSON_SCHEMA>
+    "reasoning": "<explanation of adjustment decision in user's language>",
+    "chart_type": "line|multi_line|bar|pie|grouped_bar|stacked_bar|area|",
+    "chart_schema": <VEGA_LITE_JSON_SCHEMA_OR_EMPTY_STRING>
 }}
+```
 """
 
 chart_adjustment_user_prompt_template = """
-### INPUT ###
+### TASK ###
+Analyze the user's chart adjustment requests and modify the existing Vega-Lite configuration to better serve their visualization goals while maintaining data integrity.
+
+### CHART CONTEXT ###
 Original Question: {{ query }}
 Original SQL: {{ sql }}
 Original Vega-Lite Schema: {{ chart_schema }}
@@ -53,7 +88,7 @@ Sample Data: {{ sample_data }}
 Sample Column Values: {{ sample_column_values }}
 Language: {{ language }}
 
-Adjustment Options:
+### ADJUSTMENT REQUEST ###
 - Chart Type: {{ adjustment_option.chart_type }}
 {% if adjustment_option.chart_type != "pie" %}
 {% if adjustment_option.x_axis %}
@@ -73,7 +108,37 @@ Adjustment Options:
 - Theta: {{ adjustment_option.theta }}
 {% endif %}
 
-Please think step by step
+### ADJUSTMENT EVALUATION ###
+- **Feasibility Assessment**: Determine if the requested adjustments are technically possible
+- **Data Compatibility**: Verify the adjustments work with the actual data structure
+- **Visual Impact**: Consider how changes affect chart readability and insight communication
+- **Alternative Options**: Suggest better approaches if the requested changes aren't optimal
+- **Rejection Criteria**: Decline adjustments that would misrepresent data or break functionality
+
+### VEGA-LITE SCHEMA VALIDATION ###
+- **Required Fields**: Ensure all mandatory Vega-Lite fields are present
+- **Data Types**: Verify field types match the actual data structure
+- **Encoding Validity**: Check that encoding specifications are correct
+- **Schema Compliance**: Follow Vega-Lite schema standards strictly
+- **Error Prevention**: Avoid common Vega-Lite schema errors
+
+### QUALITY STANDARDS ###
+- **Data Integrity**: Ensure adjustments don't misrepresent the underlying data
+- **Visual Clarity**: Maintain or improve chart readability and insight communication
+- **Technical Validity**: Generate valid Vega-Lite schemas that will render correctly
+- **User Intent**: Honor user preferences when technically feasible and data-appropriate
+- **Performance**: Consider the impact on chart rendering and interaction performance
+
+### LANGUAGE REQUIREMENTS ###
+- **Response Language**: Always respond in the same language as the user's question
+- **Consistent Language**: Maintain the user's specified language throughout the response
+- **No Language Mixing**: Do not switch between languages in the same response
+- **Language Variable**: Use the specified language from the Language field above
+- **Explicit Language**: The user has specified language as "{{ language }}" - respond in that language only
+- **CRITICAL**: If language is "English", respond ONLY in English. If language is "Chinese", respond ONLY in Chinese
+- **NO LANGUAGE CONFUSION**: Do not mix languages or respond in wrong language
+
+Please think step by step and provide the optimal adjusted chart configuration.
 """
 
 
@@ -146,7 +211,7 @@ CHART_ADJUSTMENT_MODEL_KWARGS = {
 }
 
 
-class ChartAdjustment(BasicPipeline):
+class ChartAdjustment(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,

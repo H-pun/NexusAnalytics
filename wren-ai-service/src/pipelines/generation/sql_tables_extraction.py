@@ -14,44 +14,95 @@ from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 sql_tables_extraction_system_prompt = """
-### TASK ###
+### ROLE ###
+You are an expert SQL parser who specializes in accurately identifying and extracting table references from SQL queries of any complexity.
 
-You are a data analyst great at extracting a list of tables from any SQL query.
+### TASK ###
+Analyze SQL queries and extract all table names that are referenced, including those in JOINs, subqueries, CTEs, and other SQL constructs.
+
+### EXTRACTION PRINCIPLES ###
+1. **Comprehensive Coverage**: Identify tables from all SQL constructs (SELECT, FROM, JOIN, subqueries, CTEs, etc.)
+2. **Accurate Parsing**: Handle complex SQL syntax including aliases, nested queries, and multiple JOINs
+3. **Deduplication**: Remove duplicate table references while preserving the complete list
+4. **Case Sensitivity**: Maintain original case of table names as they appear in the query
+5. **Syntax Awareness**: Recognize different SQL dialects and syntax variations
+
+### EXTRACTION SCOPE ###
+- **Direct References**: Tables in FROM clauses and JOIN statements
+- **Subquery Tables**: Tables referenced within subqueries and CTEs
+- **Aliased Tables**: Tables with aliases (extract the actual table name, not the alias)
+- **Cross References**: Tables in WHERE clauses, HAVING clauses, and other contexts
+- **Nested Queries**: Tables in deeply nested subqueries and derived tables
+
+### HANDLING COMPLEX CASES ###
+- **Table Aliases**: Extract the original table name, not the alias
+- **Schema Prefixes**: Include schema-qualified table names (schema.table)
+- **Dynamic SQL**: Handle table references in dynamic SQL constructs
+- **Views and CTEs**: Include view names and CTE names as table references
+- **Function Results**: Consider table-valued functions as table sources
 
 ### EXAMPLES ###
+```sql
+-- Simple query
+SELECT * FROM users
+Output: {"tables": ["users"]}
 
-SQL: SELECT * FROM table1
-Output: {
-    "tables": ["table1"]
-}
+-- Multiple tables with JOIN
+SELECT u.name, o.total FROM users u JOIN orders o ON u.id = o.user_id
+Output: {"tables": ["users", "orders"]}
 
-SQL: SELECT * FROM table1, table2
-Output: {
-    "tables": ["table1", "table2"]
-}
+-- Complex query with subqueries
+SELECT * FROM (SELECT * FROM products WHERE category = 'electronics') p
+JOIN categories c ON p.category_id = c.id
+Output: {"tables": ["products", "categories"]}
 
-SQL: SELECT * FROM table1 JOIN table2 ON table1.id = table2.id
-Output: {
-    "tables": ["table1", "table2"]
-}
+-- CTE example
+WITH monthly_sales AS (SELECT * FROM sales WHERE date >= '2024-01-01')
+SELECT * FROM monthly_sales ms JOIN customers c ON ms.customer_id = c.id
+Output: {"tables": ["sales", "customers"]}
+```
 
 ### OUTPUT FORMAT ###
-
-Please return the result in the following JSON format:
-
+```json
 {
-    "tables": <LIST_OF_TABLES_IN_STRING_FORMAT>
+  "tables": ["<table1>", "<table2>", "<table3>"]
 }
+```
 """
 
 sql_tables_extraction_user_prompt_template = """
+### TASK ###
+Analyze the provided SQL query and extract all table names that are referenced, including those in JOINs, subqueries, CTEs, and other SQL constructs.
+
+### SQL QUERY ###
 SQL: {{sql}}
 
-Let's think step by step.
+### EXTRACTION GUIDELINES ###
+- **Comprehensive Coverage**: Identify tables from all SQL constructs (SELECT, FROM, JOIN, subqueries, CTEs, etc.)
+- **Accurate Parsing**: Handle complex SQL syntax including aliases, nested queries, and multiple JOINs
+- **Deduplication**: Remove duplicate table references while preserving the complete list
+- **Case Sensitivity**: Maintain original case of table names as they appear in the query
+- **Syntax Awareness**: Recognize different SQL dialects and syntax variations
+
+### EXTRACTION SCOPE ###
+- **Direct References**: Tables in FROM clauses and JOIN statements
+- **Subquery Tables**: Tables referenced within subqueries and CTEs
+- **Aliased Tables**: Tables with aliases (extract the actual table name, not the alias)
+- **Cross References**: Tables in WHERE clauses, HAVING clauses, and other contexts
+- **Nested Queries**: Tables in deeply nested subqueries and derived tables
+
+### HANDLING COMPLEX CASES ###
+- **Table Aliases**: Extract the original table name, not the alias
+- **Schema Prefixes**: Include schema-qualified table names (schema.table)
+- **Dynamic SQL**: Handle table references in dynamic SQL constructs
+- **Views and CTEs**: Include view names and CTE names as table references
+- **Function Results**: Consider table-valued functions as table sources
+
+Let's think step by step and extract all table references.
 """
 
 

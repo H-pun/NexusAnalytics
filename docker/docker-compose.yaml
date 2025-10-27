@@ -47,7 +47,11 @@ services:
       - wren
 
   wren-ai-service:
-    image: ghcr.io/canner/wren-ai-service:${WREN_AI_SERVICE_VERSION}
+    # Build from local source instead of using online image
+    build:
+      context: ${PROJECT_DIR}/wren-ai-service
+      dockerfile: docker/Dockerfile
+    # image: ghcr.io/canner/wren-ai-service:${WREN_AI_SERVICE_VERSION}  # Commented out - using local build
     restart: on-failure
     platform: ${PLATFORM}
     expose:

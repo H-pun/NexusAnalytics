@@ -11,7 +11,7 @@ from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 from pydantic import BaseModel
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import DocumentStoreProvider, EmbedderProvider, LLMProvider
 from src.pipelines.common import build_table_ddl, clean_up_new_lines
 from src.pipelines.generation.utils.sql import construct_instructions
@@ -19,103 +19,69 @@ from src.utils import trace_cost
 from src.web.v1.services import Configuration
 from src.web.v1.services.ask import AskHistory
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 intent_classification_system_prompt = """
-### Task ###
-You are an expert detective specializing in intent classification. Combine the user's current question and previous questions to determine their true intent based on the provided database schema. Classify the intent into one of these categories: `MISLEADING_QUERY`, `TEXT_TO_SQL`, `GENERAL`, or `USER_GUIDE`. Additionally, provide a concise reasoning (maximum 20 words) for your classification.
+### ROLE ###
+You are an expert intent classifier for Analytics AI, specializing in understanding user queries and determining their true intent based on database schema and conversation context.
 
-### Instructions ###
-- **Follow the user's previous questions:** If there are previous questions, try to understand the user's current question as following the previous questions.
-- **Follow the user's instructions:** If there are instructions, strictly follow the instructions.
-- **Consider Context of Inputs:** Combine the user's current question, their previous questions, and the user's instructions together to identify the user's true intent.
-- **Rephrase Question:** Rewrite follow-up questions into full standalone questions using prior conversation context.
-- **Concise Reasoning:** The reasoning must be clear, concise, and limited to 20 words.
-- **Language Consistency:** Use the same language as specified in the user's output language for the rephrased question and reasoning.
-- **Vague Queries:** If the question is vague or does not related to a table or property from the schema, classify it as `MISLEADING_QUERY`.
-- **Incomplete Queries:** If the question is related to the database schema but references unspecified values (e.g., "the following", "these", "those") without providing them, classify as `GENERAL`.
-- **Time-related Queries:** Don't rephrase time-related information in the user's question.
+### TASK ###
+Analyze user queries and classify them into one of four categories: `TEXT_TO_SQL`, `GENERAL`, `USER_GUIDE`, or `MISLEADING_QUERY`. Provide clear reasoning and rephrase questions when necessary.
 
-### Intent Definitions ###
+### CLASSIFICATION LOGIC ###
 
-<TEXT_TO_SQL>
-**When to Use:**  
-- The user's inputs are about modifying SQL from previous questions.
-- The user's inputs are related to the database schema and requires an SQL query.
-- The question (or related previous query) includes references to specific tables, columns, or data details.
-- The question includes **complete information** with specific tables, columns, or data values needed for execution.
-- The question provides **all necessary parameters** to generate executable SQL.
+**TEXT_TO_SQL** - Use when:
+- Query requires SQL generation with complete information
+- References specific tables, columns, or data values
+- Includes complete filter criteria or clear context references
+- User wants to modify or build upon previous SQL queries
+- Examples: "Show total sales by region", "List top 10 customers by revenue"
 
-**Requirements:**
-- Must have complete filter criteria, specific values, or clear references to previous context.
-- Include specific table and column names from the schema in your reasoning or modifying SQL from previous questions.
-- Reference phrases from the user's inputs that clearly relate to the schema.
+**GENERAL** - Use when:
+- Query seeks general information about database capabilities
+- References missing or unspecified information ("these products", "the following")
+- Incomplete for SQL generation but database-related
+- Examples: "What can I analyze with this data?", "Tell me about the database structure"
 
-**Examples:**  
-- "What is the total sales for last quarter?"
-- "Show me all customers who purchased product X."
-- "List the top 10 products by revenue."
-</TEXT_TO_SQL>
+**USER_GUIDE** - Use when:
+- Query about Analytics AI features, usage, or capabilities
+- References user guide content or system functionality
+- Examples: "How do I create a chart?", "What can Analytics AI do?"
 
-<GENERAL>
-**When to Use:**  
-- The user seeks general information about the database schema or its overall capabilities.
-- The query references **missing information** (e.g., "the following items" without listing them).
-- The query contains **placeholder references** that cannot be resolved from context.
-- The query is **incomplete for SQL generation** despite mentioning database concepts.
+**MISLEADING_QUERY** - Use when:
+- Query is irrelevant to database or Analytics AI
+- Contains SQL code or technical jargon inappropriately
+- Off-topic or casual conversation
+- Examples: "How's the weather?", "Tell me a joke"
 
-**Requirements:**  
-- Incorporate phrases from the user's inputs that indicate incompleteness or lack of relevance to the database schema.
-- Identify missing parameters, unspecified references, or incomplete filter criteria.
+### LANGUAGE REQUIREMENTS ###
+- **Response Language**: Always respond in the same language as the user's question
+- **Consistent Language**: Maintain the user's specified language throughout the response
+- **No Language Mixing**: Do not switch between languages in the same response
+- **Language Detection**: Detect the user's language from their question and respond accordingly
 
-**Examples:**
-- "What is the dataset about?"
-- "Tell me more about the database."
-- "How can I analyze customer behavior with this data?"
-- "Show me orders for these products" (without specifying which products)
-- "Filter by the criteria I mentioned" (without previous context defining criteria)
-</GENERAL>
+### PROCESSING RULES ###
+1. **Context Integration**: Combine current question with previous conversation history
+2. **Question Rephrasing**: Convert follow-up questions to standalone questions using context
+3. **Language Consistency**: Maintain user's specified language throughout
+4. **Reasoning Clarity**: Provide concise reasoning (max 20 words) explaining classification
+5. **Time Preservation**: Don't modify time-related information in questions
 
-<USER_GUIDE>
-**When to Use:**  
-- The user's inputs pertains to Wren AI's features, usage, or capabilities.
-- The query relates directly to content in the user guide.
-
-**Examples:**  
-- "What can Wren AI do?"
-- "How can I reset a project?"
-- "How can I delete a project?"
-- "How can I connect to other databases?"
-- "How do I draw a chart?"
-</USER_GUIDE>
-
-<MISLEADING_QUERY>
-**When to Use:**  
-- The user's inputs is irrelevant to the database schema or includes SQL code.
-- The user's inputs lacks specific details (like table names or columns) needed to generate an SQL query.
-- It appears off-topic or is simply a casual conversation starter.
-
-**Requirements:**  
-- Incorporate phrases from the user's inputs that indicate lack of relevance to the database schema.
-
-**Examples:**  
-- "How are you?"
-- "What's the weather like today?"
-- "Tell me a joke."
-</MISLEADING_QUERY>
-
-### Output Format ###
-Return your response as a JSON object with the following structure:
-
+### OUTPUT FORMAT ###
+```json
 {
-    "rephrased_question": "<rephrased question in full standalone question if there are previous questions, otherwise the original question>",
-    "reasoning": "<brief chain-of-thought reasoning (max 20 words)>",
-    "results": "MISLEADING_QUERY" | "TEXT_TO_SQL" | "GENERAL" | "USER_GUIDE"
+    "rephrased_question": "<standalone question with full context>",
+    "reasoning": "<brief explanation of classification decision>",
+    "results": "TEXT_TO_SQL|GENERAL|USER_GUIDE|MISLEADING_QUERY"
 }
+```
 """
 
 intent_classification_user_prompt_template = """
+### TASK ###
+Analyze the user's query and classify it into the appropriate intent category while considering the database schema, conversation history, and user guide context.
+
 ### DATABASE SCHEMA ###
 {% for db_schema in db_schemas %}
     {{ db_schema }}
@@ -143,7 +109,7 @@ SQL:
 - {{doc.path}}: {{doc.content}}
 {% endfor %}
 
-### INPUT ###
+### CONVERSATION CONTEXT ###
 {% if histories %}
 User's previous questions:
 {% for history in histories %}
@@ -154,10 +120,24 @@ SQL:
 {% endfor %}
 {% endif %}
 
+### CURRENT QUERY ###
 User's current question: {{query}}
 Output Language: {{ language }}
 
-Let's think step by step
+### CLASSIFICATION GUIDELINES ###
+- **Context Integration**: Combine current question with previous conversation history
+- **Question Rephrasing**: Convert follow-up questions to standalone questions using context
+- **Language Consistency**: Maintain user's specified language throughout
+- **Reasoning Clarity**: Provide concise reasoning (max 20 words) explaining classification
+- **Time Preservation**: Don't modify time-related information in questions
+
+### INTENT CATEGORIES ###
+- **TEXT_TO_SQL**: Complete queries with specific tables/columns that need SQL
+- **GENERAL**: Incomplete queries or general database questions
+- **USER_GUIDE**: Questions about Analytics AI features
+- **MISLEADING_QUERY**: Off-topic or irrelevant queries
+
+Let's think step by step and provide the classification.
 """
 
 
@@ -268,14 +248,21 @@ def construct_db_schemas(dbschema_retrieval: list[Document]) -> list[str]:
 @observe(capture_input=False)
 def prompt(
     query: str,
-    wren_ai_docs: list[dict],
+    analytics_docs: list[dict],
     construct_db_schemas: list[str],
     histories: list[AskHistory],
     prompt_builder: PromptBuilder,
     sql_samples: Optional[list[dict]] = None,
     instructions: Optional[list[dict]] = None,
-    configuration: Configuration | None = None,
+    configuration: Configuration | dict | None = None,
 ) -> dict:
+    # Handle configuration as dict or Configuration object
+    if configuration is None:
+        configuration = Configuration()
+    elif isinstance(configuration, dict):
+        # Convert dict to Configuration object
+        configuration = Configuration(**configuration)
+
     _prompt = prompt_builder.run(
         query=query,
         language=configuration.language,
@@ -285,7 +272,7 @@ def prompt(
         instructions=construct_instructions(
             instructions=instructions,
         ),
-        docs=wren_ai_docs,
+        docs=analytics_docs,
     )
     return {"prompt": clean_up_new_lines(_prompt.get("prompt"))}
 
@@ -335,13 +322,13 @@ INTENT_CLASSIFICAION_MODEL_KWARGS = {
 }
 
 
-class IntentClassification(BasicPipeline):
+class IntentClassification(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
         embedder_provider: EmbedderProvider,
         document_store_provider: DocumentStoreProvider,
-        wren_ai_docs: list[dict],
+        analytics_docs: list[dict],
         table_retrieval_size: Optional[int] = 50,
         table_column_retrieval_size: Optional[int] = 100,
         **kwargs,
@@ -367,7 +354,7 @@ class IntentClassification(BasicPipeline):
         }
 
         self._configs = {
-            "wren_ai_docs": wren_ai_docs,
+            "analytics_docs": analytics_docs,
         }
 
         super().__init__(
@@ -382,8 +369,11 @@ class IntentClassification(BasicPipeline):
         histories: Optional[list[AskHistory]] = None,
         sql_samples: Optional[list[dict]] = None,
         instructions: Optional[list[dict]] = None,
-        configuration: Configuration = Configuration(),
+        configuration: Configuration | dict = Configuration(),
     ):
+        # Handle configuration as dict or Configuration object
+        if isinstance(configuration, dict):
+            configuration = Configuration(**configuration)
         logger.info("Intent Classification pipeline is running...")
         return await self._pipe.execute(
             ["post_process"],

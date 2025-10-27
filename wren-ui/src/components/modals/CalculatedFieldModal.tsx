@@ -159,9 +159,9 @@ export default function AddCalculatedFieldModal(props: Props) {
             </Typography.Link>
           </div>
           <div>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onClose}>No</Button>
             <Button type="primary" onClick={submit} loading={loading}>
-              Save
+              Store
             </Button>
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function AddCalculatedFieldModal(props: Props) {
         </Form.Item>
 
         <Form.Item
-          label="Select an expression"
+          label="Choose an expression"
           name="expression"
           required
           rules={[
@@ -195,7 +195,7 @@ export default function AddCalculatedFieldModal(props: Props) {
           ]}
         >
           <DescriptiveSelector
-            placeholder="Select an expression"
+            placeholder="Choose an expression"
             options={expressionOptions}
             descriptiveContentRender={(content) => {
               return (

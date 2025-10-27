@@ -78,7 +78,7 @@ const MenuTemplate = ({ currentMenu, value, onClick }) => {
   const current = getSettingMenu(value);
   return (
     <StyledButton
-      className={currentMenu === value ? 'geekblue-6 bg-gray-4' : 'gray-8'}
+      className={currentMenu === value ? 'rust-orange-6 bg-gray-4' : 'gray-8'}
       type="text"
       block
       onClick={() => onClick({ value })}
@@ -139,7 +139,7 @@ export default function Settings(props: Props) {
           {!!productVersion && (
             <div className="gray-7 d-flex align-center p-3 px-5">
               <InfoCircleOutlined className="mr-2 text-sm" />
-              Wren AI version: {productVersion}
+              Nexus Analytics version: {productVersion}
             </div>
           )}
         </StyledSider>

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { components } from '@/common';
 
-const { wrenAIAdaptor } = components;
+const { analyticsAIAdaptor } = components;
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,7 +14,7 @@ export default async function handler(
 
   const { queryId } = req.query;
   try {
-    const stream = await wrenAIAdaptor.getAskStreamingResult(queryId as string);
+    const stream = await analyticsAIAdaptor.getAskStreamingResult(queryId as string);
 
     stream.on('data', (chunk) => {
       // pass the chunk directly to the client

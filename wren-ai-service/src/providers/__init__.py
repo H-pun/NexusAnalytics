@@ -6,7 +6,7 @@ from src.core.pipeline import PipelineComponent
 from src.core.provider import DocumentStoreProvider, EmbedderProvider, LLMProvider
 from src.providers import loader
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 def provider_factory(
@@ -221,7 +221,7 @@ def engine_processor(entry: dict) -> dict:
 
     {
         "type": "engine",
-        "provider": "wren_ui",
+        "provider": "analytics_ui",
         "kwargs": {
             "host": "localhost",
             "port": 8000
@@ -231,8 +231,8 @@ def engine_processor(entry: dict) -> dict:
     The function processes this input and returns a dictionary with the following structure:
 
     {
-        "wren_ui": {
-            "provider": "wren_ui",
+        "analytics_ui": {
+            "provider": "analytics_ui",
             "kwargs": {
                 "host": "localhost",
                 "port": 8000
@@ -264,7 +264,7 @@ def pipeline_processor(entry: dict) -> dict:
                 "llm": "openai_llm.gpt-4o-mini",
                 "embedder": "openai_embedder.text-embedding-3-large",
                 "document_store": "qdrant",
-                "engine": "wren_ui"
+                "engine": "analytics_ui"
             }
         ]
     }
@@ -276,7 +276,7 @@ def pipeline_processor(entry: dict) -> dict:
             "llm": "openai_llm.gpt-4o-mini",
             "embedder": "openai_embedder.text-embedding-3-large",
             "document_store": "qdrant",
-            "engine": "wren_ui",
+            "engine": "analytics_ui",
         }
     }
 

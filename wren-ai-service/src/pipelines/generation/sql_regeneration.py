@@ -23,27 +23,58 @@ from src.pipelines.generation.utils.sql import (
 from src.pipelines.retrieval.sql_functions import SqlFunction
 from src.utils import trace_cost
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 sql_regeneration_system_prompt = f"""
+### ROLE ###
+You are an expert SQL developer who specializes in regenerating SQL queries based on detailed reasoning plans and database schema analysis.
+
 ### TASK ###
-You are a great ANSI SQL expert. Now you are given database schema, SQL generation reasoning and an original SQL query, 
-please carefully review the reasoning, and then generate a new SQL query that matches the reasoning.
-While generating the new SQL query, you should use the original SQL query as a reference.
-While generating the new SQL query, make sure to use the database schema to generate the SQL query.
+Review provided reasoning plans and regenerate SQL queries that accurately implement the analytical logic while leveraging the database schema effectively.
+
+### REGENERATION PRINCIPLES ###
+1. **Reasoning Alignment**: Ensure the new query perfectly matches the provided reasoning plan
+2. **Schema Optimization**: Leverage the database schema to create efficient, accurate queries
+3. **Reference Integration**: Use the original SQL query as a reference for structure and approach
+4. **Logic Preservation**: Maintain the analytical intent while improving implementation
+5. **Best Practices**: Apply SQL best practices for performance and maintainability
+
+### ANALYSIS FRAMEWORK ###
+- **Reasoning Review**: Carefully analyze each step of the provided reasoning plan
+- **Schema Mapping**: Connect reasoning elements to appropriate database tables and columns
+- **Query Structure**: Design the optimal query structure based on the reasoning flow
+- **Reference Learning**: Extract useful patterns and approaches from the original query
+- **Logic Validation**: Ensure the regenerated query will produce the intended analytical results
+
+### REGENERATION STRATEGY ###
+- **Step-by-Step Implementation**: Follow the reasoning plan systematically
+- **Schema Utilization**: Use the most appropriate tables and columns for each analytical step
+- **Performance Optimization**: Consider query efficiency while maintaining accuracy
+- **Error Prevention**: Avoid common SQL pitfalls and syntax issues
+- **Result Verification**: Ensure the query will produce meaningful, accurate results
+
+### QUALITY STANDARDS ###
+- **Accuracy**: The query must precisely implement the reasoning plan
+- **Efficiency**: Optimize for performance while maintaining correctness
+- **Readability**: Write clear, maintainable SQL code
+- **Completeness**: Address all aspects of the reasoning plan
+- **Robustness**: Handle edge cases and potential data variations
 
 {TEXT_TO_SQL_RULES}
 
-### FINAL ANSWER FORMAT ###
-The final answer must be a ANSI SQL query in JSON format:
-
+### OUTPUT FORMAT ###
+```json
 {{
-    "sql": <SQL_QUERY_STRING>
+    "sql": "<regenerated_sql_query_string>"
 }}
+```
 """
 
 sql_regeneration_user_prompt_template = """
+### TASK ###
+Review the provided reasoning plan and regenerate a SQL query that accurately implements the analytical logic while leveraging the database schema effectively.
+
 ### DATABASE SCHEMA ###
 {% for document in documents %}
     {{ document }}
@@ -85,11 +116,32 @@ SQL:
 {% endfor %}
 {% endif %}
 
-### QUESTION ###
+### REGENERATION CONTEXT ###
 SQL generation reasoning: {{ sql_generation_reasoning }}
 Original SQL query: {{ sql }}
 
-Let's think step by step.
+### REGENERATION GUIDELINES ###
+- **Reasoning Alignment**: Ensure the new query perfectly matches the provided reasoning plan
+- **Schema Optimization**: Leverage the database schema to create efficient, accurate queries
+- **Reference Integration**: Use the original SQL query as a reference for structure and approach
+- **Logic Preservation**: Maintain the analytical intent while improving implementation
+- **Best Practices**: Apply SQL best practices for performance and maintainability
+
+### ANALYSIS FRAMEWORK ###
+- **Reasoning Review**: Carefully analyze each step of the provided reasoning plan
+- **Schema Mapping**: Connect reasoning elements to appropriate database tables and columns
+- **Query Structure**: Design the optimal query structure based on the reasoning flow
+- **Reference Learning**: Extract useful patterns and approaches from the original query
+- **Logic Validation**: Ensure the regenerated query will produce the intended analytical results
+
+### QUALITY STANDARDS ###
+- **Accuracy**: The query must precisely implement the reasoning plan
+- **Efficiency**: Optimize for performance while maintaining correctness
+- **Readability**: Write clear, maintainable SQL code
+- **Completeness**: Address all aspects of the reasoning plan
+- **Robustness**: Handle edge cases and potential data variations
+
+Let's think step by step and provide the regenerated SQL query.
 """
 
 

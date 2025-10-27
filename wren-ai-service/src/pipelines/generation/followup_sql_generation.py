@@ -25,13 +25,18 @@ from src.pipelines.retrieval.sql_functions import SqlFunction
 from src.utils import trace_cost
 from src.web.v1.services.ask import AskHistory
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 text_to_sql_with_followup_user_prompt_template = """
 ### TASK ###
-Given the following user's follow-up question and previous SQL query and summary,
-generate one SQL query to best answer user's question.
+Generate a comprehensive SQL query that addresses the user's follow-up question while building upon the conversation context and previous analytical work.
+
+### CONTEXT INTEGRATION ###
+- **Follow-up Analysis**: Understand how the new question relates to previous queries and results
+- **Conversation Continuity**: Build upon the established analytical context and user intent
+- **Reasoning Application**: Use the provided reasoning plan to guide query construction
+- **Schema Utilization**: Leverage the database schema to create accurate, efficient queries
 
 ### DATABASE SCHEMA ###
 {% for document in documents %}
@@ -74,11 +79,18 @@ SQL:
 {% endfor %}
 {% endif %}
 
-### QUESTION ###
+### FOLLOW-UP QUESTION ###
 User's Follow-up Question: {{ query }}
 
 ### REASONING PLAN ###
 {{ sql_generation_reasoning }}
+
+### GENERATION GUIDELINES ###
+- **Context Awareness**: Consider the conversation history and previous queries
+- **Reasoning Alignment**: Follow the provided reasoning plan step-by-step
+- **Schema Compliance**: Use only available tables, columns, and relationships
+- **Query Optimization**: Create efficient queries that leverage database capabilities
+- **Result Accuracy**: Ensure the query will produce meaningful, accurate results
 
 Let's think step by step.
 """

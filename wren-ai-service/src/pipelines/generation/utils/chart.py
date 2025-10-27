@@ -8,7 +8,120 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
+
+
+def _validate_and_fix_schema(chart_schema: dict) -> dict:
+    """
+    Validate and fix common Vega-Lite schema issues.
+
+    Args:
+        chart_schema: The chart schema to validate and fix
+
+    Returns:
+        Fixed chart schema
+    """
+    # Valid mark types for Vega-Lite
+    VALID_MARK_TYPES = [
+        "arc",
+        "area",
+        "bar",
+        "image",
+        "line",
+        "point",
+        "rect",
+        "rule",
+        "text",
+        "tick",
+        "trail",
+        "circle",
+        "square",
+        "geoshape",
+    ]
+
+    # Fix empty or invalid mark type
+    if "mark" in chart_schema:
+        mark = chart_schema["mark"]
+        if isinstance(mark, dict):
+            if "type" in mark and (
+                not mark["type"] or mark["type"] not in VALID_MARK_TYPES
+            ):
+                # Default to 'bar' if type is empty or invalid
+                mark["type"] = "bar"
+                logger.warning(
+                    f"Fixed invalid mark type '{mark.get('type', '')}' to 'bar'"
+                )
+        elif isinstance(mark, str) and (not mark or mark not in VALID_MARK_TYPES):
+            # Default to 'bar' if type is empty or invalid
+            chart_schema["mark"] = "bar"
+            logger.warning(f"Fixed invalid mark type '{mark}' to 'bar'")
+
+    # Ensure required fields exist
+    if "mark" not in chart_schema:
+        chart_schema["mark"] = "bar"
+        logger.warning("Added missing 'mark' field with default 'bar'")
+
+    # Fix encoding if it exists
+    if "encoding" in chart_schema:
+        encoding = chart_schema["encoding"]
+
+        # Fix empty or invalid field names
+        for channel in ["x", "y", "color", "size", "shape", "text", "tooltip"]:
+            if channel in encoding and isinstance(encoding[channel], dict):
+                if "field" in encoding[channel] and not encoding[channel]["field"]:
+                    # Remove empty field encodings
+                    del encoding[channel]
+                    logger.warning(f"Removed empty {channel} encoding")
+
+        # Fix encoding structure - ensure it's properly nested
+        if not isinstance(encoding, dict):
+            logger.warning("Invalid encoding structure, removing encoding")
+            del chart_schema["encoding"]
+        else:
+            # Ensure encoding has proper structure
+            for channel in ["x", "y"]:
+                if channel in encoding and isinstance(encoding[channel], dict):
+                    # Ensure required fields exist
+                    if "field" not in encoding[channel]:
+                        logger.warning(f"Missing field in {channel} encoding, removing")
+                        del encoding[channel]
+                    elif "type" not in encoding[channel]:
+                        # Try to infer type from field name or data
+                        encoding[channel]["type"] = "nominal"  # Default to nominal
+                        logger.warning(
+                            f"Added missing type 'nominal' to {channel} encoding"
+                        )
+
+    # Additional validation for common Vega-Lite issues
+    try:
+        # Ensure title is a string if it exists
+        if "title" in chart_schema and not isinstance(chart_schema["title"], str):
+            chart_schema["title"] = str(chart_schema["title"])
+            logger.warning("Fixed non-string title")
+
+        # Ensure data structure is valid
+        if "data" in chart_schema:
+            if not isinstance(chart_schema["data"], dict):
+                logger.warning("Invalid data structure, removing data")
+                del chart_schema["data"]
+            elif "values" not in chart_schema["data"]:
+                logger.warning("Missing values in data, removing data")
+                del chart_schema["data"]
+
+        # Ensure schema URL is correct
+        if "$schema" in chart_schema:
+            if not chart_schema["$schema"].startswith(
+                "https://vega.github.io/schema/vega-lite/"
+            ):
+                chart_schema[
+                    "$schema"
+                ] = "https://vega.github.io/schema/vega-lite/v5.json"
+                logger.warning("Fixed invalid schema URL")
+
+    except Exception as e:
+        logger.warning(f"Error in additional validation: {e}")
+
+    return chart_schema
 
 
 chart_generation_instructions = """
@@ -20,6 +133,8 @@ chart_generation_instructions = """
 - If the sample data is not suitable for visualization, you must return an empty string for the schema and chart type
 - If the sample data is empty, you must return an empty string for the schema and chart type
 - The language for the chart and reasoning must be the same language provided by the user
+- CRITICAL: If user specifies "English", respond ONLY in English. If user specifies "Chinese", respond ONLY in Chinese
+- NO LANGUAGE CONFUSION: Do not mix languages or respond in wrong language
 - Please use the current time provided by the user to generate the chart
 - In order to generate the grouped bar chart, you need to follow the given instructions:
     - Disable Stacking: Add "stack": null to the y-encoding.
@@ -299,6 +414,9 @@ class ChartGenerationPostProcessor:
                 if isinstance(chart_schema, str):
                     chart_schema = orjson.loads(chart_schema)
 
+                # Validate and fix common schema issues
+                chart_schema = _validate_and_fix_schema(chart_schema)
+
                 chart_schema[
                     "$schema"
                 ] = "https://vega.github.io/schema/vega-lite/v5.json"
@@ -326,6 +444,25 @@ class ChartGenerationPostProcessor:
             }
         except ValidationError as e:
             logger.exception(f"Vega-lite schema is not valid: {e}")
+
+            # Try to fix the schema and validate again
+            try:
+                logger.info("Attempting to fix schema and re-validate...")
+                chart_schema = _validate_and_fix_schema(chart_schema)
+                validate(chart_schema, schema=vega_schema)
+
+                if remove_data_from_chart_schema:
+                    chart_schema["data"]["values"] = []
+
+                return {
+                    "results": {
+                        "chart_schema": chart_schema,
+                        "reasoning": reasoning,
+                        "chart_type": chart_type,
+                    }
+                }
+            except Exception as fix_error:
+                logger.exception(f"Failed to fix schema: {fix_error}")
 
             return {
                 "results": {

@@ -4,7 +4,7 @@ import { QueryService } from '../queryService';
 
 describe('QueryService', () => {
   let mockIbisAdaptor;
-  let mockWrenEngineAdaptor;
+  let mockanalyticsEngineAdaptor;
   let mockTelemetry;
   let queryService;
 
@@ -13,12 +13,12 @@ describe('QueryService', () => {
       query: jest.fn(),
       dryRun: jest.fn(),
     };
-    mockWrenEngineAdaptor = {};
+    mockanalyticsEngineAdaptor = {};
     mockTelemetry = new MockTelemetry();
 
     queryService = new QueryService({
       ibisAdaptor: mockIbisAdaptor,
-      wrenEngineAdaptor: mockWrenEngineAdaptor,
+      analyticsEngineAdaptor: mockanalyticsEngineAdaptor,
       telemetry: mockTelemetry,
     });
   });

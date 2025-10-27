@@ -11,7 +11,7 @@ from langfuse.decorators import observe
 from src.core.engine import Engine
 from src.core.pipeline import BasicPipeline
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 @component

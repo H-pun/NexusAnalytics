@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { WrenAIAdaptor } from '../wrenAIAdaptor';
+import { WrenAIAdaptor } from '../analyticsAIAdaptor';
 import {
   RecommendationQuestionsInput,
   RecommendationQuestionStatus,

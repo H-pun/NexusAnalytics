@@ -255,7 +255,7 @@ export default function CacheSettingsDrawer(props: Props) {
       footer={
         <Space className="d-flex justify-end">
           <Button onClick={onClose} disabled={loading}>
-            Cancel
+            No
           </Button>
           <Button
             type="primary"
@@ -263,17 +263,17 @@ export default function CacheSettingsDrawer(props: Props) {
             loading={loading}
             disabled={loading}
           >
-            Submit
+            Apply
           </Button>
         </Space>
       }
     >
       <Form form={form} layout="vertical">
         <Form.Item
-          label="Enable caching"
+          label="Activate caching"
           name="cacheEnabled"
           valuePropName="checked"
-          extra="Enable caching to speed up dashboard loading by reusing recent results. Choose a refresh schedule that fits your needs below."
+          extra="Activate caching to accelerate dashboard loading by reusing recent results. Choose a refresh schedule that fits your needs below."
         >
           <Switch />
         </Form.Item>
@@ -300,7 +300,7 @@ function Schedule() {
 
   return (
     <>
-      <Divider className="gray-6 text-sm">Refresh settings</Divider>
+      <Divider className="gray-6 text-sm">Update settings</Divider>
       <Form.Item label="Frequency" name={['schedule', 'frequency']}>
         <Select
           placeholder="Select frequency"
@@ -328,7 +328,7 @@ function Schedule() {
 
       {nextSchedule && (
         <div className="gray-7">
-          Next scheduled refresh:
+          Next scheduled update:
           <div className="gray-8">
             {nextSchedule} {browserTimeZone && <span>({browserTimeZone})</span>}
           </div>

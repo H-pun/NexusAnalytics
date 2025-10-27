@@ -11,14 +11,14 @@ from src.config import settings
 from src.core.engine import Engine, remove_limit_statement
 from src.providers.loader import provider
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
-@provider("wren_ui")
-class WrenUI(Engine):
+@provider("analytics_ui")
+class AnalyticsUI(Engine):
     def __init__(
         self,
-        endpoint: str = os.getenv("WREN_UI_ENDPOINT"),
+        endpoint: str = os.getenv("ANALYTICS_UI_ENDPOINT"),
         **_,
     ):
         self._endpoint = endpoint
@@ -86,48 +86,16 @@ class WrenUI(Engine):
                     "message", "Unknown error"
                 )
                 logger.error(f"Error executing SQL: {error_message}")
-                dialect_sql = (
-                    (
-                        (
-                            (res_json.get("errors", [{}])[0] or {}).get(
-                                "extensions", {}
-                            )
-                            or {}
-                        ).get("other", {})
-                        or {}
-                    ).get("metadata", {})
-                    or {}
-                ).get("dialectSql", "") or ""
-                planned_sql = (
-                    (
-                        (
-                            (res_json.get("errors", [{}])[0] or {}).get(
-                                "extensions", {}
-                            )
-                            or {}
-                        ).get("other", {})
-                        or {}
-                    ).get("metadata", {})
-                    or {}
-                ).get("plannedSql", "") or ""
 
                 return (
                     False,
                     {},
                     {
                         "error_message": error_message,
-                        "error_sql": dialect_sql or planned_sql or sql,
                         "correlation_id": (
-                            (
-                                (
-                                    (res_json.get("errors", [{}])[0] or {}).get(
-                                        "extensions", {}
-                                    )
-                                    or {}
-                                ).get("other", {})
-                                or {}
-                            ).get("correlationId")
-                            or ""
+                            res_json.get("extensions", {})
+                            .get("other", {})
+                            .get("correlationId")
                         ),
                     },
                 )
@@ -139,14 +107,14 @@ class WrenUI(Engine):
             )
 
 
-@provider("wren_ibis")
-class WrenIbis(Engine):
+@provider("analytics_ibis")
+class AnalyticsIbis(Engine):
     def __init__(
         self,
-        endpoint: str = os.getenv("WREN_IBIS_ENDPOINT"),
-        source: str = os.getenv("WREN_IBIS_SOURCE"),
-        manifest: str = os.getenv("WREN_IBIS_MANIFEST"),
-        connection_info: str = os.getenv("WREN_IBIS_CONNECTION_INFO"),
+        endpoint: str = os.getenv("ANALYTICS_IBIS_ENDPOINT"),
+        source: str = os.getenv("ANALYTICS_IBIS_SOURCE"),
+        manifest: str = os.getenv("ANALYTICS_IBIS_MANIFEST"),
+        connection_info: str = os.getenv("ANALYTICS_IBIS_CONNECTION_INFO"),
         **_,
     ):
         self._endpoint = endpoint
@@ -264,12 +232,12 @@ class WrenIbis(Engine):
             return []
 
 
-@provider("wren_engine")
-class WrenEngine(Engine):
+@provider("analytics_engine")
+class AnalyticsEngine(Engine):
     def __init__(
         self,
-        endpoint: str = os.getenv("WREN_ENGINE_ENDPOINT"),
-        manifest: str = os.getenv("WREN_ENGINE_MANIFEST"),
+        endpoint: str = os.getenv("ANALYTICS_ENGINE_ENDPOINT"),
+        manifest: str = os.getenv("ANALYTICS_ENGINE_MANIFEST"),
         **_,
     ):
         self._endpoint = endpoint

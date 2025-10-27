@@ -138,7 +138,7 @@ export default function useRecommendedQuestionsInstruction() {
       icon: showRetry ? (
         <ReloadOutlined />
       ) : (
-        <Icon component={CopilotSVG} className="geekblue-6" />
+        <Icon component={CopilotSVG} className="rust-orange-6" />
       ),
       children: generating
         ? 'Generating questions'

@@ -39,10 +39,10 @@ export default function EditMetadataModal(props: Props) {
 
   return (
     <Modal
-      title="Edit metadata"
+      title="Modify metadata"
       width={800}
       visible={visible}
-      okText="Submit"
+      okText="Apply"
       onOk={submit}
       onCancel={onClose}
       confirmLoading={loading}

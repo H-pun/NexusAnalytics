@@ -87,6 +87,7 @@ yarn-error.log*
 
 ## vercel
 .vercel
+.next
 
 ## typescript
 *.tsbuildinfo
@@ -98,5 +99,12 @@ wren-launcher/main
 
 ## temporary files
 .tmp
+
+# Refactoring reports & metrics
+reports/
+metrics-*.txt
+htmlcov/
+.coverage
+*.coverage.*
 
 !wren-ai-service/tools/.env.example

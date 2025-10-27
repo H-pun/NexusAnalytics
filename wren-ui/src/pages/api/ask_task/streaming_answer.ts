@@ -3,7 +3,7 @@ import { components } from '@/common';
 import { ThreadResponseAnswerStatus } from '@/apollo/server/services/askingService';
 import { TelemetryEvent } from '@/apollo/server/telemetry/telemetry';
 
-const { wrenAIAdaptor, askingService, telemetry } = components;
+const { analyticsAIAdaptor, askingService, telemetry } = components;
 
 class ContentMap {
   private contentMap: { [key: string]: string } = {};
@@ -68,7 +68,7 @@ export default async function handler(
       throw new Error(`Thread response ${responseId} does not have queryId`);
     }
 
-    const stream = await wrenAIAdaptor.streamTextBasedAnswer(queryId);
+    const stream = await analyticsAIAdaptor.streamTextBasedAnswer(queryId);
 
     stream.on('data', (chunk) => {
       // pass the chunk directly to the client

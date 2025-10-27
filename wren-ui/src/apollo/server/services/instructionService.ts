@@ -1,5 +1,5 @@
 import { pick } from 'lodash';
-import { IWrenAIAdaptor } from '@server/adaptors';
+import { IAnalyticsAIAdaptor } from '@server/adaptors';
 import { InstructionInput, UpdateInstructionInput } from '@server/models';
 import {
   InstructionResult,
@@ -20,16 +20,16 @@ export interface IInstructionService {
 
 export class InstructionService implements IInstructionService {
   private readonly instructionRepository: IInstructionRepository;
-  private readonly wrenAIAdaptor: IWrenAIAdaptor;
+  private readonly analyticsAIAdaptor: IAnalyticsAIAdaptor;
   constructor({
     instructionRepository,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
   }: {
     instructionRepository: IInstructionRepository;
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
   }) {
     this.instructionRepository = instructionRepository;
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
   }
 
   public async getInstructions(projectId: number): Promise<Instruction[]> {
@@ -56,7 +56,7 @@ export class InstructionService implements IInstructionService {
           tx,
         },
       );
-      const { queryId } = await this.wrenAIAdaptor.generateInstruction([
+      const { queryId } = await this.analyticsAIAdaptor.generateInstruction([
         this.pickGenerateInstructionInput(newInstruction),
       ]);
       const res = await this.waitDeployInstruction(queryId);
@@ -90,7 +90,7 @@ export class InstructionService implements IInstructionService {
           tx,
         },
       );
-      const { queryId } = await this.wrenAIAdaptor.generateInstruction(
+      const { queryId } = await this.analyticsAIAdaptor.generateInstruction(
         newInstructions.map(this.pickGenerateInstructionInput),
       );
       const res = await this.waitDeployInstruction(queryId);
@@ -133,7 +133,7 @@ export class InstructionService implements IInstructionService {
         instructionData,
         { tx },
       );
-      const { queryId } = await this.wrenAIAdaptor.generateInstruction([
+      const { queryId } = await this.analyticsAIAdaptor.generateInstruction([
         this.pickGenerateInstructionInput(updatedInstruction),
       ]);
       const res = await this.waitDeployInstruction(queryId);
@@ -161,7 +161,7 @@ export class InstructionService implements IInstructionService {
         throw new Error('Instruction not found');
       }
       await this.instructionRepository.deleteOne(id, { tx });
-      await this.wrenAIAdaptor.deleteInstructions([id], instruction.projectId);
+      await this.analyticsAIAdaptor.deleteInstructions([id], instruction.projectId);
       await tx.commit();
     } catch (e: any) {
       await tx.rollback();
@@ -177,12 +177,12 @@ export class InstructionService implements IInstructionService {
       status === InstructionStatus.FINISHED ||
       status === InstructionStatus.FAILED;
 
-    let res = await this.wrenAIAdaptor.getInstructionResult(queryId);
+    let res = await this.analyticsAIAdaptor.getInstructionResult(queryId);
     let retryCount = 0;
 
     while (!isFinalStatus(res.status) && retryCount < maxRetries) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      res = await this.wrenAIAdaptor.getInstructionResult(queryId);
+      res = await this.analyticsAIAdaptor.getInstructionResult(queryId);
       retryCount++;
     }
 

@@ -4,7 +4,7 @@ from typing import Any, Dict, get_type_hints
 
 from fastapi import APIRouter, HTTPException
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 router = APIRouter()
 
 

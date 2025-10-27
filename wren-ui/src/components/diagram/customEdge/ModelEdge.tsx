@@ -39,7 +39,7 @@ const ModelEdge = ({
   const isPopoverShow = data.highlight;
   const style = isPopoverShow
     ? {
-        stroke: 'var(--geekblue-6)',
+        stroke: 'var(--rust-orange-6)',
         strokeWidth: 1.5,
       }
     : { stroke: 'var(--gray-5)' };

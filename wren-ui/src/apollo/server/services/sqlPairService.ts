@@ -1,5 +1,5 @@
 import { SqlPair } from '@server/repositories';
-import { IWrenAIAdaptor } from '@server/adaptors/wrenAIAdaptor';
+import { IAnalyticsAIAdaptor } from '@server/adaptors/analyticsAIAdaptor';
 import { ISqlPairRepository } from '@server/repositories/sqlPairRepository';
 import { getLogger } from '@server/utils';
 import { chunk } from 'lodash';
@@ -8,8 +8,8 @@ import { Project } from '../repositories';
 import { IIbisAdaptor } from '../adaptors/ibisAdaptor';
 import {
   DialectSQL,
-  WrenSQL,
-  WrenAILanguage,
+  AnalyticsSQL,
+  AnalyticsAILanguage,
   SqlPairResult,
   SqlPairStatus,
   QuestionsResult,
@@ -53,32 +53,32 @@ export interface ISqlPairService {
   modelSubstitute(
     sql: DialectSQL,
     options: ModelSubstituteOptions,
-  ): Promise<WrenSQL>;
+  ): Promise<AnalyticsSQL>;
 }
 
 export class SqlPairService implements ISqlPairService {
   private sqlPairRepository: ISqlPairRepository;
-  private wrenAIAdaptor: IWrenAIAdaptor;
+  private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private ibisAdaptor: IIbisAdaptor;
 
   constructor({
     sqlPairRepository,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     ibisAdaptor,
   }: {
     sqlPairRepository: ISqlPairRepository;
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
     ibisAdaptor: IIbisAdaptor;
   }) {
     this.sqlPairRepository = sqlPairRepository;
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
     this.ibisAdaptor = ibisAdaptor;
   }
 
   public async modelSubstitute(
     sql: DialectSQL,
     options: ModelSubstituteOptions,
-  ): Promise<WrenSQL> {
+  ): Promise<AnalyticsSQL> {
     const { manifest: mdl, project } = options;
     const { type: dataSource, connectionInfo } = project;
     if (dataSource === DataSourceName.DUCKDB) {
@@ -106,10 +106,10 @@ export class SqlPairService implements ISqlPairService {
   ): Promise<string[]> {
     try {
       const configurations = {
-        language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+        language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       };
 
-      const { queryId } = await this.wrenAIAdaptor.generateQuestions({
+      const { queryId } = await this.analyticsAIAdaptor.generateQuestions({
         projectId: project.id,
         configurations,
         sqls,
@@ -145,7 +145,7 @@ export class SqlPairService implements ISqlPairService {
         },
         { tx },
       );
-      const { queryId } = await this.wrenAIAdaptor.deploySqlPair(
+      const { queryId } = await this.analyticsAIAdaptor.deploySqlPair(
         projectId,
         newPair,
       );
@@ -182,7 +182,7 @@ export class SqlPairService implements ISqlPairService {
     for (const pairs of chunks) {
       await Promise.allSettled(
         pairs.map(async (pair) => {
-          const { queryId } = await this.wrenAIAdaptor.deploySqlPair(
+          const { queryId } = await this.analyticsAIAdaptor.deploySqlPair(
             projectId,
             pair,
           );
@@ -198,7 +198,7 @@ export class SqlPairService implements ISqlPairService {
             `deploy sql pair failed. ${errorPairs.map((pair) => pair.question).join(', ')}`,
           );
           await tx.rollback();
-          await this.wrenAIAdaptor.deleteSqlPairs(
+          await this.analyticsAIAdaptor.deleteSqlPairs(
             projectId,
             successPairs.map((pair) => pair.id),
           );
@@ -249,7 +249,7 @@ export class SqlPairService implements ISqlPairService {
         updatedData,
         { tx },
       );
-      const { queryId } = await this.wrenAIAdaptor.deploySqlPair(
+      const { queryId } = await this.analyticsAIAdaptor.deploySqlPair(
         projectId,
         updatedSqlPair,
       );
@@ -285,7 +285,7 @@ export class SqlPairService implements ISqlPairService {
     const tx = await this.sqlPairRepository.transaction();
     try {
       await this.sqlPairRepository.deleteOne(sqlPairId, { tx });
-      await this.wrenAIAdaptor.deleteSqlPairs(projectId, [sqlPairId]);
+      await this.analyticsAIAdaptor.deleteSqlPairs(projectId, [sqlPairId]);
       await tx.commit();
       return true;
     } catch (error) {
@@ -300,10 +300,10 @@ export class SqlPairService implements ISqlPairService {
   private async waitUntilSqlPairResult(
     queryId: string,
   ): Promise<SqlPairResult> {
-    let result = await this.wrenAIAdaptor.getSqlPairResult(queryId);
+    let result = await this.analyticsAIAdaptor.getSqlPairResult(queryId);
     while (!this.isFinishedState(result.status)) {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      result = await this.wrenAIAdaptor.getSqlPairResult(queryId);
+      result = await this.analyticsAIAdaptor.getSqlPairResult(queryId);
     }
     return result;
   }
@@ -311,14 +311,14 @@ export class SqlPairService implements ISqlPairService {
   private async waitQuestionGenerateResult(
     queryId: string,
   ): Promise<Partial<QuestionsResult>> {
-    let result = await this.wrenAIAdaptor.getQuestionsResult(queryId);
+    let result = await this.analyticsAIAdaptor.getQuestionsResult(queryId);
     while (
       ![QuestionsStatus.SUCCEEDED, QuestionsStatus.FAILED].includes(
         result.status,
       )
     ) {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      result = await this.wrenAIAdaptor.getQuestionsResult(queryId);
+      result = await this.analyticsAIAdaptor.getQuestionsResult(queryId);
     }
     return result;
   }

@@ -28,7 +28,7 @@ const Wrapper = ({ children }) => {
     >
       <Logo size={48} color="var(--gray-8)" />
       <div className="text-md text-medium gray-8 mt-3">
-        Know more about your data
+        Discover insights from your data
       </div>
       {children}
     </div>
@@ -73,14 +73,14 @@ function RecommendedQuestionsInstruction(props) {
       <Button className="mt-6" {...buttonProps} />
       {generating && (
         <Text className="mt-3 text-sm gray-6">
-          Thinking of good questions for you... (about 1 minute)
+          Generating relevant queries for you... (about 1 minute)
         </Text>
       )}
       {!generating && showRetry && (
         <Text className="mt-3 text-sm gray-6 text-center">
-          We couldn't think of questions right now.
+          Unable to generate queries at this time.
           <br />
-          Let's try again later.
+          Please try again later.
         </Text>
       )}
     </Wrapper>

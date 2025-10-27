@@ -13,7 +13,7 @@ import { GroupedQuestion } from '@/hooks/useRecommendedQuestionsInstruction';
 const CategorySectionBlock = styled.div`
   background: var(--gray-1);
   border: 1px solid var(--gray-4);
-  border-radius: 4px;
+  border-radius: 12px;
   padding: 16px;
 `;
 
@@ -24,11 +24,11 @@ const QuestionBlock = styled.div`
   transition: border-color ease 0.2s;
 
   &:hover:not(.is-disabled) {
-    border-color: var(--geekblue-6) !important;
+    border-color: var(--rust-orange-6) !important;
   }
 
   &.is-active {
-    border-color: var(--geekblue-6) !important;
+    border-color: var(--rust-orange-6) !important;
   }
 
   &.is-disabled {
@@ -114,13 +114,13 @@ export default function RecommendedQuestionsPrompt(props: Props) {
 
   return (
     <div className="bg-gray-2 px-10 py-6">
-      <div className="d-flex align-center mb-3">
+      <div className="d-flex align-center mb-3 rounded-lg">
         <Logo size={24} color="var(--gray-8)" />
         <div className="text-md text-medium gray-8 mx-3">
-          Know more about your data.
+          Discover insights from your data.
         </div>
         <div className="text-medium gray-7">
-          Try asking some of the following questions
+          Explore these suggested queries
         </div>
       </div>
       <Space
@@ -147,7 +147,7 @@ export default function RecommendedQuestionsPrompt(props: Props) {
                 size="small"
                 icon={isExpanded ? <MinusOutlined /> : <ColumnHeightOutlined />}
               >
-                {isExpanded ? 'Collapse' : 'Expand all'}
+                {isExpanded ? 'Show less' : 'Show more'}
               </Button>
             </div>
           )}

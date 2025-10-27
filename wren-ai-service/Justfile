@@ -1,69 +1,242 @@
-GREEN := "\u{001b}[32m"
-YELLOW := "\u{001b}[33m"
-RESET := "\u{001b}[0m"
+# Justfile for Wren AI Service Development
 
-## todo: consider to support --override flag to override existing files
-init dev='--dev':
-	@if [ ! -f config.yaml ]; then \
-		echo "{{GREEN}}config.yaml does not exist. Creating from example...{{RESET}}"; \
-		cp tools/config/config.example.yaml config.yaml; \
-	else \
-		echo "{{YELLOW}}config.yaml already exists. Skipping creation.{{RESET}}"; \
-	fi 
+# Variables
+python := "python3"
+poetry := "poetry"
 
-	@if [ {{dev}} = "--dev" ] || [ {{dev}} != "--non-dev" ]; then \
-		if [ ! -f .env.dev ]; then \
-				echo "{{GREEN}}.env.dev does not exist. Creating from example...{{RESET}}"; \
-				cp tools/config/.env.dev.example .env.dev; \
-		else \
-			echo "{{YELLOW}}.env.dev already exists. Skipping creation.{{RESET}}"; \
-		fi \
-	fi
+# Default recipe
+default:
+    @just --list
 
-up: prepare-files
-	docker compose -f ./tools/dev/docker-compose-dev.yaml --env-file ./tools/dev/.env up -d
+# Setup & Installation
+# ====================
 
+# Initialize project (create .env.dev and config.yaml)
+init:
+    @echo "🚀 Initializing project..."
+    @if [ ! -f .env.dev ]; then cp .env.dev.example .env.dev 2>/dev/null || echo "# Add your environment variables here" > .env.dev; fi
+    @if [ ! -f config.yaml ]; then cp tools/config/config.example.yaml config.yaml 2>/dev/null || echo "Created config.yaml"; fi
+    @echo "✅ Project initialized! Please edit .env.dev and config.yaml"
+
+# Install dependencies
+install:
+    {{poetry}} install
+
+# Install with dev dependencies
+install-dev:
+    {{poetry}} install --with dev,eval,test
+
+# Development
+# ===========
+
+# Start development server
+start:
+    {{poetry}} run python -m src
+
+# Start docker containers (Qdrant, etc.)
+up:
+    docker-compose -f tools/dev/docker-compose-dev.yaml up -d
+
+# Stop docker containers
 down:
-	docker compose -f ./tools/dev/docker-compose-dev.yaml --env-file ./tools/dev/.env down
+    docker-compose -f tools/dev/docker-compose-dev.yaml down
 
-start: force_update_config
-	poetry run python -m src.__main__
+# Restart docker containers
+restart:
+    @just down
+    @just up
 
-curate_eval_data:
-	poetry run streamlit run eval/data_curation/app.py
+# Code Quality
+# ============
 
-prep dataset='spider1.0':
-	poetry run python -m eval.preparation --dataset {{dataset}}
+# Format code with black and isort
+format:
+    {{poetry}} run black src/ tests/
+    {{poetry}} run isort src/ tests/
 
-predict dataset pipeline='ask':
-    poetry run python -u eval/prediction.py --file {{dataset}} --pipeline {{pipeline}}
+# Run linter (ruff)
+lint:
+    {{poetry}} run ruff check src/ tests/
 
-eval prediction_result semantics='--no-semantics':
-    poetry run python -u eval/evaluation.py --file {{prediction_result}} {{semantics}}
+# Fix linting issues automatically
+lint-fix:
+    {{poetry}} run ruff check --fix src/ tests/
 
-test test_args='': up && down
-	poetry run pytest -s {{test_args}} --ignore tests/pytest/test_usecases.py
+# Run type checker (mypy)
+typecheck:
+    {{poetry}} run mypy src/
 
-test-usecases usecases='all' lang='en':
-	poetry run python -m tests.pytest.test_usecases --usecases {{usecases}} --lang {{lang}}
+# Run all checks (format, lint, typecheck)
+check-all:
+    @echo "📋 Running all checks..."
+    @just format
+    @just lint
+    @just typecheck
+    @echo "✅ All checks passed!"
 
+# Testing
+# =======
+
+# Run all tests
+test:
+    {{poetry}} run pytest tests/pytest -v
+
+# Run tests with coverage
+test-cov:
+    {{poetry}} run pytest tests/pytest --cov=src --cov-report=html --cov-report=term
+
+# Run tests in watch mode
+test-watch:
+    {{poetry}} run ptw tests/pytest -- -v
+
+# Run specific test file
+test-file FILE:
+    {{poetry}} run pytest {{FILE}} -v
+
+# Run load test
 load-test:
-	poetry run python -m tests.locust.locust_script
+    {{poetry}} run locust -f tests/locust/locustfile.py --config tests/locust/locust.conf
 
-prepare-files:
-	# only remove files related to engine and ui
-	rm -rf tools/dev/etc/duckdb tools/dev/etc/mdl tools/dev/etc/config.properties tools/dev/etc/db.sqlite3 tools/dev/etc/archived
-	mkdir -p tools/dev/etc
-	cp tools/dev/config.properties.example tools/dev/etc/config.properties
-	mkdir -p tools/dev/etc/mdl
-	echo "{\"catalog\": \"test_catalog\", \"schema\": \"test_schema\", \"models\": []}" \\
-		> tools/dev/etc/mdl/sample.json
+# Metrics & Analysis
+# ==================
 
-force_update_config:
-	poetry run python -m src.force_update_config
+# Generate complexity metrics
+metrics-complexity:
+    @echo "📊 Calculating code complexity..."
+    {{poetry}} run radon cc src/ -s
 
-run-sql mdl_path="" data_source="" sample_dataset="":
-	poetry run python tools/run_sql.py --mdl-path "{{mdl_path}}" --data-source "{{data_source}}" --sample-dataset "{{sample_dataset}}"
+# Generate maintainability metrics
+metrics-maintainability:
+    {{poetry}} run radon mi src/ -s
 
-mdl-to-str mdl_path="":
-	poetry run python tools/mdl_to_str.py -p {{mdl_path}}
+# Generate all metrics
+metrics:
+    @echo "📊 Generating all metrics..."
+    @echo "\n=== Cyclomatic Complexity ==="
+    @just metrics-complexity
+    @echo "\n=== Maintainability Index ==="
+    @just metrics-maintainability
+    @echo "\n=== Test Coverage ==="
+    @just test-cov
+    @echo "\n=== Type Coverage ==="
+    @just typecheck
+
+# Database
+# ========
+
+# Clean Qdrant database
+clean-db:
+    @echo "🗑️  Cleaning Qdrant database..."
+    docker-compose -f tools/dev/docker-compose-dev.yaml down -v
+    @echo "✅ Database cleaned!"
+
+# Utilities
+# =========
+
+# Clean Python cache files
+clean:
+    find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+    find . -type f -name "*.pyc" -delete 2>/dev/null || true
+    find . -type f -name "*.pyo" -delete 2>/dev/null || true
+    find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+    find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+    find . -type d -name ".mypy_cache" -exec rm -rf {} + 2>/dev/null || true
+    find . -type d -name ".ruff_cache" -exec rm -rf {} + 2>/dev/null || true
+    rm -rf htmlcov/ .coverage 2>/dev/null || true
+    @echo "✅ Cleaned Python cache files!"
+
+# Show project structure
+tree:
+    tree -I '__pycache__|*.pyc|node_modules|.git|.venv|htmlcov' -L 3 src/
+
+# Refactoring Helpers
+# ===================
+
+# Generate refactoring report
+refactor-report:
+    @echo "📋 Generating refactoring report..."
+    @mkdir -p reports
+    @echo "=== Complexity Report ===" > reports/refactor-report-$(date +%Y%m%d).txt
+    @just metrics-complexity >> reports/refactor-report-$(date +%Y%m%d).txt
+    @echo "\n=== Test Coverage ===" >> reports/refactor-report-$(date +%Y%m%d).txt
+    @{{poetry}} run pytest tests/pytest --cov=src --cov-report=term >> reports/refactor-report-$(date +%Y%m%d).txt
+    @echo "✅ Report saved to reports/refactor-report-$(date +%Y%m%d).txt"
+
+# Check if code follows refactoring guidelines
+refactor-check:
+    @echo "🔍 Checking refactoring guidelines..."
+    @echo "1. Checking function length (should be < 50 lines)..."
+    @{{poetry}} run radon raw src/ -s | grep -E "LOC: [5-9][0-9]|LOC: [0-9]{3,}" || echo "✅ All functions under 50 lines"
+    @echo "2. Checking complexity (should be < 10)..."
+    @{{poetry}} run radon cc src/ -s -n C || echo "✅ All functions have acceptable complexity"
+    @echo "3. Checking test coverage (should be > 80%)..."
+    @{{poetry}} run pytest tests/pytest --cov=src --cov-fail-under=80 -q || echo "⚠️  Test coverage below 80%"
+    @echo "4. Checking type hints..."
+    @{{poetry}} run mypy src/ --strict || echo "⚠️  Some type errors found"
+
+# Documentation
+# =============
+
+# Generate API documentation
+docs:
+    @echo "📚 Generating API documentation..."
+    {{poetry}} run pdoc src/ -o docs/api --html
+
+# Serve documentation locally
+docs-serve:
+    {{poetry}} run pdoc src/ --http localhost:8080
+
+# Deployment
+# ==========
+
+# Build Docker image
+build:
+    docker build -f docker/Dockerfile -t wren-ai-service:local .
+
+# Run Docker container
+run-docker:
+    docker run -p 5555:5555 --env-file .env.dev -v $(pwd)/config.yaml:/app/config.yaml wren-ai-service:local
+
+# Pre-commit
+# ==========
+
+# Install pre-commit hooks
+pre-commit-install:
+    {{poetry}} run pre-commit install
+
+# Run pre-commit on all files
+pre-commit-all:
+    {{poetry}} run pre-commit run --all-files
+
+# Help
+# ====
+
+# Show detailed help
+help:
+    @echo "📖 Wren AI Service - Development Commands"
+    @echo ""
+    @echo "Setup:"
+    @echo "  just init              - Initialize project"
+    @echo "  just install           - Install dependencies"
+    @echo "  just install-dev       - Install with dev dependencies"
+    @echo ""
+    @echo "Development:"
+    @echo "  just start             - Start development server"
+    @echo "  just up                - Start Docker containers"
+    @echo "  just down              - Stop Docker containers"
+    @echo ""
+    @echo "Code Quality:"
+    @echo "  just format            - Format code"
+    @echo "  just lint              - Run linter"
+    @echo "  just typecheck         - Run type checker"
+    @echo "  just check-all         - Run all checks"
+    @echo ""
+    @echo "Testing:"
+    @echo "  just test              - Run tests"
+    @echo "  just test-cov          - Run tests with coverage"
+    @echo "  just test-watch        - Run tests in watch mode"
+    @echo ""
+    @echo "Refactoring:"
+    @echo "  just refactor-report   - Generate refactoring report"
+    @echo "  just refactor-check    - Check refactoring guidelines"
+    @echo "  just metrics           - Show all metrics"

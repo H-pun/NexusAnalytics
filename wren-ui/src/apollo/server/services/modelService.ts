@@ -23,7 +23,7 @@ import {
   CheckCalculatedFieldCanQueryData,
 } from '@server/models';
 import { IMDLService } from './mdlService';
-import { IWrenEngineAdaptor } from '../adaptors/wrenEngineAdaptor';
+import { IAnalyticsEngineAdaptor } from '../adaptors/analyticsEngineAdaptor';
 import { ValidationRules } from '@server/adaptors/ibisAdaptor';
 import { isEmpty, capitalize } from 'lodash';
 import {} from '@server/utils/regex';
@@ -76,7 +76,7 @@ export class ModelService implements IModelService {
   private relationRepository: IRelationRepository;
   private viewRepository: IViewRepository;
   private mdlService: IMDLService;
-  private wrenEngineAdaptor: IWrenEngineAdaptor;
+  private analyticsEngineAdaptor: IAnalyticsEngineAdaptor;
   private queryService: IQueryService;
 
   constructor({
@@ -86,7 +86,7 @@ export class ModelService implements IModelService {
     relationRepository,
     viewRepository,
     mdlService,
-    wrenEngineAdaptor,
+    analyticsEngineAdaptor,
     queryService,
   }: {
     projectService: IProjectService;
@@ -95,7 +95,7 @@ export class ModelService implements IModelService {
     relationRepository: IRelationRepository;
     viewRepository: IViewRepository;
     mdlService: IMDLService;
-    wrenEngineAdaptor: IWrenEngineAdaptor;
+    analyticsEngineAdaptor: IAnalyticsEngineAdaptor;
     queryService: IQueryService;
   }) {
     this.projectService = projectService;
@@ -104,7 +104,7 @@ export class ModelService implements IModelService {
     this.relationRepository = relationRepository;
     this.viewRepository = viewRepository;
     this.mdlService = mdlService;
-    this.wrenEngineAdaptor = wrenEngineAdaptor;
+    this.analyticsEngineAdaptor = analyticsEngineAdaptor;
     this.queryService = queryService;
   }
 
@@ -642,7 +642,7 @@ export class ModelService implements IModelService {
     // validate calculated field can query
     const dataSource = project.type;
     if (dataSource === DataSourceName.DUCKDB) {
-      return await this.wrenEngineAdaptor.validateColumnIsValid(
+      return await this.analyticsEngineAdaptor.validateColumnIsValid(
         manifest,
         modelName,
         referenceName,

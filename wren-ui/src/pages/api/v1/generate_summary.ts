@@ -14,14 +14,14 @@ import {
   TextBasedAnswerInput,
   TextBasedAnswerResult,
   TextBasedAnswerStatus,
-  WrenAILanguage,
+  AnalyticsAILanguage,
 } from '@/apollo/server/models/adaptor';
 import { getLogger } from '@server/utils';
 
 const logger = getLogger('API_GENERATE_SUMMARY');
 logger.level = 'debug';
 
-const { projectService, wrenAIAdaptor, deployService, queryService } =
+const { projectService, analyticsAIAdaptor, deployService, queryService } =
   components;
 
 interface GenerateSummaryRequest {
@@ -97,13 +97,13 @@ export default async function handler(
       threadId: newThreadId,
       configurations: {
         language:
-          language || WrenAILanguage[project.language] || WrenAILanguage.EN,
+          language || AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       },
     };
 
     // Start the summary generation task
     const task =
-      await wrenAIAdaptor.createTextBasedAnswer(textBasedAnswerInput);
+      await analyticsAIAdaptor.createTextBasedAnswer(textBasedAnswerInput);
 
     if (!task || !task.queryId) {
       throw new ApiError('Failed to start summary generation task', 500);
@@ -113,7 +113,7 @@ export default async function handler(
     const deadline = Date.now() + MAX_WAIT_TIME;
     let result: TextBasedAnswerResult;
     while (true) {
-      result = await wrenAIAdaptor.getTextBasedAnswerResult(task.queryId);
+      result = await analyticsAIAdaptor.getTextBasedAnswerResult(task.queryId);
       if (
         result.status === TextBasedAnswerStatus.SUCCEEDED ||
         result.status === TextBasedAnswerStatus.FAILED
@@ -138,7 +138,7 @@ export default async function handler(
     // Stream the content to get the summary
     let summary = '';
     if (result.status === TextBasedAnswerStatus.SUCCEEDED) {
-      const stream = await wrenAIAdaptor.streamTextBasedAnswer(task.queryId);
+      const stream = await analyticsAIAdaptor.streamTextBasedAnswer(task.queryId);
 
       // Collect the streamed content
       const streamPromise = new Promise<void>((resolve, reject) => {

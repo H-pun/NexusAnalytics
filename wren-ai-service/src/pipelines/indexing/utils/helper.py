@@ -9,7 +9,7 @@ import orjson
 
 from src.pipelines.indexing import clean_display_name
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-service")
 
 
 class Helper:

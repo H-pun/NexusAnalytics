@@ -1,14 +1,14 @@
-import { IWrenAIAdaptor } from '@server/adaptors/wrenAIAdaptor';
+import { IAnalyticsAIAdaptor } from '@server/adaptors/analyticsAIAdaptor';
 import {
   AskResultStatus,
   RecommendationQuestionsResult,
   RecommendationQuestionsInput,
   RecommendationQuestion,
-  WrenAIError,
+  AnalyticsAIError,
   RecommendationQuestionStatus,
   ChartStatus,
   ChartAdjustmentOption,
-  WrenAILanguage,
+  AnalyticsAILanguage,
 } from '@server/models/adaptor';
 import { IDeployService } from './deployService';
 import { IProjectService } from './projectService';
@@ -84,7 +84,7 @@ export enum RecommendQuestionResultStatus {
 export interface ThreadRecommendQuestionResult {
   status: RecommendQuestionResultStatus;
   questions: RecommendationQuestion[];
-  error?: WrenAIError;
+  error?: AnalyticsAIError;
 }
 
 export interface InstantRecommendedQuestionsInput {
@@ -284,22 +284,22 @@ class BreakdownBackgroundTracker {
   // tasks is a kv pair of task id and thread response
   private tasks: Record<number, ThreadResponse> = {};
   private intervalTime: number;
-  private wrenAIAdaptor: IWrenAIAdaptor;
+  private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private threadResponseRepository: IThreadResponseRepository;
   private runningJobs = new Set();
   private telemetry: PostHogTelemetry;
 
   constructor({
     telemetry,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     threadResponseRepository,
   }: {
     telemetry: PostHogTelemetry;
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
     threadResponseRepository: IThreadResponseRepository;
   }) {
     this.telemetry = telemetry;
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
     this.threadResponseRepository = threadResponseRepository;
     this.intervalTime = 1000;
     this.start();
@@ -322,7 +322,7 @@ class BreakdownBackgroundTracker {
           const breakdownDetail = threadResponse.breakdownDetail;
 
           // get the latest result from AI service
-          const result = await this.wrenAIAdaptor.getAskDetailResult(
+          const result = await this.analyticsAIAdaptor.getAskDetailResult(
             breakdownDetail.queryId,
           );
 
@@ -399,7 +399,7 @@ class BreakdownBackgroundTracker {
 }
 
 export class AskingService implements IAskingService {
-  private wrenAIAdaptor: IWrenAIAdaptor;
+  private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private deployService: IDeployService;
   private projectService: IProjectService;
   private viewRepository: IViewRepository;
@@ -419,7 +419,7 @@ export class AskingService implements IAskingService {
 
   constructor({
     telemetry,
-    wrenAIAdaptor,
+    analyticsAIAdaptor,
     deployService,
     projectService,
     viewRepository,
@@ -431,7 +431,7 @@ export class AskingService implements IAskingService {
     askingTaskTracker,
   }: {
     telemetry: PostHogTelemetry;
-    wrenAIAdaptor: IWrenAIAdaptor;
+    analyticsAIAdaptor: IAnalyticsAIAdaptor;
     deployService: IDeployService;
     projectService: IProjectService;
     viewRepository: IViewRepository;
@@ -442,7 +442,7 @@ export class AskingService implements IAskingService {
     mdlService: IMDLService;
     askingTaskTracker: IAskingTaskTracker;
   }) {
-    this.wrenAIAdaptor = wrenAIAdaptor;
+    this.analyticsAIAdaptor = analyticsAIAdaptor;
     this.deployService = deployService;
     this.projectService = projectService;
     this.viewRepository = viewRepository;
@@ -452,12 +452,12 @@ export class AskingService implements IAskingService {
     this.queryService = queryService;
     this.breakdownBackgroundTracker = new BreakdownBackgroundTracker({
       telemetry,
-      wrenAIAdaptor,
+      analyticsAIAdaptor,
       threadResponseRepository,
     });
     this.textBasedAnswerBackgroundTracker =
       new TextBasedAnswerBackgroundTracker({
-        wrenAIAdaptor,
+        analyticsAIAdaptor,
         threadResponseRepository,
         projectService,
         deployService,
@@ -465,24 +465,24 @@ export class AskingService implements IAskingService {
       });
     this.chartBackgroundTracker = new ChartBackgroundTracker({
       telemetry,
-      wrenAIAdaptor,
+      analyticsAIAdaptor,
       threadResponseRepository,
     });
     this.chartAdjustmentBackgroundTracker =
       new ChartAdjustmentBackgroundTracker({
         telemetry,
-        wrenAIAdaptor,
+        analyticsAIAdaptor,
         threadResponseRepository,
       });
     this.threadRecommendQuestionBackgroundTracker =
       new ThreadRecommendQuestionBackgroundTracker({
         telemetry,
-        wrenAIAdaptor,
+        analyticsAIAdaptor,
         threadRepository,
       });
     this.adjustmentBackgroundTracker = new AdjustmentBackgroundTaskTracker({
       telemetry,
-      wrenAIAdaptor,
+      analyticsAIAdaptor,
       askingTaskRepository,
       threadResponseRepository,
     });
@@ -511,7 +511,7 @@ export class AskingService implements IAskingService {
         ? RecommendQuestionResultStatus[thread.questionsStatus]
         : res.status;
       res.questions = thread.questions || [];
-      res.error = thread.questionsError as WrenAIError;
+      res.error = thread.questionsError as AnalyticsAIError;
     }
     return res;
   }
@@ -548,7 +548,7 @@ export class AskingService implements IAskingService {
       ...this.getThreadRecommendationQuestionsConfig(project),
     };
 
-    const result = await this.wrenAIAdaptor.generateRecommendationQuestions(
+    const result = await this.analyticsAIAdaptor.generateRecommendationQuestions(
       recommendQuestionData,
     );
     // reset thread recommended questions
@@ -791,7 +791,7 @@ export class AskingService implements IAskingService {
     }
 
     // 1. create a task on AI service to generate the detail
-    const response = await this.wrenAIAdaptor.generateAskDetail({
+    const response = await this.analyticsAIAdaptor.generateAskDetail({
       query: threadResponse.question,
       sql: threadResponse.sql,
       configurations: { language },
@@ -855,7 +855,7 @@ export class AskingService implements IAskingService {
     }
 
     // 1. create a task on AI service to generate the chart
-    const response = await this.wrenAIAdaptor.generateChart({
+    const response = await this.analyticsAIAdaptor.generateChart({
       query: threadResponse.question,
       sql: threadResponse.sql,
       configurations,
@@ -892,7 +892,7 @@ export class AskingService implements IAskingService {
     }
 
     // 1. create a task on AI service to adjust the chart
-    const response = await this.wrenAIAdaptor.adjustChart({
+    const response = await this.analyticsAIAdaptor.adjustChart({
       query: threadResponse.question,
       sql: threadResponse.sql,
       adjustmentOption: input,
@@ -1002,7 +1002,7 @@ export class AskingService implements IAskingService {
     const project = await this.projectService.getCurrentProject();
     const { manifest } = await this.deployService.getLastDeployment(project.id);
 
-    const response = await this.wrenAIAdaptor.generateRecommendationQuestions({
+    const response = await this.analyticsAIAdaptor.generateRecommendationQuestions({
       manifest,
       previousQuestions: input.previousQuestions,
       ...this.getThreadRecommendationQuestionsConfig(project),
@@ -1014,7 +1014,7 @@ export class AskingService implements IAskingService {
     queryId: string,
   ): Promise<RecommendationQuestionsResult> {
     const response =
-      await this.wrenAIAdaptor.getRecommendationQuestionsResult(queryId);
+      await this.analyticsAIAdaptor.getRecommendationQuestionsResult(queryId);
     return response;
   }
 
@@ -1184,7 +1184,7 @@ export class AskingService implements IAskingService {
       maxCategories: config.threadRecommendationQuestionMaxCategories,
       maxQuestions: config.threadRecommendationQuestionsMaxQuestions,
       configuration: {
-        language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+        language: AnalyticsAILanguage[project.language] || AnalyticsAILanguage.EN,
       },
     };
   }

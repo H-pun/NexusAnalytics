@@ -27,7 +27,7 @@ def test_transform():
         },
         {
             "type": "engine",
-            "provider": "wren_ui",
+            "provider": "analytics_ui",
             "kwargs": {"host": "localhost", "port": 8000},
         },
         {
@@ -38,7 +38,7 @@ def test_transform():
                     "llm": "openai_llm.gpt-4",
                     "embedder": "openai_embedder.text-embedding-ada-002",
                     "document_store": "qdrant",
-                    "engine": "wren_ui",
+                    "engine": "analytics_ui",
                 }
             ],
         },
@@ -50,7 +50,7 @@ def test_transform():
     assert "openai_llm.gpt-4" in result.providers["llm"]
     assert "openai_embedder.text-embedding-ada-002" in result.providers["embedder"]
     assert "qdrant" in result.providers["document_store"]
-    assert "wren_ui" in result.providers["engine"]
+    assert "analytics_ui" in result.providers["engine"]
     assert "indexing" in result.pipelines
 
 
@@ -87,7 +87,7 @@ def test_generate_components(mocker: MockerFixture):
                     "llm": "openai_llm.gpt-4",
                     "embedder": "openai_embedder.text-embedding-ada-002",
                     "document_store": "qdrant",
-                    "engine": "wren_ui",
+                    "engine": "analytics_ui",
                 }
             ],
         },
