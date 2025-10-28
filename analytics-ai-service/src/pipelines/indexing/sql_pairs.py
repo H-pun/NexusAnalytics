@@ -190,7 +190,7 @@ class SqlPairs(EnhancedBasicPipeline):
         )
 
     @observe(name="SQL Pairs Indexing")
-    async def run(
+    async def _execute(
         self,
         mdl_str: str,
         project_id: str = "",
@@ -212,6 +212,18 @@ class SqlPairs(EnhancedBasicPipeline):
 
         return await self._pipe.execute(["write"], inputs=input)
 
+    async def run(
+        self,
+        mdl_str: str,
+        project_id: str = "",
+        external_pairs: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        return await self._execute(
+            mdl_str=mdl_str,
+            project_id=project_id,
+            external_pairs=external_pairs,
+        )
+
     @observe(name="Clean Documents for SQL Pairs")
     async def clean(
         self,
@@ -225,3 +237,6 @@ class SqlPairs(EnhancedBasicPipeline):
             project_id=project_id,
             delete_all=delete_all,
         )
+
+
+

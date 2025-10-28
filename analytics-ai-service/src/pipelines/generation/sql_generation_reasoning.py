@@ -178,7 +178,7 @@ class SQLGenerationReasoning(EnhancedBasicPipeline):
                 break
 
     @observe(name="SQL Generation Reasoning")
-    async def run(
+    async def _execute(
         self,
         query: str,
         contexts: list[str],
@@ -203,3 +203,24 @@ class SQLGenerationReasoning(EnhancedBasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        query: str,
+        contexts: list[str],
+        sql_samples: Optional[list[dict]] = None,
+        instructions: Optional[list[str]] = None,
+        configuration: Configuration | dict = Configuration(),
+        query_id: Optional[str] = None,
+    ):
+        return await self._execute(
+            query=query,
+            contexts=contexts,
+            sql_samples=sql_samples,
+            instructions=instructions,
+            configuration=configuration,
+            query_id=query_id,
+        )
+
+
+

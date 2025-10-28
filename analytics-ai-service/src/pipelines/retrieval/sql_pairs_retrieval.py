@@ -143,7 +143,7 @@ class SqlPairsRetrieval(EnhancedBasicPipeline):
         )
 
     @observe(name="SqlPairs Retrieval")
-    async def run(self, query: str, project_id: Optional[str] = None):
+    async def _execute(self, query: str, project_id: Optional[str] = None):
         logger.info("SqlPairs Retrieval pipeline is running...")
         return await self._pipe.execute(
             ["formatted_output"],
@@ -154,3 +154,6 @@ class SqlPairsRetrieval(EnhancedBasicPipeline):
                 **self._configs,
             },
         )
+
+    async def run(self, query: str, project_id: Optional[str] = None):
+        return await self._execute(query=query, project_id=project_id)

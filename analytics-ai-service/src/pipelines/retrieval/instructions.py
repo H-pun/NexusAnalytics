@@ -212,7 +212,7 @@ class Instructions(EnhancedBasicPipeline):
         )
 
     @observe(name="Instructions Retrieval")
-    async def run(
+    async def _execute(
         self, query: str, project_id: Optional[str] = None, scope: str = "sql"
     ):
         logger.info("Instructions Retrieval pipeline is running...")
@@ -226,3 +226,8 @@ class Instructions(EnhancedBasicPipeline):
                 **self._configs,
             },
         )
+
+    async def run(
+        self, query: str, project_id: Optional[str] = None, scope: str = "sql"
+    ):
+        return await self._execute(query=query, project_id=project_id, scope=scope)

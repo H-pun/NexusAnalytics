@@ -9,7 +9,7 @@ from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 from pydantic import BaseModel
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
@@ -317,7 +317,7 @@ QUESTION_RECOMMENDATION_MODEL_KWARGS = {
 }
 
 
-class QuestionRecommendation(BasicPipeline):
+class QuestionRecommendation(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
@@ -339,7 +339,7 @@ class QuestionRecommendation(BasicPipeline):
         )
 
     @observe(name="Question Recommendation")
-    async def run(
+    async def _execute(
         self,
         contexts: list[str],
         previous_questions: list[str] = [],
@@ -362,3 +362,25 @@ class QuestionRecommendation(BasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        contexts: list[str],
+        previous_questions: list[str] = [],
+        categories: list[str] = [],
+        language: str = "en",
+        max_questions: int = 5,
+        max_categories: int = 3,
+        **_,
+    ) -> dict:
+        return await self._execute(
+            contexts=contexts,
+            previous_questions=previous_questions,
+            categories=categories,
+            language=language,
+            max_questions=max_questions,
+            max_categories=max_categories,
+        )
+
+
+

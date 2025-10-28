@@ -197,7 +197,7 @@ class SQLCorrection(EnhancedBasicPipeline):
         )
 
     @observe(name="SQL Correction")
-    async def run(
+    async def _execute(
         self,
         contexts: List[Document],
         invalid_generation_result: Dict[str, str],
@@ -228,3 +228,26 @@ class SQLCorrection(EnhancedBasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        contexts: List[Document],
+        invalid_generation_result: Dict[str, str],
+        instructions: list[dict] | None = None,
+        sql_functions: list[SqlFunction] | None = None,
+        project_id: str | None = None,
+        use_dry_plan: bool = False,
+        allow_dry_plan_fallback: bool = True,
+    ):
+        return await self._execute(
+            contexts=contexts,
+            invalid_generation_result=invalid_generation_result,
+            instructions=instructions,
+            sql_functions=sql_functions,
+            project_id=project_id,
+            use_dry_plan=use_dry_plan,
+            allow_dry_plan_fallback=allow_dry_plan_fallback,
+        )
+
+
+

@@ -9,7 +9,7 @@ from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 from pydantic import BaseModel
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.pipelines.indexing import clean_display_name
@@ -243,7 +243,7 @@ SEMANTICS_DESCRIPTION_MODEL_KWARGS = {
 }
 
 
-class SemanticsDescription(BasicPipeline):
+class SemanticsDescription(EnhancedBasicPipeline):
     def __init__(self, llm_provider: LLMProvider, **_):
         self._components = {
             "prompt_builder": PromptBuilder(template=user_prompt_template),
@@ -260,7 +260,7 @@ class SemanticsDescription(BasicPipeline):
         )
 
     @observe(name="Semantics Description Generation")
-    async def run(
+    async def _execute(
         self,
         user_prompt: str,
         selected_models: list[str],
@@ -278,3 +278,20 @@ class SemanticsDescription(BasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        user_prompt: str,
+        selected_models: list[str],
+        mdl: dict,
+        language: str = "en",
+    ) -> dict:
+        return await self._execute(
+            user_prompt=user_prompt,
+            selected_models=selected_models,
+            mdl=mdl,
+            language=language,
+        )
+
+
+

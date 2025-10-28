@@ -362,7 +362,7 @@ class IntentClassification(EnhancedBasicPipeline):
         )
 
     @observe(name="Intent Classification")
-    async def run(
+    async def _execute(
         self,
         query: str,
         project_id: Optional[str] = None,
@@ -388,3 +388,24 @@ class IntentClassification(EnhancedBasicPipeline):
                 **self._configs,
             },
         )
+
+    async def run(
+        self,
+        query: str,
+        project_id: Optional[str] = None,
+        histories: Optional[list[AskHistory]] = None,
+        sql_samples: Optional[list[dict]] = None,
+        instructions: Optional[list[dict]] = None,
+        configuration: Configuration | dict = Configuration(),
+    ):
+        return await self._execute(
+            query=query,
+            project_id=project_id,
+            histories=histories,
+            sql_samples=sql_samples,
+            instructions=instructions,
+            configuration=configuration,
+        )
+
+
+

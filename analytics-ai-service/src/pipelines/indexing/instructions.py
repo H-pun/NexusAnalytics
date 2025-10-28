@@ -148,7 +148,7 @@ class Instructions(EnhancedBasicPipeline):
         )
 
     @observe(name="Instructions Indexing")
-    async def run(
+    async def _execute(
         self,
         instructions: list[Instruction],
         project_id: str = "",
@@ -165,6 +165,16 @@ class Instructions(EnhancedBasicPipeline):
 
         return await self._pipe.execute(["write"], inputs=input)
 
+    async def run(
+        self,
+        instructions: list[Instruction],
+        project_id: str = "",
+    ) -> Dict[str, Any]:
+        return await self._execute(
+            instructions=instructions,
+            project_id=project_id,
+        )
+
     @observe(name="Clean Documents for Instructions")
     async def clean(
         self,
@@ -178,3 +188,6 @@ class Instructions(EnhancedBasicPipeline):
             project_id=project_id,
             delete_all=delete_all,
         )
+
+
+

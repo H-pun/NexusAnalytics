@@ -185,7 +185,7 @@ class DataAssistance(EnhancedBasicPipeline):
                 break
 
     @observe(name="Data Assistance")
-    async def run(
+    async def _execute(
         self,
         query: str,
         db_schemas: list[str],
@@ -207,3 +207,26 @@ class DataAssistance(EnhancedBasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        query: str,
+        db_schemas: list[str],
+        language: str,
+        query_id: Optional[str] = None,
+        histories: Optional[list[AskHistory]] = None,
+        custom_instruction: Optional[str] = None,
+    ):
+        return await self._execute(
+            query=query,
+            db_schemas=db_schemas,
+            language=language,
+            query_id=query_id,
+            histories=histories,
+            custom_instruction=custom_instruction,
+        )
+
+
+
+
+

@@ -144,7 +144,7 @@ class TableDescription(EnhancedBasicPipeline):
         )
 
     @observe(name="Table Description Indexing")
-    async def run(
+    async def _execute(
         self, mdl_str: str, project_id: Optional[str] = None
     ) -> Dict[str, Any]:
         logger.info(
@@ -160,6 +160,11 @@ class TableDescription(EnhancedBasicPipeline):
             },
         )
 
+    async def run(
+        self, mdl_str: str, project_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        return await self._execute(mdl_str=mdl_str, project_id=project_id)
+
     @observe(name="Clean Documents for Table Description")
     async def clean(self, project_id: Optional[str] = None) -> None:
         await clean(
@@ -167,3 +172,6 @@ class TableDescription(EnhancedBasicPipeline):
             cleaner=self._components["cleaner"],
             project_id=project_id,
         )
+
+
+

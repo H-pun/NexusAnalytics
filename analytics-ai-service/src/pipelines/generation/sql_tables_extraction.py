@@ -9,7 +9,7 @@ from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 from pydantic import BaseModel
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
@@ -147,7 +147,7 @@ SQL_TABLES_EXTRACTION_MODEL_KWARGS = {
 }
 
 
-class SQLTablesExtraction(BasicPipeline):
+class SQLTablesExtraction(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
@@ -169,7 +169,7 @@ class SQLTablesExtraction(BasicPipeline):
         )
 
     @observe(name="Sql Tables Extraction")
-    async def run(
+    async def _execute(
         self,
         sql: str,
     ):
@@ -181,3 +181,12 @@ class SQLTablesExtraction(BasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        sql: str,
+    ):
+        return await self._execute(sql=sql)
+
+
+

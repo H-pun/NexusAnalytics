@@ -10,7 +10,7 @@ from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 from pydantic import BaseModel
 
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
@@ -113,7 +113,7 @@ SQL_DIAGNOSIS_MODEL_KWARGS = {
 }
 
 
-class SQLDiagnosis(BasicPipeline):
+class SQLDiagnosis(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
@@ -135,7 +135,7 @@ class SQLDiagnosis(BasicPipeline):
         )
 
     @observe(name="SQL Diagnosis")
-    async def run(
+    async def _execute(
         self,
         contexts: List[Document],
         original_sql: str,
@@ -156,3 +156,22 @@ class SQLDiagnosis(BasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        contexts: List[Document],
+        original_sql: str,
+        invalid_sql: str,
+        error_message: str,
+        language: str,
+    ):
+        return await self._execute(
+            contexts=contexts,
+            original_sql=original_sql,
+            invalid_sql=invalid_sql,
+            error_message=error_message,
+            language=language,
+        )
+
+
+

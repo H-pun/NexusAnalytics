@@ -8,7 +8,7 @@ from haystack.components.builders.prompt_builder import PromptBuilder
 from langfuse.decorators import observe
 
 from src.core.engine import Engine
-from src.core.pipeline import BasicPipeline
+from src.core.pipeline import EnhancedBasicPipeline
 from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.pipelines.generation.utils.sql import (
@@ -202,7 +202,7 @@ async def post_process(
 ## End of Pipeline
 
 
-class SQLRegeneration(BasicPipeline):
+class SQLRegeneration(EnhancedBasicPipeline):
     def __init__(
         self,
         llm_provider: LLMProvider,
@@ -226,7 +226,7 @@ class SQLRegeneration(BasicPipeline):
         )
 
     @observe(name="SQL Regeneration")
-    async def run(
+    async def _execute(
         self,
         contexts: list[str],
         sql_generation_reasoning: str,
@@ -256,3 +256,32 @@ class SQLRegeneration(BasicPipeline):
                 **self._components,
             },
         )
+
+    async def run(
+        self,
+        contexts: list[str],
+        sql_generation_reasoning: str,
+        sql: str,
+        sql_samples: list[dict] | None = None,
+        instructions: list[dict] | None = None,
+        project_id: str | None = None,
+        has_calculated_field: bool = False,
+        has_metric: bool = False,
+        has_json_field: bool = False,
+        sql_functions: list[SqlFunction] | None = None,
+    ):
+        return await self._execute(
+            contexts=contexts,
+            sql_generation_reasoning=sql_generation_reasoning,
+            sql=sql,
+            sql_samples=sql_samples,
+            instructions=instructions,
+            project_id=project_id,
+            has_calculated_field=has_calculated_field,
+            has_metric=has_metric,
+            has_json_field=has_json_field,
+            sql_functions=sql_functions,
+        )
+
+
+
