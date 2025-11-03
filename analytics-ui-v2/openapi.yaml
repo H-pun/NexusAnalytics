@@ -1,0 +1,19 @@
+openapi: 3.0.0
+info:
+  title: WrenAI API
+  description: Restful API for interacting with Wren AI
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: WrenAI API v1
+paths: {}
+
+
+
+
+
+
+
+
+
+

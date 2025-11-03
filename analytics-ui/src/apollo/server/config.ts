@@ -65,14 +65,14 @@ const defaultConfig = {
   persistCredentialDir: `${process.cwd()}/.tmp`,
 
   // analytics engine
-  analyticsEngineEndpoint: 'http://localhost:8080',
+  analyticsEngineEndpoint: 'http://192.168.18.71:8080',
 
   // analytics AI
-  analyticsAIEndpoint: 'http://localhost:5555',
+  analyticsAIEndpoint: 'http://192.168.18.71:5555',
 
   // ibis server
   experimentalEngineRustVersion: true,
-  ibisServerEndpoint: 'http://127.0.0.1:8000',
+  ibisServerEndpoint: 'http://192.168.18.71:8000',
 
   // encryption
   encryptionPassword: 'sementic',
