@@ -1,10 +1,8 @@
 import logging
-import re
 from abc import ABCMeta, abstractmethod
 from typing import Any, Dict, Optional, Tuple
 
 import aiohttp
-import sqlglot
 from pydantic import BaseModel
 
 logger = logging.getLogger("analytics-service")
@@ -27,41 +25,29 @@ class Engine(metaclass=ABCMeta):
         ...
 
 
-def clean_generation_result(result: str) -> str:
-    def _normalize_whitespace(s: str) -> str:
-        return re.sub(r"\s+", " ", s).strip()
-
-    return (
-        _normalize_whitespace(result)
-        .replace("```sql", "")
-        .replace("```json", "")
-        .replace('"""', "")
-        .replace("'''", "")
-        .replace("```", "")
-        .replace(";", "")
+try:
+    # Hard requirement: Rust extension must be present
+    from analytics_rust_core import (
+        clean_generation_result as _rs_clean_generation_result,
+        remove_limit_statement as _rs_remove_limit_statement,
+        add_quotes as _rs_add_quotes,
     )
+except Exception as e:  # pragma: no cover
+    # Fail fast with clear message
+    raise RuntimeError(
+        "analytics_rust_core module is required but not found. "
+        "Install Rust toolchain and build the extension (maturin build --release), "
+        "then install the generated wheel before starting the service."
+    ) from e
+
+
+def clean_generation_result(result: str) -> str:
+    return _rs_clean_generation_result(result)
 
 
 def remove_limit_statement(sql: str) -> str:
-    pattern = r"\s*LIMIT\s+\d+(\s*;?\s*--.*|\s*;?\s*)$"
-    modified_sql = re.sub(pattern, "", sql, flags=re.IGNORECASE)
-
-    return modified_sql
+    return _rs_remove_limit_statement(sql)
 
 
 def add_quotes(sql: str) -> Tuple[str, str]:
-    try:
-        sql = sql.replace("`", '"')
-        quoted_sql = sqlglot.transpile(
-            sql,
-            read=None,
-            identify=True,
-            error_level=sqlglot.ErrorLevel.RAISE,
-            unsupported_level=sqlglot.ErrorLevel.RAISE,
-        )[0]
-    except Exception as e:
-        logger.exception(f"Error in sqlglot.transpile to {sql}: {e}")
-
-        return "", str(e)
-
-    return quoted_sql, ""
+    return _rs_add_quotes(sql)

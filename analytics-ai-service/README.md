@@ -19,6 +19,10 @@ Please read the [documentation](https://docs.getwren.ai/oss/concept/wren_ai_serv
    ```
 
 3. **Just**: Install [Just](https://github.com/casey/just?tab=readme-ov-file#packages) command runner (version 1.36 or higher)
+4. **Rust Toolchain (untuk Rust extension)**:
+   - Install Rust stable: https://rustup.rs/
+   - Verifikasi: `rustc --version`
+   - (Opsional) Install Maturin: `pip install maturin` atau `cargo install maturin`
 
 ### Step-by-Step Setup
 
@@ -37,6 +41,33 @@ Please read the [documentation](https://docs.getwren.ai/oss/concept/wren_ai_serv
    This creates both `.env.dev` and `config.yaml`. Use `just init --non-dev` to generate only `config.yaml`.
 
     > For Windows, add the line `set shell:= ["bash", "-cu"]` at the start of the Justfile.
+
+3. **Build Rust Extension (analytics_rust_core)**:
+
+   - Development build (local):
+
+     ```bash
+     # dari folder analytics-ai-service
+     cd rust
+     cargo build --release
+     # hasil: target/release/libanalytics_rust_core.(so|dll|dylib)
+     ```
+
+   - Integrasi lokal ke Python (opsi cepat):
+
+     - Salin hasil build ke root project dengan nama `analytics_rust_core.so` (Linux/macOS) atau `analytics_rust_core.pyd` (Windows)
+     - Contoh Linux:
+
+       ```bash
+       cp target/release/libanalytics_rust_core.so ../analytics_rust_core.so
+       ```
+
+   - Alternatif (wheel):
+
+     ```bash
+     maturin build --release
+     pip install target/wheels/analytics_rust_core-*.whl
+     ```
 
 4. **Configure Environment**:
 
