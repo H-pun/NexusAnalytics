@@ -339,7 +339,7 @@ export default function useAskPrompt(threadId?: number) {
     inputProps: {
       placeholder: threadId
         ? 'Ask follow-up questions to explore your data'
-        : 'Ask to explore your data',
+        : 'Ask anything about your data',
     },
   };
 }

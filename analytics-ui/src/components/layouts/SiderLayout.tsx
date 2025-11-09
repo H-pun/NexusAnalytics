@@ -8,7 +8,7 @@ import useModalAction from '@/hooks/useModalAction';
 const { Sider } = Layout;
 
 const basicStyle = css`
-  height: calc(100vh - 48px);
+  height: 100vh;
   overflow: auto;
 `;
 

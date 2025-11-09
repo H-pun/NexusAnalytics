@@ -2,9 +2,25 @@ import { useEffect, useRef, useState } from 'react';
 import { Input, Button } from 'antd';
 import styled from 'styled-components';
 import { attachLoading } from '@/utils/helper';
+import { Database, Paperclip, SendHorizontal } from 'lucide-react';
 
-const PromptButton = styled(Button)`
-  min-width: 72px;
+const StyledTextArea = styled(Input.TextArea)`
+  border: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+
+  &:focus,
+  &:hover {
+    border: none !important;
+    box-shadow: none !important;
+  }
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
 `;
 
 interface Props {
@@ -53,8 +69,8 @@ export default function PromptInput(props: Props) {
   const isDisabled = innerLoading || isProcessing;
 
   return (
-    <>
-      <Input.TextArea
+    <Wrapper>
+      <StyledTextArea
         ref={$promptInput}
         // disable grammarly
         data-gramm="false"
@@ -66,15 +82,34 @@ export default function PromptInput(props: Props) {
         disabled={isDisabled}
         {...inputProps}
       />
-      <PromptButton
-        type="primary"
-        size="large"
-        className="ml-3"
-        onClick={handleAsk}
-        disabled={isDisabled}
-      >
-        Ask
-      </PromptButton>
-    </>
+      <div className="d-flex align-center justify-space-between">
+        <div className="d-flex gap-2">
+          <Button
+            type="text"
+            className="d-flex align-center justify-center"
+            icon={<Paperclip size={16} />}
+            onClick={() => console.log('click')}
+            disabled={isDisabled}
+          />
+
+          <Button
+            type="text"
+            className="d-flex align-center justify-center"
+            icon={<Database size={16} className="mr-1" />}
+            disabled={isDisabled}
+          >
+            Source
+          </Button>
+        </div>
+        <Button
+          type="primary"
+          size="large"
+          className="d-flex align-center justify-center"
+          icon={<SendHorizontal />}
+          onClick={handleAsk}
+          disabled={isDisabled}
+        />
+      </div>
+    </Wrapper>
   );
 }

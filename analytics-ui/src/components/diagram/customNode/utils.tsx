@@ -13,14 +13,23 @@ export type CustomNodeProps<T> = NodeProps<{
 export const StyledNode = styled.div`
   position: relative;
   width: 200px;
-  border-radius: 20px;
+  border-radius: 8px;
   overflow: hidden;
+  background-color: var(--gray-1);
   box-shadow:
     0px 3px 6px -4px rgba(0, 0, 0, 0.12),
     0px 6px 16px rgba(0, 0, 0, 0.08),
     0px 9px 28px 8px rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
 
   &:before {
     content: '';
@@ -39,6 +48,7 @@ export const StyledNode = styled.div`
   &:focus {
     &:before {
       border-color: var(--rust-orange-6);
+      border-radius: 8px;
     }
   }
 
@@ -66,7 +76,15 @@ export const NodeHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 36px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
   font-weight: 500;
 
   &.dragHandle {
@@ -87,7 +105,15 @@ export const NodeHeader = styled.div`
     .ant-typography {
       width: 140px;
       color: white;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-family:
+        'Inter',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        'Helvetica Neue',
+        Arial,
+        sans-serif;
       font-weight: 500;
     }
   }

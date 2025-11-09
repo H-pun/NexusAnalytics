@@ -38,8 +38,8 @@ const Title = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--gray-8);
-  padding: 4px 12px;
+  color: var(--gray-7);
+  padding: 4px 8px;
   cursor: default;
 `;
 

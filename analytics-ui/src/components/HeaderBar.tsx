@@ -4,31 +4,33 @@ import styled from 'styled-components';
 import LogoBar from '@/components/LogoBar';
 import { Path } from '@/utils/enum';
 import Deploy from '@/components/deploy/Deploy';
+import { ChartPie, Database, SquarePen } from 'lucide-react';
 
 const { Header } = Layout;
 
 const StyledButton = styled(Button)<{ $isHighlight: boolean }>`
-  background: ${(props) =>
-    props.$isHighlight ? 'rgba(255, 255, 255, 0.20)' : 'transparent'};
-  font-weight: ${(props) => (props.$isHighlight ? '700' : 'normal')};
-  border: none;
-  color: var(--gray-1);
+  background-color: ${(props) =>
+    props.$isHighlight ? 'var(--gray-4)' : 'transparent'};
+
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  // padding-left: 16px;
+  // padding-right: 16px;
+  color: var(--gray-8) !important;
+  border-radius: 0;
 
   &:hover,
   &:focus {
-    background: ${(props) =>
-      props.$isHighlight
-        ? 'rgba(255, 255, 255, 0.20)'
-        : 'rgba(255, 255, 255, 0.05)'};
-    color: var(--gray-1);
+    background-color: var(--gray-4);
   }
 `;
 
 const StyledHeader = styled(Header)`
-  height: 48px;
-  border-bottom: 1px solid var(--gray-5);
-  background: var(--gray-10);
-  padding: 10px 16px;
+  height: auto;
+  border-bottom: 1px solid var(--gray-4);
+  background: var(--gray-2);
+  padding: 10px 8px;
 `;
 
 export default function HeaderBar() {
@@ -39,46 +41,69 @@ export default function HeaderBar() {
 
   return (
     <StyledHeader>
-      <div
-        className="d-flex justify-space-between align-center"
-        style={{ marginTop: -2 }}
-      >
-        <Space size={[48, 0]}>
-          <LogoBar />
+      <div className="d-flex flex-column">
+        <Space size={[0, 8]} direction="vertical">
           {showNav && (
-            <Space size={[16, 0]}>
+            <Space size={[0, 4]} direction="vertical" style={{ width: '100%' }}>
+              <Space size={[2, 0]} style={{ width: '100%' }}>
+                <LogoBar />
+                <div className="d-flex flex-column">
+                  <h4
+                    style={{ color: 'var(--rust-orange-6)', marginBottom: -6 }}
+                  >
+                    NQR Analytics
+                  </h4>
+                  <p
+                    className="text-sm"
+                    style={{ color: 'var(--gray-6)', margin: 0 }}
+                  >
+                    v1.0.0
+                  </p>
+                </div>
+              </Space>
               <StyledButton
-                shape="round"
-                size="small"
+                type="text"
                 $isHighlight={pathname.startsWith(Path.Home)}
                 onClick={() => router.push(Path.Home)}
+                block
               >
-                Home
+                <SquarePen size={16} className="mr-1" />
+                New Chat
               </StyledButton>
               <StyledButton
-                shape="round"
-                size="small"
+                type="text"
+                $isHighlight={pathname.startsWith(Path.HomeDashboard)}
+                onClick={() => router.push(Path.HomeDashboard)}
+                block
+              >
+                <ChartPie size={16} className="mr-1" />
+                Dashboard
+              </StyledButton>
+              <StyledButton
+                type="text"
                 $isHighlight={pathname.startsWith(Path.Modeling)}
                 onClick={() => router.push(Path.Modeling)}
+                block
               >
-                Data Modeling
+                <Database size={16} className="mr-1" />
+                Data Source
               </StyledButton>
-              <StyledButton
-                shape="round"
-                size="small"
+              {/* <StyledButton
+                type="text"
                 $isHighlight={pathname.startsWith(Path.Knowledge)}
                 onClick={() => router.push(Path.KnowledgeQuestionSQLPairs)}
+                block
               >
                 Knowledge
               </StyledButton>
               <StyledButton
-                shape="round"
-                size="small"
+                type="text"
                 $isHighlight={pathname.startsWith(Path.APIManagement)}
                 onClick={() => router.push(Path.APIManagementHistory)}
+                block
               >
                 API Management
-              </StyledButton>
+              </StyledButton> */}
             </Space>
           )}
         </Space>

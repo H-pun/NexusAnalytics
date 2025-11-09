@@ -1,12 +1,12 @@
-import clsx from 'clsx';
+// import clsx from 'clsx';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useParams } from 'next/navigation';
 import styled from 'styled-components';
 import { Path } from '@/utils/enum';
-import FundViewOutlined from '@ant-design/icons/FundViewOutlined';
+// import FundViewOutlined from '@ant-design/icons/FundViewOutlined';
 import SidebarTree, {
-  StyledTreeNodeLink,
+  // StyledTreeNodeLink,
   useSidebarTreeState,
 } from './SidebarTree';
 import ThreadTree, { ThreadData } from './home/ThreadTree';
@@ -71,7 +71,7 @@ export default function Home(props: Props) {
 
   return (
     <>
-      <StyledTreeNodeLink
+      {/* <StyledTreeNodeLink
         className={clsx({
           'adm-treeNode--selected': router.pathname === Path.HomeDashboard,
         })}
@@ -79,7 +79,7 @@ export default function Home(props: Props) {
       >
         <FundViewOutlined className="mr-2" />
         <span className="text-medium">Dashboard</span>
-      </StyledTreeNodeLink>
+      </StyledTreeNodeLink> */}
       <ThreadTree
         threads={threads}
         selectedKeys={treeSelectedKeys}

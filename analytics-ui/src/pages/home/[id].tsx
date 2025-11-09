@@ -337,7 +337,7 @@ export default function HomeThread() {
         <PromptThread />
       </PromptThreadProvider>
 
-      <div className="py-12" />
+      <div style={{ padding: '64px' }} />
       <Prompt
         ref={$prompt}
         {...askPrompt}
