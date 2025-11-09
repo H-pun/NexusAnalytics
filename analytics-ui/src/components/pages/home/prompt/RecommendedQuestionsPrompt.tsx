@@ -6,15 +6,14 @@ import ColumnHeightOutlined from '@ant-design/icons/ColumnHeightOutlined';
 import MinusOutlined from '@ant-design/icons/MinusOutlined';
 import EllipsisWrapper from '@/components/EllipsisWrapper';
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
-import { Logo } from '@/components/Logo';
 import { makeIterable } from '@/utils/iteration';
 import { GroupedQuestion } from '@/hooks/useRecommendedQuestionsInstruction';
 
 const CategorySectionBlock = styled.div`
-  background: var(--gray-1);
-  border: 1px solid var(--gray-4);
-  border-radius: 12px;
-  padding: 16px;
+  // background: var(--gray-1);
+  // border: 1px solid var(--gray-4);
+  // border-radius: 12px;
+  // padding: 16px;
 `;
 
 const QuestionBlock = styled.div`
@@ -64,7 +63,7 @@ const QuestionTemplate = ({
     <Col span={8}>
       <QuestionBlock
         className={clsx(
-          'border border-gray-5 rounded px-3 pt-3 pb-4',
+          'border border-gray-5 rounded-2xl px-3 pt-3 pb-4',
           loading ? 'cursor-wait' : 'cursor-pointer',
           {
             'is-active': isSelected,
@@ -75,7 +74,7 @@ const QuestionTemplate = ({
       >
         <div className="d-flex justify-space-between align-center text-sm mb-3">
           <div
-            className="border border-gray-5 px-2 rounded-pill text-truncate"
+            className="bg-gray-3 px-2 rounded-pill text-truncate text-medium"
             title={category}
           >
             {category}
@@ -113,24 +112,17 @@ export default function RecommendedQuestionsPrompt(props: Props) {
   };
 
   return (
-    <div className="bg-gray-2 px-10 py-6">
-      <div className="d-flex align-center mb-3 rounded-lg">
-        <Logo size={24} color="var(--gray-8)" />
-        <div className="text-md text-medium gray-8 mx-3">
-          Discover insights from your data.
-        </div>
-        <div className="text-medium gray-7">
-          Explore these suggested queries
-        </div>
-      </div>
+    <div className="px-10 py-6">
+      <h2 className="text-center">
+        What data would you like to explore?
+      </h2>
       <Space
         style={{ width: 680 }}
-        className="gray-8"
         direction="vertical"
         size={[0, 16]}
       >
         <CategorySectionBlock>
-          <Row gutter={[16, 16]} className="mt-3">
+          <Row gutter={[16, 16]}>
             <QuestionColumnIterator
               data={questionList}
               onSelect={onSelectQuestion}

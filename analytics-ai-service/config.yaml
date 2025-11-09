@@ -56,12 +56,12 @@ models:
 ---
 type: engine
 provider: analytics_ui
-endpoint: http://localhost:3000
+endpoint: http://analytics-ui:3000
 
 ---
 type: engine
 provider: analytics_ibis
-endpoint: http://localhost:8000
+endpoint: http://ibis-server:8000
 source: bigquery
 manifest: "" # base64 encoded string of the MDL
 connection_info: "" # base64 encoded string of the connection info
@@ -69,13 +69,13 @@ connection_info: "" # base64 encoded string of the connection info
 ---
 type: engine
 provider: analytics_engine
-endpoint: http://localhost:8080
+endpoint: http://wren-engine:8080
 manifest: ""
 
 ---
 type: document_store
 provider: qdrant
-location: http://localhost:6333
+location: http://qdrant:6333
 embedding_model_dim: 3072
 timeout: 120
 recreate_index: false
@@ -175,7 +175,7 @@ pipes:
 
 ---
 settings:
-  host: 127.0.0.1
+  host: 0.0.0.0
   port: 5556
   doc_endpoint: https://docs.getwren.ai
   is_oss: true

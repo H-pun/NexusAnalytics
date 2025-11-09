@@ -2,19 +2,22 @@ export default function LogoBar() {
   return (
     <div
       style={{
-        width: '125px',
-        height: '30px',
+        width: '40px',
+        height: '40px',
         overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       <img
-        src="/images/brand-horizontal-logo-orange.png?v=9"
+        src="/images/apple-touch-icon.png?v=6"
         alt="NQRust - Analytics"
         style={{
-          width: '180px',
-          height: '45px',
-          objectFit: 'contain',
+          width: '125%',
+          height: '125%',
           display: 'block',
+          objectFit: 'contain',
         }}
       />
     </div>

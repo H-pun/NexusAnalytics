@@ -76,7 +76,11 @@ export default function EllipsisWrapper(props: Props) {
   }, [showMoreCount, stage]);
 
   const renderContent = () => {
-    if (!children) return text || '-';
+    if (!children) return (
+      <span className="gray-7">
+        {text || '-'}
+      </span>
+      );
 
     // Turn another template if showMoreCount is provided
     if (showMoreCount) {
