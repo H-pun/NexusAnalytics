@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { Dropdown, Menu } from 'antd';
-import EditOutlined from '@ant-design/icons/EditOutlined';
-import MoreOutlined from '@ant-design/icons/MoreOutlined';
+import { Pencil, EllipsisVertical } from 'lucide-react';
 import LabelTitle from '@/components/sidebar/LabelTitle';
 import TreeTitleInput from '@/components/sidebar/home/TreeTitleInput';
 import { DeleteThreadModal } from '@/components/modals/DeleteModal';
@@ -64,10 +63,10 @@ export default function TreeTitle(props: TreeTitleProps) {
               items={[
                 {
                   label: (
-                    <>
-                      <EditOutlined className="mr-2" />
+                    <span className="d-flex align-center">
+                      <Pencil className="mr-2" size={16} />
                       Rename
-                    </>
+                    </span>
                   ),
                   key: MENU_ITEM_KEYS.RENAME,
                   onClick: ({ domEvent }) => {
@@ -88,7 +87,10 @@ export default function TreeTitle(props: TreeTitleProps) {
             />
           }
         >
-          <MoreOutlined onClick={(event) => event.stopPropagation()} />
+          <EllipsisVertical
+            onClick={(event) => event.stopPropagation()}
+            size={16}
+          />
         </Dropdown>
       }
     />

@@ -3,12 +3,7 @@ import styled from 'styled-components';
 import { Dropdown, Menu } from 'antd';
 import { ItemType } from 'antd/lib/menu/hooks/useItems';
 import { MORE_ACTION, NODE_TYPE } from '@/utils/enum';
-import EditOutlined from '@ant-design/icons/EditOutlined';
-import ReloadOutlined from '@ant-design/icons/ReloadOutlined';
-import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
-import EyeOutlined from '@ant-design/icons/EyeOutlined';
-import CodeFilled from '@ant-design/icons/CodeFilled';
-import DatabaseOutlined from '@ant-design/icons/DatabaseOutlined';
+import { Pencil, RefreshCw, EyeOff, Eye, Code, Database } from 'lucide-react';
 import { EditSVG } from '@/utils/svgs';
 import {
   DeleteCalculatedFieldModal,
@@ -64,10 +59,10 @@ export const ModelDropdown = makeDropdown((props: Props) => {
   const items: ItemType[] = [
     {
       label: (
-        <>
-          <EditOutlined className="mr-2" />
+        <span className="d-flex align-center">
+          <Pencil className="mr-2" size={16} />
           Update Columns
-        </>
+        </span>
       ),
       key: MORE_ACTION.UPDATE_COLUMNS,
       onClick: () => onMoreClick(MORE_ACTION.UPDATE_COLUMNS),
@@ -113,10 +108,10 @@ export const ColumnDropdown = makeDropdown((props: Props) => {
   const items: ItemType[] = [
     {
       label: (
-        <>
-          <EditOutlined className="mr-2" />
+        <span className="d-flex align-center">
+          <Pencil className="mr-2" size={16} />
           Edit
-        </>
+        </span>
       ),
       key: MORE_ACTION.EDIT,
       onClick: () => onMoreClick(MORE_ACTION.EDIT),
@@ -139,20 +134,20 @@ export const DashboardDropdown = makeDropdown((props: Props) => {
   const items: ItemType[] = [
     isSupportCached && {
       label: (
-        <>
-          <DatabaseOutlined className="mr-2" />
+        <span className="d-flex align-center">
+          <Database className="mr-2" size={16} />
           Cache settings
-        </>
+        </span>
       ),
       key: MORE_ACTION.CACHE_SETTINGS,
       onClick: () => onMoreClick(MORE_ACTION.CACHE_SETTINGS),
     },
     {
       label: (
-        <>
-          <ReloadOutlined className="mr-2" />
+        <span className="d-flex align-center">
+          <RefreshCw className="mr-2" size={16} />
           {isSupportCached ? 'Refresh all caches' : 'Refresh all'}
-        </>
+        </span>
       ),
       key: MORE_ACTION.REFRESH,
       onClick: () => onMoreClick(MORE_ACTION.REFRESH),
@@ -166,25 +161,25 @@ export const DashboardItemDropdown = makeDropdown((props: Props) => {
   const items: ItemType[] = [
     {
       label: isHideLegend ? (
-        <>
-          <EyeOutlined className="mr-2" />
+        <span className="d-flex align-center">
+          <Eye className="mr-2" size={16} />
           Show categories
-        </>
+        </span>
       ) : (
-        <>
-          {<EyeInvisibleOutlined className="mr-2" />}
+        <span className="d-flex align-center">
+          {<EyeOff className="mr-2" size={16} />}
           Hide categories
-        </>
+        </span>
       ),
       key: MORE_ACTION.HIDE_CATEGORY,
       onClick: () => onMoreClick(MORE_ACTION.HIDE_CATEGORY),
     },
     {
       label: (
-        <>
-          <ReloadOutlined className="mr-2" />
+        <span className="d-flex align-center">
+          <RefreshCw className="mr-2" size={16} />
           {isSupportCached ? 'Refresh cache' : 'Refresh'}
-        </>
+        </span>
       ),
       key: MORE_ACTION.REFRESH,
       onClick: () => onMoreClick(MORE_ACTION.REFRESH),
@@ -213,10 +208,10 @@ export const SQLPairDropdown = makeDropdown(
     const items: ItemType[] = [
       {
         label: (
-          <>
-            <EyeOutlined className="mr-2" />
+          <span className="d-flex align-center">
+            <Eye className="mr-2" size={16} />
             View
-          </>
+          </span>
         ),
         key: MORE_ACTION.VIEW_SQL_PAIR,
         onClick: () =>
@@ -227,10 +222,10 @@ export const SQLPairDropdown = makeDropdown(
       },
       {
         label: (
-          <>
-            <EditOutlined className="mr-2" />
+          <span className="d-flex align-center">
+            <Pencil className="mr-2" size={16} />
             Edit
-          </>
+          </span>
         ),
         key: MORE_ACTION.EDIT,
         onClick: () =>
@@ -272,10 +267,10 @@ export const InstructionDropdown = makeDropdown(
     const items: ItemType[] = [
       {
         label: (
-          <>
-            <EyeOutlined className="mr-2" />
+          <span className="d-flex align-center">
+            <Eye className="mr-2" size={16} />
             View
-          </>
+          </span>
         ),
         key: MORE_ACTION.VIEW_INSTRUCTION,
         onClick: () =>
@@ -286,10 +281,10 @@ export const InstructionDropdown = makeDropdown(
       },
       {
         label: (
-          <>
-            <EditOutlined className="mr-2" />
+          <span className="d-flex align-center">
+            <Pencil className="mr-2" size={16} />
             Edit
-          </>
+          </span>
         ),
         key: MORE_ACTION.EDIT,
         onClick: () =>
@@ -342,7 +337,7 @@ export const AdjustAnswerDropdown = makeDropdown(
       },
       {
         label: 'Adjust SQL',
-        icon: <CodeFilled className="text-base" />,
+        icon: <Code className="text-base" size={16} />,
         disabled: !data.sql,
         key: 'adjust-sql',
         onClick: () =>

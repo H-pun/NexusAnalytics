@@ -1,98 +1,100 @@
 import styled from 'styled-components';
-import { Columns } from '@styled-icons/fa-solid';
 import {
+  Columns3,
   Calendar,
-  Text,
-  InfoCircle,
-  Cube,
-  LineChart,
-  IdCard,
-} from '@styled-icons/boxicons-regular';
-import { Braces, Map2 } from '@styled-icons/remix-line';
-import {
-  SortNumerically,
-  SortAlphabetically,
-  Tick,
-} from '@styled-icons/typicons';
-import {
-  VpnKey,
-  CenterFocusWeak,
-  Refresh,
-  Pageview,
-  Explore,
-  Translate,
-  OpenInNew,
-} from '@styled-icons/material-outlined';
-import FieldBinaryOutlined from '@ant-design/icons/FieldBinaryOutlined';
-import MonitorOutlined from '@ant-design/icons/MonitorOutlined';
-import SwapOutlined from '@ant-design/icons/SwapOutlined';
-import ShareAltOutlined from '@ant-design/icons/ShareAltOutlined';
-import { Binoculars, LightningCharge } from '@styled-icons/bootstrap';
-import MoreOutlined from '@ant-design/icons/MoreOutlined';
-import { Sparkles } from '@styled-icons/ionicons-outline';
+  Type,
+  Info,
+  Box,
+  TrendingUp,
+  CreditCard,
+  Braces,
+  Map,
+  Hash,
+  Check,
+  Key,
+  Focus,
+  ArrowLeftRight,
+  Monitor,
+  RefreshCw,
+  Share2,
+  Zap,
+  Eye,
+  Compass,
+  Sparkles,
+  Binoculars,
+  Languages,
+  ExternalLink,
+  Database,
+  Folder,
+  CaseUpper,
+  Binary,
+  EllipsisVertical,
+} from 'lucide-react';
 import { Discord, Github } from '@styled-icons/fa-brands';
 
-export const NumericIcon = styled(SortNumerically)`
+export const NumericIcon = styled(Hash)`
   height: 1em;
 `;
-export const TickIcon = styled(Tick)`
+export const TickIcon = styled(Check)`
   height: 1em;
 `;
-export const StringIcon = styled(SortAlphabetically)`
+export const StringIcon = styled(CaseUpper)`
   height: 1em;
 `;
-export const TextIcon = styled(Text)`
+export const TextIcon = styled(Type)`
   height: 1em;
 `;
 export const CalendarIcon = styled(Calendar)`
   height: 1em;
 `;
-export const IdIcon = styled(IdCard)`
+export const IdIcon = styled(CreditCard)`
   height: 1em;
 `;
 export const JsonBracesIcon = styled(Braces)`
   height: 1em;
 `;
-export const BinaryIcon = styled(FieldBinaryOutlined)`
+export const BinaryIcon = styled(Binary)`
   height: 1em;
 `;
-export const ColumnsIcon = styled(Columns)`
+export const ColumnsIcon = styled(Columns3)`
   height: 1em;
 `;
-export const InfoIcon = styled(InfoCircle)`
+export const InfoIcon = styled(Info)`
   height: 1em;
 `;
-export const PrimaryKeyIcon = styled(VpnKey)`
+export const PrimaryKeyIcon = styled(Key)`
   height: 1em;
 `;
-export const ModelIcon = styled(Cube)`
+export const ModelIcon = styled(Box)`
   height: 1em;
 `;
-export const FocusIcon = styled(CenterFocusWeak)`
+export const FocusIcon = styled(Focus)`
   height: 1em;
 `;
-export const MapIcon = styled(Map2)`
+export const MapIcon = styled(Map)`
   height: 1em;
 `;
-export const RelationshipIcon = styled(SwapOutlined)`
+export const RelationshipIcon = styled(ArrowLeftRight)`
   height: 1em;
 `;
-export const MonitorIcon = styled(MonitorOutlined)`
+export const MonitorIcon = styled(Monitor)`
   height: 1em;
 `;
-export const RefreshIcon = styled(Refresh)``;
-export const MetricIcon = styled(LineChart)`
+export const RefreshIcon = styled(RefreshCw)``;
+export const MetricIcon = styled(TrendingUp)`
   height: 1em;
 `;
-export const ShareIcon = styled(ShareAltOutlined)``;
-export const LightningIcon = styled(LightningCharge)`
+export const ShareIcon = styled(Share2)``;
+export const LightningIcon = styled(Zap)`
   height: 1em;
 `;
-export const MoreIcon = styled(MoreOutlined)``;
-export const ViewIcon = styled(Pageview)`
+export const MoreIcon = styled(EllipsisVertical)`
   height: 1em;
 `;
-export const ExploreIcon = styled(Explore)`
+export const ViewIcon = styled(Eye)`
+  height: 1em;
+`;
+export const ExploreIcon = styled(Compass)`
   height: 1em;
 `;
 export const SparklesIcon = styled(Sparkles)`
@@ -104,6 +106,14 @@ export const BinocularsIcon = styled(Binoculars)`
   width: 14px;
 `;
 
+export const DatabaseIcon = styled(Database)`
+  height: 1em;
+`;
+
+export const FolderIcon = styled(Folder)`
+  height: 1em;
+`;
+
 export const DiscordIcon = styled(Discord)`
   height: 1em;
 `;
@@ -112,10 +122,10 @@ export const GithubIcon = styled(Github)`
   height: 1em;
 `;
 
-export const TranslateIcon = styled(Translate)`
+export const TranslateIcon = styled(Languages)`
   height: 1em;
 `;
 
-export const OpenInNewIcon = styled(OpenInNew)`
+export const OpenInNewIcon = styled(ExternalLink)`
   height: 1em;
 `;

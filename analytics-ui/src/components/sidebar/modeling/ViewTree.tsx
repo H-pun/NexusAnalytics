@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Modal } from 'antd';
 import { DataNode } from 'antd/es/tree';
-import PlusOutlined from '@ant-design/icons/PlusOutlined';
+import { Plus } from 'lucide-react';
 import { Path } from '@/utils/enum';
 import { DiagramView } from '@/utils/data';
 import { getNodeTypeIcon } from '@/utils/nodeType';
@@ -53,7 +53,7 @@ export default function ViewTree(props: Props) {
         key: 'add-view-info',
         render: () => (
           <GroupActionButton
-            icon={<PlusOutlined />}
+            icon={<Plus size={16} />}
             size="small"
             onClick={onAddView}
             data-ph-capture="true"

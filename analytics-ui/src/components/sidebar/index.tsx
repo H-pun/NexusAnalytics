@@ -4,7 +4,7 @@ import { Button } from 'antd';
 import styled from 'styled-components';
 import { Path } from '@/utils/enum';
 // import { DiscordIcon, GithubIcon } from '@/utils/icons';
-import SettingOutlined from '@ant-design/icons/SettingOutlined';
+import { Settings } from 'lucide-react';
 import Home, { Props as HomeSidebarProps } from './Home';
 import Modeling, { Props as ModelingSidebarProps } from './Modeling';
 import Knowledge from './Knowledge';
@@ -92,7 +92,7 @@ export default function Sidebar(props: Props) {
       {/* <LearningSection /> */}
       <div className="border-t border-gray-4 p-2">
         <StyledButton type="text" block onClick={onSettingsClick}>
-          <SettingOutlined className="text-md" />
+          <Settings className="mr-1" size={16} />
           Settings
         </StyledButton>
         {/* <StyledButton type="text" block>

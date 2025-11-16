@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, Form, Button, Skeleton, Modal, message } from 'antd';
 import { attachLoading } from '@/utils/helper';
-import ReloadOutlined from '@ant-design/icons/ReloadOutlined';
+import { RefreshCw } from 'lucide-react';
 import BasicProperties from '@/components/chart/properties/BasicProperties';
 import DonutProperties from '@/components/chart/properties/DonutProperties';
 import LineProperties from '@/components/chart/properties/LineProperties';
@@ -210,7 +210,11 @@ export default function ChartAnswer(props: AnswerResultProps) {
 
   const regenerateBtn = (
     <div className="text-center mt-4">
-      <Button icon={<ReloadOutlined />} onClick={onReload}>
+      <Button
+        className="d-flex align-center"
+        icon={<RefreshCw className="mr-1" size={16} />}
+        onClick={onReload}
+      >
         Regenerate
       </Button>
     </div>

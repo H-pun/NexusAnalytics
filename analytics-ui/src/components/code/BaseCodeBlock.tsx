@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Button, Typography } from 'antd';
-import CheckOutlined from '@ant-design/icons/CheckOutlined';
-import CopyOutlined from '@ant-design/icons/CopyOutlined';
+import { Check, Copy } from 'lucide-react';
 import { Loading } from '@/components/PageLoading';
 import '@/components/editor/AceEditor';
 
@@ -193,13 +192,15 @@ export const createCodeBlock = (HighlightRules: any) => {
                   icon: [
                     <Button
                       key="copy-icon"
-                      icon={<CopyOutlined />}
+                      className="d-flex align-center justify-center"
+                      icon={<Copy size={16} />}
                       size="small"
                       style={{ backgroundColor: 'transparent' }}
                     />,
                     <Button
                       key="copied-icon"
-                      icon={<CheckOutlined className="green-6" />}
+                      className="d-flex align-center justify-center"
+                      icon={<Check className="green-6" size={16} />}
                       size="small"
                     />,
                   ],

@@ -1,11 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, Button, Skeleton, Typography } from 'antd';
-import ReloadOutlined from '@ant-design/icons/ReloadOutlined';
-import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
-import CaretDownOutlined from '@ant-design/icons/CaretDownOutlined';
-import EditOutlined from '@ant-design/icons/EditOutlined';
+import { LoadingOutlined } from '@ant-design/icons';
+import { RefreshCw, ChevronDown, Pencil, Binoculars } from 'lucide-react';
 import styled from 'styled-components';
-import { BinocularsIcon } from '@/utils/icons';
 import { nextTick } from '@/utils/time';
 import { MORE_ACTION } from '@/utils/enum';
 import usePromptThreadStore from './store';
@@ -167,16 +164,21 @@ export default function TextBasedAnswer(props: AnswerResultProps) {
       onDropdownVisibleChange={adjustResultsDropdown.onVisibleChange}
     >
       <Button
-        className="px-0"
+        className="px-0 d-flex align-center"
         type="link"
         size="small"
-        icon={<EditOutlined />}
+        icon={<Pencil className="mr-1" size={14} />}
         onClick={(event) => event.stopPropagation()}
       >
         Adjust the answer
-        <CaretDownOutlined
+        <ChevronDown
           className="ml-1"
-          rotate={adjustResultsDropdown.visible ? 180 : 0}
+          style={{
+            transform: adjustResultsDropdown.visible
+              ? 'rotate(180deg)'
+              : 'rotate(0deg)',
+          }}
+          size={16}
         />
       </Button>
     </AdjustAnswerDropdown>
@@ -207,13 +209,16 @@ export default function TextBasedAnswer(props: AnswerResultProps) {
       title={false}
     >
       <div className="text-md gray-10 py-4 px-6">
-        <div className="text-right mb-4">{adjustAnswerDropdown}</div>
+        <div className="text-right mb-4 d-flex justify-end">
+          {adjustAnswerDropdown}
+        </div>
         <MarkdownBlock content={textAnswer} />
         {isStreaming && <LoadingOutlined className="rust-orange-6" spin />}
         {status === ThreadResponseAnswerStatus.INTERRUPTED && (
           <div className="mt-2 text-right">
             <Button
-              icon={<ReloadOutlined />}
+              className="px-0 d-flex align-center"
+              icon={<RefreshCw size={16} />}
               size="small"
               type="link"
               title="Regenerate answer"
@@ -227,14 +232,8 @@ export default function TextBasedAnswer(props: AnswerResultProps) {
           <div className="mt-6">
             <Button
               size="small"
-              icon={
-                <BinocularsIcon
-                  style={{
-                    paddingBottom: 2,
-                    marginRight: 8,
-                  }}
-                />
-              }
+              className="d-flex align-center"
+              icon={<Binoculars size={16} className="mr-1" />}
               loading={previewDataResult.loading}
               onClick={onPreviewData}
               data-ph-capture="true"

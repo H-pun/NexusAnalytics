@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
 import { Button, Space, Typography, message } from 'antd';
-import CheckCircleOutlined from '@ant-design/icons/CheckCircleOutlined';
-import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
-import WarningOutlined from '@ant-design/icons/WarningOutlined';
+import { CheckCircle, AlertTriangle } from 'lucide-react';
 import { SyncStatus } from '@/apollo/client/graphql/__types__';
 import { useDeployMutation } from '@/apollo/client/graphql/deploy.generated';
 import { useDeployStatusContext } from '@/components/deploy/Context';
+import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 
 const { Text } = Typography;
 
@@ -22,13 +21,13 @@ const getDeployStatus = (deploying: boolean, status: SyncStatus) => {
       ),
       [SyncStatus.SYNCRONIZED]: (
         <Space size={[4, 0]}>
-          <CheckCircleOutlined className="mr-1 green-7" />
+          <CheckCircle className="mr-1 green-7" size={16} />
           <Text className="gray-8">Synced</Text>
         </Space>
       ),
       [SyncStatus.UNSYNCRONIZED]: (
         <Space size={[4, 0]}>
-          <WarningOutlined className="mr-1 gold-6" />
+          <AlertTriangle className="mr-1 gold-6" size={16} />
           <Text className="gray-8">Undeployed changes</Text>
         </Space>
       ),

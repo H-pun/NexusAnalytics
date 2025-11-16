@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Button, Form, Input, Modal, Row, Col, Radio } from 'antd';
-import DeleteOutlined from '@ant-design/icons/DeleteOutlined';
-import PlusOutlined from '@ant-design/icons/PlusOutlined';
+import { Trash2, Plus } from 'lucide-react';
 import { isEmpty } from 'lodash';
 import { FORM_MODE } from '@/utils/enum';
 import { ERROR_TEXTS } from '@/utils/error';
@@ -150,10 +149,10 @@ export default function InstructionModal(props: Props) {
                         <Button
                           onClick={() => remove(name)}
                           disabled={fields.length <= 1}
-                          icon={<DeleteOutlined />}
+                          icon={<Trash2 className="mr-1" size={16} />}
                           size="small"
                           style={{ border: 'none' }}
-                          className="bg-gray-1"
+                          className="bg-gray-1 d-flex align-center"
                         />
                       </Col>
                     </Row>
@@ -163,9 +162,9 @@ export default function InstructionModal(props: Props) {
                       type="dashed"
                       onClick={() => add()}
                       block
-                      icon={<PlusOutlined />}
+                      icon={<Plus className="mr-1" size={16} />}
                       disabled={fields.length >= MAX_QUESTIONS}
-                      className="mb-1"
+                      className="mb-1 d-flex align-center"
                     >
                       Add a question
                     </Button>

@@ -5,14 +5,16 @@ import styled from 'styled-components';
 import { PROCESS_STATE } from '@/utils/enum';
 import { attachLoading } from '@/utils/helper';
 import { BrainSVG } from '@/utils/svgs';
-import CloseOutlined from '@ant-design/icons/CloseOutlined';
-import StopOutlined from '@ant-design/icons/StopFilled';
-import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
-import CloseCircleFilled from '@ant-design/icons/CloseCircleFilled';
-import WarningOutlined from '@ant-design/icons/WarningOutlined';
-import MessageOutlined from '@ant-design/icons/MessageOutlined';
+import {
+  X,
+  StopCircle,
+  XCircle,
+  AlertTriangle,
+  MessageSquare,
+  Info,
+} from 'lucide-react';
 import ErrorCollapse from '@/components/ErrorCollapse';
-import InfoCircleOutlined from '@ant-design/icons/InfoCircleOutlined';
+import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 import RecommendedQuestions, {
   getRecommendedQuestionProps,
 } from '@/components/pages/home/RecommendedQuestions';
@@ -84,7 +86,7 @@ const makeProcessing = (text: string) => (props: Props) => {
         </span>
         <Button
           className={clsx(
-            'adm-btn-no-style bg-gray-3 text-sm px-2',
+            'adm-btn-no-style bg-gray-3 text-sm px-2 d-flex align-center',
             loading ? 'gray-6' : 'gray-7',
           )}
           type="text"
@@ -92,7 +94,7 @@ const makeProcessing = (text: string) => (props: Props) => {
           onClick={attachLoading(onStop, setLoading)}
           disabled={loading}
         >
-          <StopOutlined className="-mr-1" />
+          <StopCircle className="mr-1" size={16} />
           Stop
         </Button>
       </div>
@@ -119,12 +121,12 @@ const makeProcessingError =
             {config.title || shortMessage}
           </div>
           <Button
-            className="adm-btn-no-style gray-7 bg-gray-3 text-sm px-2"
+            className="adm-btn-no-style gray-7 bg-gray-3 text-sm px-2 d-flex align-center"
             type="text"
             size="small"
             onClick={onClose}
           >
-            <CloseOutlined className="-mr-1" />
+            <X className="mr-1" size={16} />
             Close
           </Button>
         </div>
@@ -146,7 +148,7 @@ const makeProcessingError =
     );
   };
 
-const ErrorIcon = () => <CloseCircleFilled className="mr-2 red-5 text-lg" />;
+const ErrorIcon = () => <XCircle className="mr-2 red-5 text-lg" size={20} />;
 
 const Failed = makeProcessingError({
   icon: <ErrorIcon />,
@@ -199,16 +201,16 @@ const GeneralAnswer = (props: Props) => {
     <Wrapper>
       <div className="d-flex justify-space-between">
         <div className="d-flex align-start">
-          <MessageOutlined className="mr-2 mt-1 rust-orange-6" />
+          <MessageSquare className="mr-2 mt-1 rust-orange-6" size={20} />
           <b className="text-semi-bold">{originalQuestion}</b>
         </div>
         <Button
-          className="adm-btn-no-style gray-7 bg-gray-3 text-sm px-2"
+          className="adm-btn-no-style gray-7 bg-gray-3 text-sm px-2 d-flex align-center"
           type="text"
           size="small"
           onClick={onClose}
         >
-          <CloseOutlined className="-mr-1" />
+          <X className="mr-1" size={16} />
           Close
         </Button>
       </div>
@@ -229,7 +231,7 @@ const GeneralAnswer = (props: Props) => {
           <MarkdownBlock content={askingStreamTask} />
           {isDone && (
             <div className="gray-6">
-              <InfoCircleOutlined className="mr-2" />
+              <Info className="mr-2" size={16} />
               For the most accurate semantics, please visit the modeling page.
             </div>
           )}
@@ -247,7 +249,7 @@ const GeneralAnswer = (props: Props) => {
 };
 
 const MisleadingQuery = makeProcessingError({
-  icon: <WarningOutlined className="mr-2 text-lg gold-6" />,
+  icon: <AlertTriangle className="mr-2 text-lg gold-6" size={20} />,
   title: 'Clarification needed',
 });
 

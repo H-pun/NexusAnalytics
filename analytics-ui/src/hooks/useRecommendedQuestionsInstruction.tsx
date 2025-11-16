@@ -1,9 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { groupBy, orderBy, flatMap } from 'lodash';
 import { message } from 'antd';
-import Icon from '@/import/icon';
-import ReloadOutlined from '@ant-design/icons/ReloadOutlined';
-import { CopilotSVG } from '@/utils/svgs';
+import { RefreshCw, Sparkles } from 'lucide-react';
 import { isRecommendedFinished } from '@/hooks/useAskPrompt';
 import {
   ResultQuestion,
@@ -45,7 +43,7 @@ export default function useRecommendedQuestionsInstruction() {
 
   const [fetchRecommendationQuestions, recommendationQuestionsResult] =
     useGetProjectRecommendationQuestionsLazyQuery({
-      pollInterval: 2000,
+      pollInterval: 200000,
     });
 
   // Handle errors via try/catch blocks rather than onError callback
@@ -128,7 +126,7 @@ export default function useRecommendedQuestionsInstruction() {
     if (showRecommendedQuestionsPromptMode && isRegenerate) {
       return {
         ...baseProps,
-        icon: <ReloadOutlined />,
+        icon: <RefreshCw size={16} />,
         children: 'Regenerate',
       };
     }
@@ -136,9 +134,9 @@ export default function useRecommendedQuestionsInstruction() {
     return {
       ...baseProps,
       icon: showRetry ? (
-        <ReloadOutlined />
+        <RefreshCw className="mr-1" size={16} />
       ) : (
-        <Icon component={CopilotSVG} className="rust-orange-6" />
+        <Sparkles className="mr-1 rust-orange-6" size={16} />
       ),
       children: generating
         ? 'Generating questions'

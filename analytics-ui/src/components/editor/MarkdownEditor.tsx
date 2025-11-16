@@ -2,8 +2,7 @@ import clsx from 'clsx';
 import { Button, Mentions, Typography } from 'antd';
 import styled from 'styled-components';
 import { useState, useContext, useRef } from 'react';
-import ReadOutlined from '@ant-design/icons/ReadOutlined';
-import EditOutlined from '@ant-design/icons/EditOutlined';
+import { BookOpen, Pencil } from 'lucide-react';
 import { nextTick } from '@/utils/time';
 import { Mention } from '@/hooks/useAutoComplete';
 import { FormItemInputContext } from 'antd/lib/form/context';
@@ -219,7 +218,7 @@ export default function MarkdownEditor(props: Props) {
           )}
         </div>
         <LinkButton
-          icon={isPreviewMode ? <EditOutlined /> : <ReadOutlined />}
+          icon={isPreviewMode ? <Pencil size={16} /> : <BookOpen size={16} />}
           type="link"
           size="small"
           onClick={() => setIsPreviewMode(!isPreviewMode)}

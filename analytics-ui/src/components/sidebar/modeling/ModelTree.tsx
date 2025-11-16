@@ -10,10 +10,9 @@ import {
 } from '@/components/sidebar/utils';
 import useModalAction from '@/hooks/useModalAction';
 import LabelTitle from '@/components/sidebar/LabelTitle';
-import PlusOutlined from '@ant-design/icons/PlusOutlined';
-import WarningOutlined from '@ant-design/icons/WarningOutlined';
-import ReloadOutlined from '@ant-design/icons/ReloadOutlined';
+import { Plus, AlertTriangle } from 'lucide-react';
 import { StyledSidebarTree } from '@/components/sidebar/Modeling';
+import ReloadOutlined from '@ant-design/icons/ReloadOutlined';
 import SchemaChangeModal from '@/components/modals/SchemaChangeModal';
 import {
   SchemaChange,
@@ -117,7 +116,7 @@ export default function ModelTree(props: Props) {
           <GroupActionButton
             data-guideid="add-model"
             data-testid="add-model"
-            icon={<PlusOutlined />}
+            icon={<Plus size={16} />}
             size="small"
             onClick={() => onOpenModelDrawer()}
           >
@@ -136,10 +135,7 @@ export default function ModelTree(props: Props) {
         quotaUsage: models.length,
         appendSlot: hasSchemaChange && (
           <span className="adm-actionIcon mx-2" onClick={onOpenSchemaChange}>
-            <WarningOutlined
-              className="orange-5"
-              title="Review schema change impacts"
-            />
+            <AlertTriangle className="orange-5" size={16} />
           </span>
         ),
         children: models.map((model) => {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, Form, Modal, Typography } from 'antd';
-import InfoCircleOutlined from '@ant-design/icons/InfoCircleOutlined';
+import { Info } from 'lucide-react';
 import { ERROR_TEXTS } from '@/utils/error';
 import { ModalAction } from '@/hooks/useModalAction';
 import SQLEditor from '@/components/editor/SQLEditor';
@@ -137,7 +137,7 @@ export default function AdjustSQLModal(props: Props) {
             className="text-sm ml-2 d-flex justify-space-between align-center"
             style={{ width: 300 }}
           >
-            <InfoCircleOutlined className="mr-2 text-sm gray-7" />
+            <Info className="mr-2 text-sm gray-7" style={{ minWidth: 16 }} />
             <Typography.Text
               type="secondary"
               className="text-sm gray-7 text-left"

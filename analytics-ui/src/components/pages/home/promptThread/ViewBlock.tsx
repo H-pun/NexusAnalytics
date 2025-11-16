@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Button } from 'antd';
-import FileDoneOutlined from '@ant-design/icons/FileDoneOutlined';
-import SaveOutlined from '@ant-design/icons/SaveOutlined';
+import { FileCheck, Save } from 'lucide-react';
 import { Path } from '@/utils/enum';
 import { ViewInfo } from '@/apollo/client/graphql/__types__';
 
@@ -16,7 +15,7 @@ export default function ViewBlock({ view, onClick }: Props) {
   if (isViewSaved) {
     return (
       <div className="gray-6 text-medium">
-        <FileDoneOutlined className="mr-2" />
+        <FileCheck className="mr-2" size={16} />
         Generated from stored view{' '}
         <Link
           className="gray-7"
@@ -32,10 +31,10 @@ export default function ViewBlock({ view, onClick }: Props) {
 
   return (
     <Button
-      className="gray-6"
+      className="gray-6 d-flex align-center"
       type="text"
       size="small"
-      icon={<SaveOutlined />}
+      icon={<Save className="mr-1" size={16} />}
       onClick={onClick}
     >
       Store as View
