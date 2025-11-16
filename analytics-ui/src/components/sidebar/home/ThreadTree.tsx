@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { DataNode } from 'antd/lib/tree';
-import { Path } from '@/utils/enum';
-import { useParams, useRouter } from 'next/navigation';
-import PlusOutlined from '@ant-design/icons/PlusOutlined';
+import { useParams } from 'next/navigation';
 import SidebarTree, {
   sidebarCommonStyle,
 } from '@/components/sidebar/SidebarTree';
 import {
   createTreeGroupNode,
-  GroupActionButton,
+  // GroupActionButton,
 } from '@/components/sidebar/utils';
 import TreeTitle from './TreeTitle';
 
@@ -48,7 +46,7 @@ interface Props {
 
 export default function ThreadTree(props: Props) {
   const params = useParams<{ id: string }>();
-  const router = useRouter();
+  // const router = useRouter();
   const {
     threads = [],
     selectedKeys,
@@ -61,18 +59,18 @@ export default function ThreadTree(props: Props) {
     groupName: 'History',
     groupKey: 'threads',
     actions: [
-      {
-        key: 'new-thread',
-        render: () => (
-          <GroupActionButton
-            size="small"
-            icon={<PlusOutlined />}
-            onClick={() => router.push(Path.Home)}
-          >
-            New
-          </GroupActionButton>
-        ),
-      },
+      //   {
+      //     key: 'new-thread',
+      //     render: () => (
+      //       <GroupActionButton
+      //         size="small"
+      //         icon={<PlusOutlined />}
+      //         onClick={() => router.push(Path.Home)}
+      //       >
+      //         New
+      //       </GroupActionButton>
+      //     ),
+      //   },
     ],
   });
 

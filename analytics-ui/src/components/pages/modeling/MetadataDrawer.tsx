@@ -1,6 +1,6 @@
 import { Button, Drawer } from 'antd';
 import { NODE_TYPE } from '@/utils/enum';
-import EditOutlined from '@ant-design/icons/EditOutlined';
+import { Pencil } from 'lucide-react';
 import { DrawerAction } from '@/hooks/useDrawerAction';
 import ModelMetadata, {
   Props as ModelMetadataProps,
@@ -32,7 +32,8 @@ export default function MetadataDrawer(props: Props) {
       onClose={onClose}
       extra={
         <Button
-          icon={<EditOutlined />}
+          className="d-flex align-center"
+          icon={<Pencil className="mr-1" size={16} />}
           onClick={() => onEditClick(defaultValue)}
         >
           Modify

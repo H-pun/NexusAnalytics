@@ -1,13 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import { isEmpty, debounce } from 'lodash';
-import clsx from 'clsx';
 import { Button, Typography, Tabs, Tag, Tooltip } from 'antd';
 import styled from 'styled-components';
-import CheckCircleFilled from '@ant-design/icons/CheckCircleFilled';
-import CodeFilled from '@ant-design/icons/CodeFilled';
-import PieChartFilled from '@ant-design/icons/PieChartFilled';
-import MessageOutlined from '@ant-design/icons/MessageOutlined';
-import ShareAltOutlined from '@ant-design/icons/ShareAltOutlined';
+import { Share2 } from 'lucide-react';
 import { RobotSVG } from '@/utils/svgs';
 import { ANSWER_TAB_KEYS } from '@/utils/enum';
 import { canGenerateAnswer } from '@/hooks/useAskPrompt';
@@ -31,8 +26,9 @@ import {
   ThreadResponseAdjustment,
   ThreadResponseAdjustmentType,
 } from '@/apollo/client/graphql/__types__';
+import { ChartPie, Code, MessageSquareText } from 'lucide-react';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const adjustmentType = {
   [ThreadResponseAdjustmentType.APPLY_SQL]: 'User-provided SQL applied',
@@ -41,8 +37,8 @@ const adjustmentType = {
 
 const knowledgeTooltip = (
   <>
-    Store this answer as a Question-SQL pair to help NQRust - Analytics improve SQL
-    generation.
+    Store this answer as a Question-SQL pair to help NQRust - Analytics improve
+    SQL generation.
     <br />
     <Typography.Link
       className="gray-1 underline"
@@ -57,13 +53,15 @@ const knowledgeTooltip = (
 
 const StyledTabs = styled(Tabs)`
   .ant-tabs-nav {
-    margin-bottom: 0;
+    margin-bottom: 0px;
+    background-color: white;
   }
 
   .ant-tabs-content-holder {
     border-left: 1px var(--gray-4) solid;
     border-right: 1px var(--gray-4) solid;
     border-bottom: 1px var(--gray-4) solid;
+    border-radius: 0 0 16px 16px;
   }
 
   .ant-tabs-tab {
@@ -71,7 +69,7 @@ const StyledTabs = styled(Tabs)`
       color: var(--gray-6);
     }
 
-    [aria-label='check-circle'] {
+    [aria-label='message-square-text'] {
       color: var(--gray-5);
     }
 
@@ -88,8 +86,8 @@ const StyledTabs = styled(Tabs)`
         color: var(--gray-8);
       }
 
-      [aria-label='check-circle'] {
-        color: var(--green-5);
+      [aria-label='message-square-text'] {
+        color: var(--rust-orange-5);
       }
 
       [aria-label='code'] {
@@ -97,7 +95,7 @@ const StyledTabs = styled(Tabs)`
       }
 
       [aria-label='pie-chart'] {
-        color: var(--gold-6);
+        color: var(--rust-orange-5);
       }
 
       .adm-beta-tag {
@@ -125,16 +123,34 @@ export interface Props {
   onInitPreviewDone: () => void;
 }
 
+const QuestionBubble = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+
+  .question-bubble {
+    background-color: var(--gray-4);
+    border-radius: 12px;
+    padding: 12px 16px;
+    max-width: 70%;
+    word-wrap: break-word;
+  }
+
+  .question-text {
+    color: var(--gray-8);
+    margin: 0;
+    font-size: 16px;
+  }
+`;
+
 const QuestionTitle = (props) => {
   const { question, className } = props;
   return (
-    <Title
-      className={clsx('d-flex bg-gray-1 rounded mt-0', className)}
-      level={4}
-    >
-      <MessageOutlined className="rust-orange-5 mt-1 mr-3" />
-      <Text className="text-medium gray-8">{question}</Text>
-    </Title>
+    <QuestionBubble className={className}>
+      <div className="question-bubble">
+        <Text className="question-text">{question}</Text>
+      </div>
+    </QuestionBubble>
   );
 };
 
@@ -162,7 +178,7 @@ const AdjustmentInformation = (props: {
   return (
     <div className="rounded bg-gray-3 gray-6 py-2 px-3 mb-2">
       <div className="d-flex align-center gx-2">
-        <ShareAltOutlined className="gray-7" />
+        <Share2 className="gray-7" size={16} />
         <div className="flex-grow-1 gray-7">
           Adjusted answer
           <Tag className="gray-6 border border-gray-5 bg-gray-3 ml-3 text-medium">
@@ -287,8 +303,12 @@ export default function AnswerResult(props: Props) {
               <Tabs.TabPane
                 key={ANSWER_TAB_KEYS.ANSWER}
                 tab={
-                  <div className="select-none">
-                    <CheckCircleFilled className="mr-2" />
+                  <div className="select-none d-flex align-center">
+                    <MessageSquareText
+                      className="mr-1"
+                      aria-label="message-square-text"
+                      size={16}
+                    />
                     <Text>Answer</Text>
                   </div>
                 }
@@ -299,8 +319,8 @@ export default function AnswerResult(props: Props) {
             <Tabs.TabPane
               key={ANSWER_TAB_KEYS.VIEW_SQL}
               tab={
-                <div className="select-none">
-                  <CodeFilled className="mr-2" />
+                <div className="select-none d-flex align-center">
+                  <Code className="mr-1" aria-label="code" size={16} />
                   <Text>View SQL</Text>
                 </div>
               }
@@ -310,8 +330,8 @@ export default function AnswerResult(props: Props) {
             <Tabs.TabPane
               key="chart"
               tab={
-                <div className="select-none">
-                  <PieChartFilled className="mr-2" />
+                <div className="select-none d-flex align-center">
+                  <ChartPie className="mr-1" aria-label="pie-chart" size={16} />
                   <Text>
                     Chart<Tag className="adm-beta-tag">Beta</Tag>
                   </Text>
@@ -345,7 +365,7 @@ export default function AnswerResult(props: Props) {
                 data-guideid="save-to-knowledge"
               >
                 <div className="d-flex align-center">
-                  <RobotSVG className="mr-2" />
+                  <RobotSVG className="mr-1" />
                   Save to knowledge
                 </div>
               </Button>

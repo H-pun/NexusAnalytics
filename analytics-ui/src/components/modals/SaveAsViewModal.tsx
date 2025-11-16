@@ -1,5 +1,5 @@
 import { Button, Form, Input, Modal, Typography } from 'antd';
-import InfoCircleOutlined from '@ant-design/icons/InfoCircleOutlined';
+import { Info } from 'lucide-react';
 import { ModalAction } from '@/hooks/useModalAction';
 import { createViewNameValidator } from '@/utils/validator';
 import SQLCodeBlock from '@/components/code/SQLCodeBlock';
@@ -48,7 +48,7 @@ export default function SaveAsViewModal(props: Props) {
             className="d-flex justify-space-between align-center ml-2"
             style={{ width: 300 }}
           >
-            <InfoCircleOutlined className="mr-2 text-sm gray-6" />
+            <Info className="mr-2 text-sm gray-6" size={16} />
             <Text type="secondary" className="text-sm gray-6 text-left">
               After saving, make sure you go to "Modeling Page" to deploy all
               saved views.

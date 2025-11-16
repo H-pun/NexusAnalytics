@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import styled from 'styled-components';
 import { useMemo } from 'react';
 import { Skeleton } from 'antd';
-import BulbOutlined from '@ant-design/icons/BulbOutlined';
+import { Lightbulb } from 'lucide-react';
 import { makeIterable } from '@/utils/iteration';
 import {
   RecommendedQuestionsTask,
@@ -90,9 +90,11 @@ export default function RecommendedQuestions(props: Props) {
 
   return (
     <div className={clsx('bg-gray-2 rounded p-3', className)}>
-      <div className="mb-2">
-        <BulbOutlined className="mr-1 gray-6" />
-        <b className="text-semi-bold text-sm gray-7">Recommended questions</b>
+      <div className="d-flex align-center mb-2">
+        <Lightbulb className="mr-1 gray-6" size={16} />
+        <span className="text-semi-bold text-sm gray-7">
+          Recommended questions
+        </span>
       </div>
       <div className="pl-1 gray-8">
         <StyledSkeleton

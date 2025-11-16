@@ -12,10 +12,7 @@ import {
   Switch,
   Typography,
 } from 'antd';
-import CheckOutlined from '@ant-design/icons/CheckOutlined';
-import CloseOutlined from '@ant-design/icons/CloseOutlined';
-import CodeFilled from '@ant-design/icons/CodeFilled';
-import { BinocularsIcon } from '@/utils/icons';
+import { Code, Binoculars } from 'lucide-react';
 import { nextTick } from '@/utils/time';
 import useNativeSQL from '@/hooks/useNativeSQL';
 import { DATA_SOURCE_OPTIONS } from '@/components/pages/setup/utils';
@@ -92,8 +89,8 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
     if (!nativeSQLResult.nativeSQLMode) {
       message.success(
         <>
-          You copied NQRust SQL. This dialect is for the NQRust Engine and may not
-          run directly on your database.
+          You copied NQRust SQL. This dialect is for the NQRust Engine and may
+          not run directly on your database.
           {hasNativeSQL && (
             <>
               {' '}
@@ -159,8 +156,6 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
                 }
               >
                 <Switch
-                  checkedChildren={<CheckOutlined />}
-                  unCheckedChildren={<CloseOutlined />}
                   className="mr-2"
                   size="small"
                   checked={nativeSQLResult.nativeSQLMode}
@@ -173,9 +168,10 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
             )}
             <Button
               type="link"
+              className="d-flex align-center"
               data-ph-capture="true"
               data-ph-capture-attribute-name="view_sql_copy_sql"
-              icon={<CodeFilled />}
+              icon={<Code size={16} className="mr-1" />}
               size="small"
               onClick={() => onOpenAdjustSQLModal({ sql, responseId: id })}
             >
@@ -195,14 +191,8 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
       <div className="mt-6">
         <Button
           size="small"
-          icon={
-            <BinocularsIcon
-              style={{
-                paddingBottom: 2,
-                marginRight: 8,
-              }}
-            />
-          }
+          className="d-flex align-center"
+          icon={<Binoculars size={16} className="mr-1" />}
           loading={previewDataResult.loading}
           onClick={onPreviewData}
           data-ph-capture="true"

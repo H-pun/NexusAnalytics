@@ -69,7 +69,7 @@ function RecommendedQuestionsInstruction(props) {
     </div>
   ) : (
     <Wrapper>
-      <Button className="mt-6" {...buttonProps} />
+      <Button className="mt-6 d-flex align-center" {...buttonProps} />
       {generating && (
         <Text className="mt-3 text-sm gray-6">
           Generating relevant queries for you... (about 1 minute)

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
-import FunctionOutlined from '@ant-design/icons/FunctionOutlined';
+import { FunctionSquare } from 'lucide-react';
 import { Path, MENU_KEY } from '@/utils/enum';
 import { InstructionsSVG } from '@/utils/svgs';
 import SidebarMenu from '@/components/sidebar/SidebarMenu';
@@ -35,7 +35,7 @@ export default function Knowledge() {
           Question-SQL pairs
         </Link>
       ),
-      icon: <FunctionOutlined />,
+      icon: <FunctionSquare size={16} />,
       key: MENU_KEY.QUESTION_SQL_PAIRS,
       className: 'pl-4',
     },

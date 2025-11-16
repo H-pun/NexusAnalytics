@@ -1,15 +1,14 @@
 import { SETTINGS } from '@/utils/enum';
-import DatabaseOutlined from '@ant-design/icons/DatabaseOutlined';
-import ProjectOutlined from '@ant-design/icons/ProjectOutlined';
+import { DatabaseIcon, FolderIcon } from '@/utils/icons';
 
 export const getSettingMenu = (menu: SETTINGS) =>
   ({
     [SETTINGS.DATA_SOURCE]: {
-      icon: DatabaseOutlined,
+      icon: DatabaseIcon,
       label: 'Data source settings',
     },
     [SETTINGS.PROJECT]: {
-      icon: ProjectOutlined,
+      icon: FolderIcon,
       label: 'Project settings',
     },
   })[menu] || null;

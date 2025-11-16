@@ -3,8 +3,7 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { Path, MENU_KEY } from '@/utils/enum';
 import { OpenInNewIcon } from '@/utils/icons';
-import ApiOutlined from '@ant-design/icons/ApiOutlined';
-import ReadOutlined from '@ant-design/icons/ReadOutlined';
+import { Code2, BookOpen } from 'lucide-react';
 import SidebarMenu from '@/components/sidebar/SidebarMenu';
 
 const Layout = styled.div`
@@ -35,7 +34,7 @@ export default function APIManagement() {
           API history
         </Link>
       ),
-      icon: <ApiOutlined />,
+      icon: <Code2 size={16} />,
       key: MENU_KEY.API_HISTORY,
       className: 'pl-4',
     },
@@ -51,7 +50,7 @@ export default function APIManagement() {
           <OpenInNewIcon className="ml-1" />
         </Link>
       ),
-      icon: <ReadOutlined />,
+      icon: <BookOpen size={16} />,
       key: MENU_KEY.API_REFERENCE,
       className: 'pl-4',
     },

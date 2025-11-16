@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal, Form, Input, Typography, Button, Alert } from 'antd';
-import LinkOutlined from '@ant-design/icons/LinkOutlined';
+import { Link } from 'lucide-react';
 import { FORM_MODE } from '@/utils/enum';
 import { ERROR_TEXTS } from '@/utils/error';
 import { DiagramModel } from '@/utils/data/type';
@@ -148,7 +148,7 @@ export default function AddCalculatedFieldModal(props: Props) {
       footer={
         <div className="d-flex justify-space-between align-center">
           <div className="text-sm ml-2">
-            <LinkOutlined className="gray-6 mr-2" />
+            <Link className="gray-6 mr-2" size={16} />
             <Typography.Link
               type="secondary"
               href="https://docs.getwren.ai/oss/guide/modeling/models#update-primary-key"

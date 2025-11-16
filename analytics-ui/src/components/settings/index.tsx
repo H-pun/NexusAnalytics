@@ -4,8 +4,7 @@ import styled from 'styled-components';
 import { SETTINGS } from '@/utils/enum';
 import { makeIterable } from '@/utils/iteration';
 import { ModalAction } from '@/hooks/useModalAction';
-import SettingOutlined from '@ant-design/icons/SettingOutlined';
-import InfoCircleOutlined from '@ant-design/icons/InfoCircleOutlined';
+import { SettingsIcon, Info } from 'lucide-react';
 import DataSourceSettings from './DataSourceSettings';
 import ProjectSettings from './ProjectSettings';
 import { getSettingMenu } from './utils';
@@ -125,8 +124,8 @@ export default function Settings(props: Props) {
     >
       <Layout style={{ height: '100%' }}>
         <StyledSider width={310} className="border-r border-gray-4">
-          <div className="gray-9 text-bold py-3 px-5">
-            <SettingOutlined className="mr-2" />
+          <div className="gray-9 text-bold py-3 px-5 d-flex align-center">
+            <SettingsIcon className="mr-2" size={16} />
             Settings
           </div>
           <div className="p-3 flex-grow-1">
@@ -138,7 +137,7 @@ export default function Settings(props: Props) {
           </div>
           {!!productVersion && (
             <div className="gray-7 d-flex align-center p-3 px-5">
-              <InfoCircleOutlined className="mr-2 text-sm" />
+              <Info className="mr-2 text-sm" size={16} />
               Nexus Analytics version: {productVersion}
             </div>
           )}

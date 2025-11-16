@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { isString, difference } from 'lodash';
 import { Input, Table } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import SearchOutlined from '@ant-design/icons/SearchOutlined';
+import { Search } from 'lucide-react';
 import {
   FormItemInputContext,
   FormItemStatusContextProps,
@@ -88,7 +88,7 @@ export default function MultiSelectBox(props: Props) {
       <StyledTotal>{total} table(s)</StyledTotal>
       <div className="p-2">
         <Input
-          prefix={<SearchOutlined />}
+          prefix={<Search size={16} />}
           onChange={onSearchChange}
           placeholder="Search here"
           allowClear

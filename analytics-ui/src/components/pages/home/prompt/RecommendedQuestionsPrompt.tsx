@@ -2,10 +2,9 @@ import { useState, useMemo } from 'react';
 import clsx from 'clsx';
 import styled from 'styled-components';
 import { Space, Button, Row, Col } from 'antd';
-import ColumnHeightOutlined from '@ant-design/icons/ColumnHeightOutlined';
-import MinusOutlined from '@ant-design/icons/MinusOutlined';
-import EllipsisWrapper from '@/components/EllipsisWrapper';
+import { ListChevronsDownUp, ListChevronsUpDown } from 'lucide-react';
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
+import EllipsisWrapper from '@/components/EllipsisWrapper';
 import { makeIterable } from '@/utils/iteration';
 import { GroupedQuestion } from '@/hooks/useRecommendedQuestionsInstruction';
 
@@ -113,14 +112,8 @@ export default function RecommendedQuestionsPrompt(props: Props) {
 
   return (
     <div className="px-10 py-6">
-      <h2 className="text-center">
-        What data would you like to explore?
-      </h2>
-      <Space
-        style={{ width: 680 }}
-        direction="vertical"
-        size={[0, 16]}
-      >
+      <h2 className="text-center">What data would you like to explore?</h2>
+      <Space style={{ width: 680 }} direction="vertical" size={[0, 16]}>
         <CategorySectionBlock>
           <Row gutter={[16, 16]}>
             <QuestionColumnIterator
@@ -134,10 +127,16 @@ export default function RecommendedQuestionsPrompt(props: Props) {
             <div className="text-right">
               <Button
                 onClick={() => onHandleToggle()}
-                className="gray-6 mt-3"
+                className="gray-6 mt-3 d-flex align-center"
                 type="text"
                 size="small"
-                icon={isExpanded ? <MinusOutlined /> : <ColumnHeightOutlined />}
+                icon={
+                  isExpanded ? (
+                    <ListChevronsDownUp size={16} />
+                  ) : (
+                    <ListChevronsUpDown className="mr-1" size={16} />
+                  )
+                }
               >
                 {isExpanded ? 'Show less' : 'Show more'}
               </Button>

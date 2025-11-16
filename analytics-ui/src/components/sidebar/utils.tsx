@@ -137,6 +137,9 @@ export const GroupActionButton = styled(Button)`
   height: auto;
   background: transparent;
   color: var(--gray-8);
+  display: flex;
+  align-items: center;
+  gap: 2px;
   &:hover {
     background-color: transparent;
   }
