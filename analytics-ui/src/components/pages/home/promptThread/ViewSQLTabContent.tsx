@@ -75,18 +75,35 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
   const { hasNativeSQL, dataSourceType } = nativeSQLResult;
   const showNativeSQL = hasNativeSQL;
 
+  // fetch native SQL on initial load to show original SQL by default (switch inactive)
+  useEffect(() => {
+    if (
+      showNativeSQL &&
+      !nativeSQLResult.nativeSQLMode &&
+      !nativeSQLResult.data
+    ) {
+      fetchNativeSQL({ variables: { responseId: id } });
+    }
+  }, [
+    showNativeSQL,
+    id,
+    nativeSQLResult.nativeSQLMode,
+    nativeSQLResult.data,
+    fetchNativeSQL,
+  ]);
+
   const sqls =
     nativeSQLResult.nativeSQLMode && nativeSQLResult.loading === false
-      ? nativeSQLResult.data
-      : sql;
+      ? sql
+      : nativeSQLResult.data || sql;
 
   const onChangeNativeSQL = async (checked: boolean) => {
     nativeSQLResult.setNativeSQLMode(checked);
-    checked && fetchNativeSQL({ variables: { responseId: id } });
+    !checked && fetchNativeSQL({ variables: { responseId: id } });
   };
 
   const onCopy = () => {
-    if (!nativeSQLResult.nativeSQLMode) {
+    if (nativeSQLResult.nativeSQLMode) {
       message.success(
         <>
           You copied NQRust SQL. This dialect is for the NQRust Engine and may
@@ -94,7 +111,7 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
           {hasNativeSQL && (
             <>
               {' '}
-              Click “<b>Show original SQL</b>” to get the executable version.
+              Click "<b>Show original SQL</b>" to get the executable version.
             </>
           )}
         </>,
@@ -109,9 +126,8 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
         className="mb-3 adm-alert-info"
         message={
           <>
-            You're viewing NQRust SQL by default. If you want to run this query
-            on your own database, click "Show original SQL" to get the exact
-            syntax.
+            You're viewing original SQL by default. If you want to see the
+            NQRust SQL version, toggle the switch above.
             <Typography.Link
               className="underline ml-1"
               href="https://docs.getwren.ai/oss/guide/home/wren_sql"
@@ -128,6 +144,11 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
         <StyledToolBar className="d-flex align-center justify-space-between text-family-base">
           <div>
             {nativeSQLResult.nativeSQLMode ? (
+              <span className="d-flex align-center gx-2">
+                <Logo size={18} />
+                <Text className="gray-8 text-medium text-sm">NQRust SQL</Text>
+              </span>
+            ) : (
               <>
                 <Image
                   className="mr-2"
@@ -140,29 +161,20 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
                   {DATA_SOURCE_OPTIONS[dataSourceType].label}
                 </Text>
               </>
-            ) : (
-              <span className="d-flex align-center gx-2">
-                <Logo size={18} />
-                <Text className="gray-8 text-medium text-sm">NQRust SQL</Text>
-              </span>
             )}
           </div>
           <Space split={<Divider type="vertical" className="m-0" />}>
             {showNativeSQL && (
-              <div
-                className="d-flex align-center cursor-pointer"
-                onClick={() =>
-                  onChangeNativeSQL(!nativeSQLResult.nativeSQLMode)
-                }
-              >
+              <div className="d-flex align-center cursor-pointer">
                 <Switch
                   className="mr-2"
                   size="small"
                   checked={nativeSQLResult.nativeSQLMode}
                   loading={nativeSQLResult.loading}
+                  onChange={(checked) => onChangeNativeSQL(checked)}
                 />
                 <Text className="gray-8 text-medium text-base">
-                  Show original SQL
+                  Show NQRust SQL
                 </Text>
               </div>
             )}

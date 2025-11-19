@@ -24,6 +24,8 @@ const Layout = styled.div`
 const Content = styled.div`
   flex-grow: 1;
   overflow-y: auto;
+  padding-left: 8px;
+  padding-right: 8px;
 `;
 
 const StyledButton = styled(Button)`
@@ -33,7 +35,7 @@ const StyledButton = styled(Button)`
   padding-left: 16px;
   padding-right: 16px;
   color: var(--gray-8) !important;
-  border-radius: 0;
+  border-radius: 8px;
 
   &:hover,
   &:focus {
