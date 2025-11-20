@@ -63,7 +63,7 @@ export default function HeaderBar() {
               </Space>
               <StyledButton
                 type="text"
-                $isHighlight={pathname.startsWith(Path.Home)}
+                $isHighlight={pathname === Path.Home}
                 onClick={() => router.push(Path.Home)}
                 block
               >
