@@ -14,8 +14,8 @@ export default function LogoBar() {
         src="/images/apple-touch-icon.png?v=6"
         alt="NQRust - Analytics"
         style={{
-          width: '125%',
-          height: '125%',
+          width: '100%',
+          height: '100%',
           display: 'block',
           objectFit: 'contain',
         }}

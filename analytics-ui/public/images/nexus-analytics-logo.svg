@@ -1,9 +1,0 @@
-<svg width="268" height="64" viewBox="0 0 268 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Placeholder brand wordmark for Nexus Analytics; replace with final artwork when ready. -->
-  <rect width="268" height="64" rx="8" fill="#F5F5F5"/>
-  <g transform="translate(12,12)">
-    <path d="M0 40 V0 H10 L30 26 V0 H40 V40 H30 L10 14 V40 Z" fill="#C8652A"/>
-    <text x="56" y="28" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#C8652A">Nexus</text>
-    <text x="140" y="28" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#C8652A">Analytics</text>
-  </g>
-</svg>
