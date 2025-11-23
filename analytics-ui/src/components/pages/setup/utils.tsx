@@ -57,16 +57,6 @@ export const SETUP_STEPS = {
 } as { [key: string]: SetupStep };
 
 export const DATA_SOURCE_OPTIONS = {
-  [DATA_SOURCES.BIG_QUERY]: {
-    ...getDataSourceConfig(DATA_SOURCES.BIG_QUERY),
-    guide: 'https://docs.getwren.ai/oss/guide/connect/bigquery',
-    disabled: false,
-  },
-  [DATA_SOURCES.DUCKDB]: {
-    ...getDataSourceConfig(DATA_SOURCES.DUCKDB),
-    guide: 'https://docs.getwren.ai/oss/guide/connect/duckdb',
-    disabled: false,
-  },
   [DATA_SOURCES.POSTGRES]: {
     ...getDataSourceConfig(DATA_SOURCES.POSTGRES),
     guide: 'https://docs.getwren.ai/oss/guide/connect/postgresql',
@@ -77,24 +67,14 @@ export const DATA_SOURCE_OPTIONS = {
     guide: 'https://docs.getwren.ai/oss/guide/connect/mysql',
     disabled: false,
   },
-  [DATA_SOURCES.ORACLE]: {
-    ...getDataSourceConfig(DATA_SOURCES.ORACLE),
-    guide: 'https://docs.getwren.ai/oss/guide/connect/oracle',
+  [DATA_SOURCES.BIG_QUERY]: {
+    ...getDataSourceConfig(DATA_SOURCES.BIG_QUERY),
+    guide: 'https://docs.getwren.ai/oss/guide/connect/bigquery',
     disabled: false,
   },
-  [DATA_SOURCES.MSSQL]: {
-    ...getDataSourceConfig(DATA_SOURCES.MSSQL),
-    guide: 'https://docs.getwren.ai/oss/guide/connect/sqlserver',
-    disabled: false,
-  },
-  [DATA_SOURCES.CLICK_HOUSE]: {
-    ...getDataSourceConfig(DATA_SOURCES.CLICK_HOUSE),
-    guide: 'https://docs.getwren.ai/oss/guide/connect/clickhouse',
-    disabled: false,
-  },
-  [DATA_SOURCES.TRINO]: {
-    ...getDataSourceConfig(DATA_SOURCES.TRINO),
-    guide: 'https://docs.getwren.ai/oss/guide/connect/trino',
+  [DATA_SOURCES.REDSHIFT]: {
+    ...getDataSourceConfig(DATA_SOURCES.REDSHIFT),
+    guide: 'https://docs.getwren.ai/oss/guide/connect/redshift',
     disabled: false,
   },
   [DATA_SOURCES.SNOWFLAKE]: {
@@ -102,14 +82,34 @@ export const DATA_SOURCE_OPTIONS = {
     guide: 'https://docs.getwren.ai/oss/guide/connect/snowflake',
     disabled: false,
   },
+  [DATA_SOURCES.MSSQL]: {
+    ...getDataSourceConfig(DATA_SOURCES.MSSQL),
+    guide: 'https://docs.getwren.ai/oss/guide/connect/sqlserver',
+    disabled: false,
+  },
+  [DATA_SOURCES.ORACLE]: {
+    ...getDataSourceConfig(DATA_SOURCES.ORACLE),
+    guide: 'https://docs.getwren.ai/oss/guide/connect/oracle',
+    disabled: false,
+  },
+  [DATA_SOURCES.DUCKDB]: {
+    ...getDataSourceConfig(DATA_SOURCES.DUCKDB),
+    guide: 'https://docs.getwren.ai/oss/guide/connect/duckdb',
+    disabled: false,
+  },
+  [DATA_SOURCES.CLICK_HOUSE]: {
+    ...getDataSourceConfig(DATA_SOURCES.CLICK_HOUSE),
+    guide: 'https://docs.getwren.ai/oss/guide/connect/clickhouse',
+    disabled: false,
+  },
   [DATA_SOURCES.ATHENA]: {
     ...getDataSourceConfig(DATA_SOURCES.ATHENA),
     guide: 'https://docs.getwren.ai/oss/guide/connect/athena',
     disabled: false,
   },
-  [DATA_SOURCES.REDSHIFT]: {
-    ...getDataSourceConfig(DATA_SOURCES.REDSHIFT),
-    guide: 'https://docs.getwren.ai/oss/guide/connect/redshift',
+  [DATA_SOURCES.TRINO]: {
+    ...getDataSourceConfig(DATA_SOURCES.TRINO),
+    guide: 'https://docs.getwren.ai/oss/guide/connect/trino',
     disabled: false,
   },
 } as { [key: string]: ButtonOption };

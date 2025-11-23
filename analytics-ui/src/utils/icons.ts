@@ -4,7 +4,6 @@ import {
   Calendar,
   Type,
   Info,
-  Box,
   TrendingUp,
   CreditCard,
   Braces,
@@ -29,6 +28,7 @@ import {
   CaseUpper,
   Binary,
   EllipsisVertical,
+  Component,
 } from 'lucide-react';
 import { Discord, Github } from '@styled-icons/fa-brands';
 
@@ -65,7 +65,7 @@ export const InfoIcon = styled(Info)`
 export const PrimaryKeyIcon = styled(Key)`
   height: 1em;
 `;
-export const ModelIcon = styled(Box)`
+export const ModelIcon = styled(Component)`
   height: 1em;
 `;
 export const FocusIcon = styled(Focus)`

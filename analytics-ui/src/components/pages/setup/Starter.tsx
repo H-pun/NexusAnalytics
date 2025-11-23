@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { ComponentProps, useState } from 'react';
 import { Typography, Row, Col } from 'antd';
 import { getDataSources, getTemplates } from './utils';
@@ -9,9 +8,11 @@ import {
   SampleDatasetName,
 } from '@/apollo/client/graphql/__types__';
 
+const { Title, Text } = Typography;
+
 const ButtonTemplate = (props: ComponentProps<typeof ButtonItem>) => {
   return (
-    <Col span={6} key={props.label}>
+    <Col span={4} key={props.label}>
       <ButtonItem {...props} />
     </Col>
   );
@@ -39,21 +40,15 @@ export default function Starter(props) {
 
   return (
     <>
-      <Typography.Title level={1} className="mb-3">
-        Connect a data source
-      </Typography.Title>
-      <Typography.Text>
-        Vote for your favorite data sources on{' '}
-        <Link
-          href="https://github.com/Canner/WrenAI/discussions/327"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          GitHub
-        </Link>
-        .
-      </Typography.Text>
-      <Row className="mt-6" gutter={[16, 16]}>
+      <Title level={2} className="mb-0">
+        Choose your data source
+      </Title>
+      <Text type="secondary">
+        Start by connecting your own data source. Analytics supports PostgreSQL,
+        MySQL, SQL Server, and more. You can also explore using example datasets
+        to get started.
+      </Text>
+      <Row className="mt-6" gutter={[8, 8]}>
         <DataSourceIterator
           data={dataSources}
           onSelect={onSelectDataSource}
@@ -61,12 +56,12 @@ export default function Starter(props) {
         />
       </Row>
 
-      <div className="py-8" />
+      <div className="py-6" />
 
-      <Typography.Title level={1} className="mb-3">
-        Play around with sample data
+      <Typography.Title level={4} className="mb-0">
+        Explore using example datasets
       </Typography.Title>
-      <Row className="mt-6" gutter={[16, 16]}>
+      <Row className="mt-3" gutter={[8, 8]}>
         <TemplatesIterator
           data={templates}
           onSelect={onSelectTemplate}
@@ -74,8 +69,6 @@ export default function Starter(props) {
           selectedTemplate={template}
         />
       </Row>
-
-      <div className="py-12" />
     </>
   );
 }

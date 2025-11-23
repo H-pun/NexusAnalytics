@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Card, Steps } from 'antd';
+import { Blend, Table2, Unplug } from 'lucide-react';
 
 const Container = styled.div<{ maxWidth?: number }>`
   max-width: ${(props) => props.maxWidth || 1200}px;
@@ -19,9 +20,9 @@ export default function ContainerCard(props: Props) {
     <Container maxWidth={maxWidth}>
       <Card>
         <Steps current={step} className="mb-12">
-          <Steps.Step title="Link" />
-          <Steps.Step title="Choose Tables" />
-          <Steps.Step title="Set Relationships" />
+          <Steps.Step title="Connect" icon={<Unplug size={20} />} />
+          <Steps.Step title="Select Tables" icon={<Table2 size={20} />} />
+          <Steps.Step title="Define Relationships" icon={<Blend size={20} />} />
         </Steps>
         <div className="px-12 pb-6">{props.children}</div>
       </Card>

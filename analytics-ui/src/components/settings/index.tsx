@@ -138,7 +138,7 @@ export default function Settings(props: Props) {
           {!!productVersion && (
             <div className="gray-7 d-flex align-center p-3 px-5">
               <Info className="mr-2 text-sm" size={16} />
-              Nexus Analytics version: {productVersion}
+              NQRust - Analytics version: {productVersion}
             </div>
           )}
         </StyledSider>

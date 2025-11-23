@@ -6,13 +6,11 @@ import { DATA_SOURCES } from '@/utils/enum/dataSources';
 import { getDataSource, getPostgresErrorMessage } from './utils';
 
 const StyledForm = styled(Form)`
-  border: 1px var(--gray-4) solid;
-  border-radius: 4px;
+  margin: 24px 0px;
 `;
 
 const DataSource = styled.div`
-  border: 1px var(--gray-4) solid;
-  border-radius: 4px;
+  margin-bottom: 24px;
 `;
 
 interface Props {
@@ -41,47 +39,36 @@ export default function ConnectDataSource(props: Props) {
 
   return (
     <>
-      <Typography.Title level={1} className="mb-3">
-        Link the data source
-      </Typography.Title>
-      <Typography.Text>
-        Vote for your favorite data sources on{' '}
-        <Link
-          href="https://github.com/Canner/WrenAI/discussions/327"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          GitHub
-        </Link>
-        .
-      </Typography.Text>
+      {/* <Typography.Title level={1} className="mb-0">
+        Connect your data source
+      </Typography.Title> */}
 
-      <StyledForm form={form} layout="vertical" className="p-6 my-6">
-        <Row align="middle" className="mb-6">
-          <Col span={12}>
-            <DataSource className="d-inline-block px-4 py-2 bg-gray-2 gray-8">
-              <Image
-                className="mr-2"
-                src={current.logo}
-                alt={dataSource}
-                width="40"
-                height="40"
-              />
+      <StyledForm form={form} layout="vertical">
+        <DataSource>
+          <Image
+            className="mr-2"
+            src={current.logo}
+            alt={dataSource}
+            width="64"
+            height="64"
+          />
+          <div>
+            <Typography.Title level={3} className="mb-0">
               {current.label}
-            </DataSource>
-          </Col>
-          <Col className="text-right" span={12}>
-            Learn more information in the {current.label}{' '}
-            <Link
-              href={current.guide}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              setup guide
-            </Link>
-            .
-          </Col>
-        </Row>
+            </Typography.Title>
+            <Typography.Text type="secondary">
+              Learn more information in the {current.label}{' '}
+              <Link
+                href={current.guide}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                setup guide
+              </Link>
+              .
+            </Typography.Text>
+          </div>
+        </DataSource>
         <current.component />
       </StyledForm>
 

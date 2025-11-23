@@ -7,11 +7,13 @@ import { ButtonOption } from './utils';
 import { SampleDatasetName } from '@/apollo/client/graphql/__types__';
 
 const StyledButton = styled(Button)`
-  border: 2px var(--gray-4) solid;
-  background-color: var(--gray-2);
-  border-radius: 4px;
+  border: 2px var(--gray-1) solid;
+  border: none;
+  // background-color: var(--gray-2);
+  border-radius: 16px !important;
   width: 100%;
   height: auto;
+  box-shadow: none;
 
   &:focus {
     border: 2px var(--gray-4) solid;
@@ -20,12 +22,12 @@ const StyledButton = styled(Button)`
 
   &:hover {
     border-color: var(--rust-orange-6);
-    background-color: var(--gray-2);
+    background-color: var(--gray-3);
   }
 
   &.is-active {
     border-color: var(--rust-orange-6) !important;
-    background-color: var(--gray-2) !important;
+    background-color: var(--gray-3) !important;
   }
 
   &:disabled {
@@ -88,27 +90,23 @@ export default function ButtonItem(props: IterableComponent<Props>) {
   return (
     <StyledButton
       className={[
-        'px-4 py-2 gray-8 d-flex align-center',
-        loading ? 'flex-start' : 'justify-space-between',
+        'px-2 py-2 gray-8 d-flex flex-column align-center',
         isSelected ? 'is-active' : '',
       ].join(' ')}
       disabled={disabled || submitting}
       loading={loading}
       onClick={() => onSelect(value)}
     >
-      <div className="d-flex align-center" style={{ width: '100%' }}>
+      <div className="d-flex flex-column align-center">
         {logo ? (
-          <Image
-            className="mr-2"
-            src={logo}
-            alt={label}
-            width="40"
-            height="40"
-          />
+          <Image src={logo} alt={label} width="64" height="64" />
         ) : IconComponent ? (
-          <StyledIcon component={IconComponent} className="mr-2" />
+          <StyledIcon
+            component={IconComponent}
+            style={{ width: 64, height: 64, fontSize: 54 }}
+          />
         ) : (
-          <PlainImage className="mr-2" />
+          <PlainImage style={{ width: 64, height: 64 }} />
         )}
         {label}
       </div>

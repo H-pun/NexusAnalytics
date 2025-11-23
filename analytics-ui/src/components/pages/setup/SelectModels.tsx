@@ -44,12 +44,12 @@ export default function SelectModels(props: Props) {
 
   return (
     <div>
-      <Title level={1} className="mb-3">
-        Choose tables to build data models
+      <Title level={2} className="mb-0">
+        Select tables to create your data models
       </Title>
-      <Text>
-        We will create data models based on selected tables to help AI better
-        understand your data.
+      <Text type="secondary">
+        Selecting tables here helps us build data models, enabling AI to better
+        interpret your information.
         <br />
         <Link
           href="https://docs.getwren.ai/oss/guide/modeling/overview"
