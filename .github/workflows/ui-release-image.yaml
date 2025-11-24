@@ -1,4 +1,4 @@
-name: Wren-UI Release image
+name: Analytics-UI Release image
 
 on:
   workflow_dispatch:
@@ -8,11 +8,11 @@ on:
         type: string
 
 env:
-  WREN_UI_IMAGE: ghcr.io/canner/wren-ui
+  ANALYTICS_UI_IMAGE: ghcr.io/canner/analytics-ui
 
 defaults:
   run:
-    working-directory: wren-ui
+    working-directory: analytics-ui
 
 jobs:
   build-image:
@@ -55,9 +55,9 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: ${{ matrix.arch.platform }}
-          labels: ${{ env.WREN_UI_IMAGE }}
-          context: ./wren-ui
-          outputs: type=image,name=${{ env.WREN_UI_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          labels: ${{ env.ANALYTICS_UI_IMAGE }}
+          context: ./analytics-ui
+          outputs: type=image,name=${{ env.ANALYTICS_UI_IMAGE }},push-by-digest=true,name-canonical=true,push=true
       - name: Export digest
         run: |
           mkdir -p /tmp/digests
@@ -86,7 +86,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.WREN_UI_IMAGE }}
+          images: ${{ env.ANALYTICS_UI_IMAGE }}
           tags: |
             ${{ needs.build-image.outputs.tag_name }}
       - name: Login to GitHub Container Registry
@@ -100,5 +100,5 @@ jobs:
         run: |
           TAGS=$(echo "${{ steps.meta.outputs.tags }}" | awk '{printf "--tag %s ", $0}')
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.WREN_UI_IMAGE }}@sha256:%s ' *) \
+            $(printf '${{ env.ANALYTICS_UI_IMAGE }}@sha256:%s ' *) \
             $TAGS

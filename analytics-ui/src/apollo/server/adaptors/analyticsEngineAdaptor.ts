@@ -200,7 +200,7 @@ export class AnalyticsEngineAdaptor implements IAnalyticsEngineAdaptor {
       return res.data as EngineQueryResponse;
     } catch (err: any) {
       logger.debug(`Got error when querying duckdb: ${err.message}`);
-      throw Errors.create(Errors.GeneralErrorCodes.WREN_ENGINE_ERROR, {
+      throw Errors.create(Errors.GeneralErrorCodes.ANALYTICS_ENGINE_ERROR, {
         customMessage: err.response?.data?.message || err.message,
         originalError: err,
       });
@@ -222,7 +222,7 @@ export class AnalyticsEngineAdaptor implements IAnalyticsEngineAdaptor {
       await axios.patch(url.href, configPayload, { headers });
     } catch (err: any) {
       logger.debug(`Got error when patching config: ${err.message}`);
-      throw Errors.create(Errors.GeneralErrorCodes.WREN_ENGINE_ERROR, {
+      throw Errors.create(Errors.GeneralErrorCodes.ANALYTICS_ENGINE_ERROR, {
         customMessage: err.response?.data?.message || err.message,
         originalError: err,
       });
@@ -254,7 +254,7 @@ export class AnalyticsEngineAdaptor implements IAnalyticsEngineAdaptor {
       return res.data;
     } catch (err: any) {
       logger.debug(`Got error when previewing data: ${err.message}`);
-      throw Errors.create(Errors.GeneralErrorCodes.WREN_ENGINE_ERROR, {
+      throw Errors.create(Errors.GeneralErrorCodes.ANALYTICS_ENGINE_ERROR, {
         customMessage: err.response?.data?.message || err.message,
         originalError: err,
       });
@@ -313,7 +313,7 @@ export class AnalyticsEngineAdaptor implements IAnalyticsEngineAdaptor {
         url: url.href,
         data: body,
       });
-      logger.debug(`Wren Engine Dry run success`);
+      logger.debug(`Analytics Engine Dry run success`);
       return res.data;
     } catch (err: any) {
       logger.info(`Got error when dry running`);

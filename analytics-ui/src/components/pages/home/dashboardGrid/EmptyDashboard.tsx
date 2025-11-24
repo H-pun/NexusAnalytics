@@ -52,7 +52,7 @@ const EmptyDashboard = (props: {
           Follow these steps to pin charts to your dashboard.{' '}
           <Link
             className="gray-8 underline"
-            href="https://docs.getwren.ai/oss/guide/home/dashboard"
+            href="https://docs.getanalytics.ai/oss/guide/home/dashboard"
             rel="noopener noreferrer"
             target="_blank"
           >

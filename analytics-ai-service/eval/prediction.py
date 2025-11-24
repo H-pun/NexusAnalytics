@@ -20,7 +20,7 @@ from eval.utils import (
     load_eval_data_db_to_postgres,
     parse_db_name,
     parse_toml,
-    replace_wren_engine_env_variables,
+    replace_analytics_engine_env_variables,
 )
 
 
@@ -33,7 +33,7 @@ def generate_meta(
 ) -> Dict[str, Any]:
     return {
         "langfuse_url": settings.langfuse_url,
-        "user_id": "wren-evaluator",  # this property is using for langfuse
+        "user_id": "analytics-evaluator",  # this property is using for langfuse
         "session_id": f"eval_{pipe}_{uuid.uuid4()}",
         "date": datetime.now(),
         "dataset_id": dataset["dataset_id"],
@@ -118,8 +118,8 @@ if __name__ == "__main__":
         _connection_info = base64.b64encode(
             orjson.dumps(settings.postgres_info)
         ).decode("utf-8")
-        replace_wren_engine_env_variables(
-            "wren_ibis",
+        replace_analytics_engine_env_variables(
+            "analytics_ibis",
             {
                 "manifest": _mdl,
                 "source": settings.datasource,
@@ -131,8 +131,8 @@ if __name__ == "__main__":
         _connection_info = base64.b64encode(
             orjson.dumps(settings.bigquery_info)
         ).decode("utf-8")
-        replace_wren_engine_env_variables(
-            "wren_ibis",
+        replace_analytics_engine_env_variables(
+            "analytics_ibis",
             {
                 "manifest": _mdl,
                 "source": settings.datasource,

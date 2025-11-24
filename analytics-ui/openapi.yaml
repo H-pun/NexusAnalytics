@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
-  title: WrenAI API
-  description: Restful API for interacting with Wren AI
+  title: AnalyticsAI API
+  description: Restful API for interacting with Analytics AI
   version: 1.0.0
 servers:
   - url: /api/v1
-    description: WrenAI API v1
+    description: AnalyticsAI API v1
 paths:
   /generate_sql:
     post:
@@ -69,7 +69,7 @@ paths:
                 example:
                   id: "75c13d09-6f86-4e79-a00e-a4f85f73f2d7"
                   code: "NON_SQL_QUERY"
-                  error: "User asks about Wren AI's features and capabilities, unrelated to database schema."
+                  error: "User asks about Analytics AI's features and capabilities, unrelated to database schema."
                   explanationQueryId: "71b016c5-42bb-4897-82d6-46f9b0bf7d94"
   /run_sql:
     post:
@@ -308,7 +308,7 @@ paths:
                 type: string
                 description: Server-sent events stream with explanation chunks
               example: |
-                data: {"message":"Wren AI is "}
+                data: {"message":"Analytics AI is "}
 
                 data: {"message":"designed to "}
 

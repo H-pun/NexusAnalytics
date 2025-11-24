@@ -11,7 +11,7 @@ import {
   Manifest,
   ModelMDL,
   TableReference,
-  WrenEngineDataSourceType,
+  AnalyticsEngineDataSourceType,
 } from './type';
 import { getLogger } from '@server/utils';
 import { getConfig } from '@server/config';
@@ -115,7 +115,7 @@ export class MDLBuilder implements IMDLBuilder {
         columns: [],
         tableReference,
         // can only have one of refSql or tableReference
-        refSql: this.useRustWrenEngine()
+        refSql: this.useRustAnalyticsEngine()
           ? null
           : tableReference
             ? null
@@ -448,7 +448,7 @@ export class MDLBuilder implements IMDLBuilder {
     };
   }
   private postProcessManifest() {
-    if (this.useRustWrenEngine()) {
+    if (this.useRustAnalyticsEngine()) {
       // 1. remove all the key that the value is null
       this.manifest.models = this.manifest.models?.map((model) => {
         model.columns.map((column) => {
@@ -483,37 +483,37 @@ export class MDLBuilder implements IMDLBuilder {
       });
     }
   }
-  private useRustWrenEngine(): boolean {
+  private useRustAnalyticsEngine(): boolean {
     return !!config.experimentalEngineRustVersion;
   }
-  private buildDataSource(): WrenEngineDataSourceType {
+  private buildDataSource(): AnalyticsEngineDataSourceType {
     const type = this.project.type;
     if (!type) {
       return;
     }
     switch (type) {
       case DataSourceName.ATHENA:
-        return WrenEngineDataSourceType.ATHENA;
+        return AnalyticsEngineDataSourceType.ATHENA;
       case DataSourceName.BIG_QUERY:
-        return WrenEngineDataSourceType.BIGQUERY;
+        return AnalyticsEngineDataSourceType.BIGQUERY;
       case DataSourceName.DUCKDB:
-        return WrenEngineDataSourceType.DUCKDB;
+        return AnalyticsEngineDataSourceType.DUCKDB;
       case DataSourceName.POSTGRES:
-        return WrenEngineDataSourceType.POSTGRES;
+        return AnalyticsEngineDataSourceType.POSTGRES;
       case DataSourceName.MYSQL:
-        return WrenEngineDataSourceType.MYSQL;
+        return AnalyticsEngineDataSourceType.MYSQL;
       case DataSourceName.ORACLE:
-        return WrenEngineDataSourceType.ORACLE;
+        return AnalyticsEngineDataSourceType.ORACLE;
       case DataSourceName.MSSQL:
-        return WrenEngineDataSourceType.MSSQL;
+        return AnalyticsEngineDataSourceType.MSSQL;
       case DataSourceName.CLICK_HOUSE:
-        return WrenEngineDataSourceType.CLICKHOUSE;
+        return AnalyticsEngineDataSourceType.CLICKHOUSE;
       case DataSourceName.TRINO:
-        return WrenEngineDataSourceType.TRINO;
+        return AnalyticsEngineDataSourceType.TRINO;
       case DataSourceName.SNOWFLAKE:
-        return WrenEngineDataSourceType.SNOWFLAKE;
+        return AnalyticsEngineDataSourceType.SNOWFLAKE;
       case DataSourceName.REDSHIFT:
-        return WrenEngineDataSourceType.REDSHIFT;
+        return AnalyticsEngineDataSourceType.REDSHIFT;
       default:
         throw new Error(
           `Unsupported data source type: ${type} found when building manifest`,

@@ -1,6 +1,6 @@
 # create the github action to run the UI tests when PR created
 
-name: Wren-UI Test
+name: Analytics-UI Test
 
 on:
   pull_request:
@@ -16,7 +16,7 @@ concurrency:
 
 defaults:
   run:
-    working-directory: wren-ui
+    working-directory: analytics-ui
 
 jobs:
   unit-test:

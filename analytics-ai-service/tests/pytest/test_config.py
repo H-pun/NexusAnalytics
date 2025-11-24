@@ -29,8 +29,8 @@ def test_settings_default_values():
 
 def test_settings_env_var_override():
     env_vars = {
-        "WREN_AI_SERVICE_HOST": "0.0.0.0",
-        "WREN_AI_SERVICE_PORT": "8000",
+        "ANALYTICS_AI_SERVICE_HOST": "0.0.0.0",
+        "ANALYTICS_AI_SERVICE_PORT": "8000",
         "LOGGING_LEVEL": "DEBUG",
     }
 
@@ -38,16 +38,16 @@ def test_settings_env_var_override():
         "os.environ", env_vars
     ):
         settings = Settings()
-        assert settings.host == env_vars["WREN_AI_SERVICE_HOST"]
-        assert settings.port == int(env_vars["WREN_AI_SERVICE_PORT"])
+        assert settings.host == env_vars["ANALYTICS_AI_SERVICE_HOST"]
+        assert settings.port == int(env_vars["ANALYTICS_AI_SERVICE_PORT"])
         assert settings.logging_level == env_vars["LOGGING_LEVEL"]
 
 
 def test_settings_env_dev_override():
     # Mock the content of .env.dev file
     mock_env_dev_content = """
-    WREN_AI_SERVICE_HOST=localhost
-    WREN_AI_SERVICE_PORT=7000
+    ANALYTICS_AI_SERVICE_HOST=localhost
+    ANALYTICS_AI_SERVICE_PORT=7000
     LOGGING_LEVEL=WARNING
     """
 

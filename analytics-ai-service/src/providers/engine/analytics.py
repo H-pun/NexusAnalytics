@@ -188,7 +188,7 @@ class AnalyticsIbis(Engine):
             async with session.post(
                 api_endpoint,
                 headers={
-                    "x-wren-fallback_disable": "false" if allow_fallback else "true",
+                    "x-analytics-fallback_disable": "false" if allow_fallback else "true",
                 },
                 json={
                     "sql": sql,

@@ -12,8 +12,8 @@ import (
 	"github.com/pterm/pterm"
 )
 
-// Note: All struct definitions (WrenMDLManifest, WrenModel, etc.) are defined
-// in wren_mdl.go to prevent "redeclared in this block" compilation errors.
+// Note: All struct definitions (AnalyticsMDLManifest, AnalyticsModel, etc.) are defined
+// in analytics_mdl.go to prevent "redeclared in this block" compilation errors.
 
 // ConvertOptions holds the options for dbt project conversion
 type ConvertOptions struct {
@@ -93,7 +93,7 @@ func ConvertDbtProjectCore(opts ConvertOptions) (*ConvertResult, error) {
 		pterm.Info.Println("semantic_manifest.json not found, skipping metric and primary key conversion.")
 	}
 
-	// Convert profiles.yml to WrenDataSource (if profiles found)
+	// Convert profiles.yml to AnalyticsDataSource (if profiles found)
 	var dataSourceGenerated bool
 	var ds DataSource
 	localStoragePath := "." // default value
@@ -130,23 +130,23 @@ func ConvertDbtProjectCore(opts ConvertOptions) (*ConvertResult, error) {
 			ds = dataSources[0]
 
 			// Check if the first data source is duckdb (local file)
-			if localFileDS, ok := dataSources[0].(*WrenLocalFileDataSource); ok {
+			if localFileDS, ok := dataSources[0].(*AnalyticsLocalFileDataSource); ok {
 				localStoragePath = localFileDS.Url
 				pterm.Info.Printf("Found DuckDB data source, using local storage path: %s\n", localStoragePath)
 			}
 
-			// Create WrenDataSource JSON
-			var wrenDataSource map[string]interface{}
+			// Create AnalyticsDataSource JSON
+			var analyticsDataSource map[string]interface{}
 
 			switch typedDS := ds.(type) {
-			case *WrenPostgresDataSource:
+			case *AnalyticsPostgresDataSource:
 				var host string
 				if opts.UsedByContainer {
 					host = handleLocalhostForContainer(typedDS.Host)
 				} else {
 					host = typedDS.Host
 				}
-				wrenDataSource = map[string]interface{}{
+				analyticsDataSource = map[string]interface{}{
 					"type": "postgres",
 					"properties": map[string]interface{}{
 						"host":     host,
@@ -156,14 +156,14 @@ func ConvertDbtProjectCore(opts ConvertOptions) (*ConvertResult, error) {
 						"password": typedDS.Password,
 					},
 				}
-			case *WrenMSSQLDataSource:
+			case *AnalyticsMSSQLDataSource:
 				var host string
 				if opts.UsedByContainer {
 					host = handleLocalhostForContainer(typedDS.Host)
 				} else {
 					host = typedDS.Host
 				}
-				wrenDataSource = map[string]interface{}{
+				analyticsDataSource = map[string]interface{}{
 					"type": "mssql",
 					"properties": map[string]interface{}{
 						"host":        host,
@@ -176,7 +176,7 @@ func ConvertDbtProjectCore(opts ConvertOptions) (*ConvertResult, error) {
 						"kwargs":      typedDS.Kwargs,
 					},
 				}
-			case *WrenLocalFileDataSource:
+			case *AnalyticsLocalFileDataSource:
 				var url string
 				if opts.UsedByContainer {
 					// For container usage, the file path will be mounted to the following path
@@ -184,15 +184,15 @@ func ConvertDbtProjectCore(opts ConvertOptions) (*ConvertResult, error) {
 				} else {
 					url = typedDS.Url
 				}
-				wrenDataSource = map[string]interface{}{
+				analyticsDataSource = map[string]interface{}{
 					"type": "local_file",
 					"properties": map[string]interface{}{
 						"url":    url,
 						"format": typedDS.Format,
 					},
 				}
-			case *WrenBigQueryDataSource:
-				wrenDataSource = map[string]interface{}{
+			case *AnalyticsBigQueryDataSource:
+				analyticsDataSource = map[string]interface{}{
 					"type": "bigquery",
 					"properties": map[string]interface{}{
 						"project_id":  typedDS.Project,
@@ -200,8 +200,8 @@ func ConvertDbtProjectCore(opts ConvertOptions) (*ConvertResult, error) {
 						"credentials": typedDS.Credentials,
 					},
 				}
-			case *WrenMysqlDataSource:
-				wrenDataSource = map[string]interface{}{
+			case *AnalyticsMysqlDataSource:
+				analyticsDataSource = map[string]interface{}{
 					"type": "mysql",
 					"properties": map[string]interface{}{
 						"host":     typedDS.Host,
@@ -214,15 +214,15 @@ func ConvertDbtProjectCore(opts ConvertOptions) (*ConvertResult, error) {
 				}
 			default:
 				pterm.Warning.Printf("Warning: Unsupported data source type: %s\n", ds.GetType())
-				wrenDataSource = map[string]interface{}{
+				analyticsDataSource = map[string]interface{}{
 					"type":       ds.GetType(),
 					"properties": map[string]interface{}{},
 				}
 			}
 
-			// Write WrenDataSource JSON
-			dataSourcePath := filepath.Join(opts.OutputDir, "wren-datasource.json")
-			dataSourceJSON, err := json.MarshalIndent(wrenDataSource, "", "  ")
+			// Write AnalyticsDataSource JSON
+			dataSourcePath := filepath.Join(opts.OutputDir, "analytics-datasource.json")
+			dataSourceJSON, err := json.MarshalIndent(analyticsDataSource, "", "  ")
 			if err != nil {
 				return nil, fmt.Errorf("failed to marshal data source JSON: %w", err)
 			}
@@ -231,12 +231,12 @@ func ConvertDbtProjectCore(opts ConvertOptions) (*ConvertResult, error) {
 				return nil, fmt.Errorf("failed to write data source file: %w", err)
 			}
 
-			pterm.Success.Printf("✓ WrenDataSource saved to: %s\n", dataSourcePath)
+			pterm.Success.Printf("✓ AnalyticsDataSource saved to: %s\n", dataSourcePath)
 			dataSourceGenerated = true
 		}
 	}
 
-	// Convert catalog.json to Wren MDL
+	// Convert catalog.json to Analytics MDL
 	pterm.Info.Printf("Converting catalog.json from: %s\n", catalogPath)
 
 	// Create a default data source if none was found
@@ -244,13 +244,13 @@ func ConvertDbtProjectCore(opts ConvertOptions) (*ConvertResult, error) {
 		ds = &DefaultDataSource{}
 	}
 
-	manifest, err := ConvertDbtCatalogToWrenMDL(catalogPath, ds, manifestPathForConversion, semanticManifestPathForConversion, opts.IncludeStagingModels)
+	manifest, err := ConvertDbtCatalogToAnalyticsMDL(catalogPath, ds, manifestPathForConversion, semanticManifestPathForConversion, opts.IncludeStagingModels)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert catalog: %w", err)
 	}
 
-	// Write Wren MDL JSON
-	mdlPath := filepath.Join(opts.OutputDir, "wren-mdl.json")
+	// Write Analytics MDL JSON
+	mdlPath := filepath.Join(opts.OutputDir, "analytics-mdl.json")
 	mdlJSON, err := json.MarshalIndent(manifest, "", "  ")
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal MDL JSON: %w", err)
@@ -260,7 +260,7 @@ func ConvertDbtProjectCore(opts ConvertOptions) (*ConvertResult, error) {
 		return nil, fmt.Errorf("failed to write MDL file: %w", err)
 	}
 
-	pterm.Success.Printf("✓ Wren MDL saved to: %s\n", mdlPath)
+	pterm.Success.Printf("✓ Analytics MDL saved to: %s\n", mdlPath)
 
 	// Summary
 	pterm.Success.Println("\n🎉 Conversion completed successfully!")
@@ -271,15 +271,15 @@ func ConvertDbtProjectCore(opts ConvertOptions) (*ConvertResult, error) {
 
 	if dataSourceGenerated {
 		pterm.Info.Println("Generated files:")
-		pterm.Info.Printf("  - WrenDataSource: %s\n", filepath.Join(opts.OutputDir, "wren-datasource.json"))
-		pterm.Info.Printf("  - Wren MDL: %s\n", filepath.Join(opts.OutputDir, "wren-mdl.json"))
+		pterm.Info.Printf("  - AnalyticsDataSource: %s\n", filepath.Join(opts.OutputDir, "analytics-datasource.json"))
+		pterm.Info.Printf("  - Analytics MDL: %s\n", filepath.Join(opts.OutputDir, "analytics-mdl.json"))
 	} else {
 		pterm.Info.Println("Generated files:")
-		pterm.Info.Printf("  - Wren MDL: %s\n", filepath.Join(opts.OutputDir, "wren-mdl.json"))
+		pterm.Info.Printf("  - Analytics MDL: %s\n", filepath.Join(opts.OutputDir, "analytics-mdl.json"))
 		if profilesPath != "" {
-			pterm.Warning.Println("  - WrenDataSource: Not generated (no compatible data sources found)")
+			pterm.Warning.Println("  - AnalyticsDataSource: Not generated (no compatible data sources found)")
 		} else {
-			pterm.Warning.Println("  - WrenDataSource: Not generated (profiles.yml not found)")
+			pterm.Warning.Println("  - AnalyticsDataSource: Not generated (profiles.yml not found)")
 		}
 	}
 
@@ -302,9 +302,9 @@ func handleLocalhostForContainer(host string) string {
 	return host
 }
 
-// ConvertDbtCatalogToWrenMDL is the main function to convert a dbt catalog into a Wren MDL manifest.
-// It orchestrates the reading of dbt artifacts and processes each dbt node to convert it into a Wren model.
-func ConvertDbtCatalogToWrenMDL(catalogPath string, dataSource DataSource, manifestPath string, semanticManifestPath string, includeStagingModels bool) (*WrenMDLManifest, error) {
+// ConvertDbtCatalogToAnalyticsMDL is the main function to convert a dbt catalog into a Analytics MDL manifest.
+// It orchestrates the reading of dbt artifacts and processes each dbt node to convert it into a Analytics model.
+func ConvertDbtCatalogToAnalyticsMDL(catalogPath string, dataSource DataSource, manifestPath string, semanticManifestPath string, includeStagingModels bool) (*AnalyticsMDLManifest, error) {
 	// --- 1. Read and Parse All Necessary DBT Artifact Files ---
 
 	// Read and unmarshal the primary catalog.json file.
@@ -340,14 +340,14 @@ func ConvertDbtCatalogToWrenMDL(catalogPath string, dataSource DataSource, manif
 		}
 	}
 
-	// --- 2. Initialize Wren Manifest and Pre-process Metadata ---
+	// --- 2. Initialize Analytics Manifest and Pre-process Metadata ---
 
-	manifest := &WrenMDLManifest{
-		JsonSchema:      "https://raw.githubusercontent.com/Canner/WrenAI/main/wren-mdl/mdl.schema.json",
-		Catalog:         "wren",
+	manifest := &AnalyticsMDLManifest{
+		JsonSchema:      "https://raw.githubusercontent.com/Canner/AnalyticsAI/main/analytics-mdl/mdl.schema.json",
+		Catalog:         "analytics",
 		Schema:          "public",
 		EnumDefinitions: []EnumDefinition{},
-		Models:          []WrenModel{},
+		Models:          []AnalyticsModel{},
 		Relationships:   []Relationship{},
 		Metrics:         []Metric{},
 		Views:           []View{},
@@ -370,7 +370,7 @@ func ConvertDbtCatalogToWrenMDL(catalogPath string, dataSource DataSource, manif
 		preprocessSemanticManifestForPrimaryKeys(semanticManifestData, modelToPrimaryKeyMap)
 	}
 
-	// --- 3. Convert dbt Nodes to Wren Models ---
+	// --- 3. Convert dbt Nodes to Analytics Models ---
 
 	nodesValue, exists := catalogData["nodes"]
 	if !exists {
@@ -381,7 +381,7 @@ func ConvertDbtCatalogToWrenMDL(catalogPath string, dataSource DataSource, manif
 		return nil, fmt.Errorf("invalid 'nodes' format in catalog")
 	}
 
-	// Iterate through each node in the catalog and convert it to a Wren model.
+	// Iterate through each node in the catalog and convert it to a Analytics model.
 	for nodeKey, nodeValue := range nodesMap {
 		nodeMap, ok := nodeValue.(map[string]interface{})
 		if !ok {
@@ -399,7 +399,7 @@ func ConvertDbtCatalogToWrenMDL(catalogPath string, dataSource DataSource, manif
 		}
 
 		// Perform the conversion for the single node.
-		model, err := convertDbtNodeToWrenModel(nodeKey, nodeMap, dataSource, manifestData, columnToEnumNameMap, columnToNotNullMap, modelToPrimaryKeyMap)
+		model, err := convertDbtNodeToAnalyticsModel(nodeKey, nodeMap, dataSource, manifestData, columnToEnumNameMap, columnToNotNullMap, modelToPrimaryKeyMap)
 		if err != nil {
 			pterm.Warning.Printf("Failed to convert model %s: %v\n", nodeKey, err)
 			continue
@@ -416,7 +416,7 @@ func ConvertDbtCatalogToWrenMDL(catalogPath string, dataSource DataSource, manif
 
 	// Generate metrics from the semantic manifest.
 	if semanticManifestData != nil {
-		manifest.Metrics = convertDbtMetricsToWrenMetrics(semanticManifestData)
+		manifest.Metrics = convertDbtMetricsToAnalyticsMetrics(semanticManifestData)
 	}
 
 	return manifest, nil
@@ -703,11 +703,11 @@ func processColumnForTests(nodeKey, modelName, columnName string, colMap map[str
 	}
 }
 
-// convertDbtMetricsToWrenMetrics converts dbt metrics from the semantic manifest into the Wren MDL format.
+// convertDbtMetricsToAnalyticsMetrics converts dbt metrics from the semantic manifest into the Analytics MDL format.
 // It serves as the main entry point for metric conversion, orchestrating the creation of lookup tables
 // and processing each metric definition.
-func convertDbtMetricsToWrenMetrics(semanticData map[string]interface{}) []Metric {
-	var wrenMetrics []Metric
+func convertDbtMetricsToAnalyticsMetrics(semanticData map[string]interface{}) []Metric {
+	var analyticsMetrics []Metric
 
 	// --- 1. Pre-process semantic models to build fast lookup maps ---
 	// These maps are essential for quickly finding the model a measure belongs to and its details.
@@ -717,7 +717,7 @@ func convertDbtMetricsToWrenMetrics(semanticData map[string]interface{}) []Metri
 	metrics, ok := semanticData["metrics"].([]interface{})
 	if !ok {
 		// If there's no 'metrics' array, there's nothing to do.
-		return wrenMetrics
+		return analyticsMetrics
 	}
 
 	for _, m := range metrics {
@@ -732,7 +732,7 @@ func convertDbtMetricsToWrenMetrics(semanticData map[string]interface{}) []Metri
 			continue // A metric must have a name.
 		}
 
-		wrenMetric := Metric{
+		analyticsMetric := Metric{
 			Name:        metricName,
 			DisplayName: getStringFromMap(metricMap, "label", metricName),
 			Description: getStringFromMap(metricMap, "description", ""),
@@ -747,21 +747,21 @@ func convertDbtMetricsToWrenMetrics(semanticData map[string]interface{}) []Metri
 			continue // Skip metric if we can't associate it with a model.
 		}
 
-		wrenMetric.Models = []string{baseModel}
-		wrenMetric.Dimensions = findTimeDimensionsForModel(semanticData, baseModel)
+		analyticsMetric.Models = []string{baseModel}
+		analyticsMetric.Dimensions = findTimeDimensionsForModel(semanticData, baseModel)
 
 		// --- 5. Build the specific aggregation expression based on the metric type ---
 		metricType := getStringFromMap(metricMap, "type", "")
-		wrenMetric.Aggregation = buildAggregationExpression(metricType, typeParams, measureDataLookup)
+		analyticsMetric.Aggregation = buildAggregationExpression(metricType, typeParams, measureDataLookup)
 
 		// --- 6. Final validation before adding to the list ---
 		// A metric is only valid if it has a base model and a valid aggregation expression.
-		if wrenMetric.Aggregation != "" && len(wrenMetric.Models) > 0 {
-			wrenMetrics = append(wrenMetrics, wrenMetric)
+		if analyticsMetric.Aggregation != "" && len(analyticsMetric.Models) > 0 {
+			analyticsMetrics = append(analyticsMetrics, analyticsMetric)
 		}
 	}
 
-	return wrenMetrics
+	return analyticsMetrics
 }
 
 // buildMeasureLookups preprocesses the semantic models to create two essential maps:
@@ -868,7 +868,7 @@ func findTimeDimensionsForModel(semanticData map[string]interface{}, baseModelNa
 	return timeDimensions
 }
 
-// buildAggregationExpression constructs the SQL aggregation string for a Wren metric
+// buildAggregationExpression constructs the SQL aggregation string for a Analytics metric
 // based on its dbt type ('simple', 'ratio', or 'derived').
 func buildAggregationExpression(metricType string, typeParams map[string]interface{}, measureDataLookup map[string]map[string]interface{}) string {
 	switch metricType {
@@ -948,13 +948,13 @@ func extractDescriptionsFromManifest(manifestData map[string]interface{}, nodeKe
 	return modelDescription, columnDescriptions
 }
 
-// buildWrenColumn creates a single WrenColumn from its corresponding dbt column data map.
+// buildAnalyticsColumn creates a single AnalyticsColumn from its corresponding dbt column data map.
 // It populates the name, type, and properties like enums, descriptions, and comments.
-func buildWrenColumn(colMap map[string]interface{}, nodeKey string, dataSource DataSource, columnDescriptions map[string]string, columnToEnumNameMap map[string]string, columnToNotNullMap map[string]bool) WrenColumn {
+func buildAnalyticsColumn(colMap map[string]interface{}, nodeKey string, dataSource DataSource, columnDescriptions map[string]string, columnToEnumNameMap map[string]string, columnToNotNullMap map[string]bool) AnalyticsColumn {
 	columnName := getStringFromMap(colMap, "name", "")
 	columnKey := fmt.Sprintf("%s.%s", nodeKey, columnName)
 
-	column := WrenColumn{
+	column := AnalyticsColumn{
 		Name:        columnName,
 		DisplayName: getStringFromMap(getMapFromMap(colMap, "meta", nil), "label", ""),
 		Type:        dataSource.MapType(getStringFromMap(colMap, "type", "")),
@@ -971,7 +971,7 @@ func buildWrenColumn(colMap map[string]interface{}, nodeKey string, dataSource D
 	}
 
 	// Assign an enum if one was derived from dbt tests
-	// TODO: enum isn't implemented in Wren yet, putting this here for future use
+	// TODO: enum isn't implemented in Analytics yet, putting this here for future use
 	if enumName, ok := columnToEnumNameMap[columnKey]; ok {
 		properties["enumDefinition"] = enumName
 	}
@@ -984,8 +984,8 @@ func buildWrenColumn(colMap map[string]interface{}, nodeKey string, dataSource D
 	return column
 }
 
-// convertAndSortColumns extracts, sorts, and converts dbt columns to the WrenColumn format.
-func convertAndSortColumns(nodeData map[string]interface{}, nodeKey string, dataSource DataSource, columnDescriptions map[string]string, columnToEnumNameMap map[string]string, columnToNotNullMap map[string]bool) ([]WrenColumn, error) {
+// convertAndSortColumns extracts, sorts, and converts dbt columns to the AnalyticsColumn format.
+func convertAndSortColumns(nodeData map[string]interface{}, nodeKey string, dataSource DataSource, columnDescriptions map[string]string, columnToEnumNameMap map[string]string, columnToNotNullMap map[string]bool) ([]AnalyticsColumn, error) {
 	columnsValue, exists := nodeData["columns"]
 	if !exists {
 		return nil, fmt.Errorf("no columns found for model %s", nodeKey)
@@ -1014,22 +1014,22 @@ func convertAndSortColumns(nodeData map[string]interface{}, nodeKey string, data
 		return getStringFromMap(columnsData[i], "name", "") < getStringFromMap(columnsData[j], "name", "")
 	})
 
-	// Build the final slice of WrenColumns
-	var wrenColumns []WrenColumn
+	// Build the final slice of AnalyticsColumns
+	var analyticsColumns []AnalyticsColumn
 	for _, colMap := range columnsData {
 		if getStringFromMap(colMap, "name", "") == "" {
 			continue
 		}
-		column := buildWrenColumn(colMap, nodeKey, dataSource, columnDescriptions, columnToEnumNameMap, columnToNotNullMap)
-		wrenColumns = append(wrenColumns, column)
+		column := buildAnalyticsColumn(colMap, nodeKey, dataSource, columnDescriptions, columnToEnumNameMap, columnToNotNullMap)
+		analyticsColumns = append(analyticsColumns, column)
 	}
 
-	return wrenColumns, nil
+	return analyticsColumns, nil
 }
 
-// convertDbtNodeToWrenModel converts a single dbt node to a Wren model.
+// convertDbtNodeToAnalyticsModel converts a single dbt node to a Analytics model.
 // This function now orchestrates calls to helpers to perform the conversion.
-func convertDbtNodeToWrenModel(nodeKey string, nodeData map[string]interface{}, dataSource DataSource, manifestData map[string]interface{}, columnToEnumNameMap map[string]string, columnToNotNullMap map[string]bool, modelToPrimaryKeyMap map[string]string) (*WrenModel, error) {
+func convertDbtNodeToAnalyticsModel(nodeKey string, nodeData map[string]interface{}, dataSource DataSource, manifestData map[string]interface{}, columnToEnumNameMap map[string]string, columnToNotNullMap map[string]bool, modelToPrimaryKeyMap map[string]string) (*AnalyticsModel, error) {
 	modelName := getModelNameFromNodeKey(nodeKey)
 	if modelName == "" {
 		return nil, fmt.Errorf("invalid node key format: %s", nodeKey)
@@ -1054,16 +1054,16 @@ func convertDbtNodeToWrenModel(nodeKey string, nodeData map[string]interface{}, 
 	modelDescription, columnDescriptions := extractDescriptionsFromManifest(manifestData, nodeKey)
 
 	// --- 3. Convert and Sort Columns ---
-	wrenColumns, err := convertAndSortColumns(nodeData, nodeKey, dataSource, columnDescriptions, columnToEnumNameMap, columnToNotNullMap)
+	analyticsColumns, err := convertAndSortColumns(nodeData, nodeKey, dataSource, columnDescriptions, columnToEnumNameMap, columnToNotNullMap)
 	if err != nil {
 		return nil, err
 	}
 
-	// --- 4. Assemble the Final WrenModel ---
-	model := &WrenModel{
+	// --- 4. Assemble the Final AnalyticsModel ---
+	model := &AnalyticsModel{
 		Name:           modelName,
 		TableReference: tableRef,
-		Columns:        wrenColumns,
+		Columns:        analyticsColumns,
 	}
 
 	// Set primary key if available

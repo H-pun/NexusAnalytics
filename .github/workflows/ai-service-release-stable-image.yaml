@@ -9,11 +9,11 @@ on:
         required: true
 
 env:
-  WREN_AI_SERVICE_IMAGE: ghcr.io/canner/wren-ai-service
+  ANALYTICS_AI_SERVICE_IMAGE: ghcr.io/canner/analytics-ai-service
 
 defaults:
   run:
-    working-directory: wren-ai-service
+    working-directory: analytics-ai-service
 
 jobs:
   upgrade-ai-service-version:
@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0
       - name: Set up Git
         run: |
-          git config --global user.name "wren-ai[bot]"
+          git config --global user.name "analytics-ai[bot]"
           git config --global user.email "dev@cannerdata.com"
       - name: Set up Python 3.12.0
         uses: actions/setup-python@v4
@@ -50,7 +50,7 @@ jobs:
 
           # Get the change log from the previous version to the current HEAD
           # If there is no change log, the command will return an error, so we use || true to ignore the error
-          CHANGE_LOG=$(git log --pretty=format:"%s" $PREVIOUS_VERSION..HEAD | grep wren-ai-service || true)
+          CHANGE_LOG=$(git log --pretty=format:"%s" $PREVIOUS_VERSION..HEAD | grep analytics-ai-service || true)
 
           # Separate the change log into categories
           FEATURES=$(echo "$CHANGE_LOG" | grep "^feat" | sed 's/^/- /')
@@ -111,10 +111,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: ${{ matrix.arch.platform }}
-          labels: ${{ env.WREN_AI_SERVICE_IMAGE }}
-          context: ./wren-ai-service
-          file: ./wren-ai-service/docker/Dockerfile
-          outputs: type=image,name=${{ env.WREN_AI_SERVICE_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          labels: ${{ env.ANALYTICS_AI_SERVICE_IMAGE }}
+          context: ./analytics-ai-service
+          file: ./analytics-ai-service/docker/Dockerfile
+          outputs: type=image,name=${{ env.ANALYTICS_AI_SERVICE_IMAGE }},push-by-digest=true,name-canonical=true,push=true
       - name: Export digest
         run: |
           mkdir -p /tmp/digests
@@ -143,7 +143,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.WREN_AI_SERVICE_IMAGE }}
+          images: ${{ env.ANALYTICS_AI_SERVICE_IMAGE }}
           tags: |
             type=raw,${{ github.event.inputs.version }}
             type=raw,latest
@@ -158,5 +158,5 @@ jobs:
         run: |
           TAGS=$(echo "${{ steps.meta.outputs.tags }}" | awk '{printf "--tag %s ", $0}')
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.WREN_AI_SERVICE_IMAGE }}@sha256:%s ' *) \
+            $(printf '${{ env.ANALYTICS_AI_SERVICE_IMAGE }}@sha256:%s ' *) \
             $TAGS

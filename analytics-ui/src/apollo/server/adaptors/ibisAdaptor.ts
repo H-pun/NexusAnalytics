@@ -13,7 +13,7 @@ import {
   RecommendConstraint,
 } from '@server/services';
 import { snakeCase } from 'lodash';
-import { WREN_AI_CONNECTION_INFO } from '../repositories';
+import { ANALYTICS_AI_CONNECTION_INFO } from '../repositories';
 import {
   toIbisConnectionInfo,
   toMultipleIbisConnectionInfos,
@@ -145,7 +145,7 @@ export interface ValidationResponse {
 
 export interface IbisBaseOptions {
   dataSource: DataSourceName;
-  connectionInfo: WREN_AI_CONNECTION_INFO;
+  connectionInfo: ANALYTICS_AI_CONNECTION_INFO;
   mdl: Manifest;
 }
 export interface IbisQueryOptions extends IbisBaseOptions {
@@ -169,18 +169,18 @@ export interface IIbisAdaptor {
   dryRun: (query: string, options: IbisBaseOptions) => Promise<DryRunResponse>;
   getTables: (
     dataSource: DataSourceName,
-    connectionInfo: WREN_AI_CONNECTION_INFO,
+    connectionInfo: ANALYTICS_AI_CONNECTION_INFO,
   ) => Promise<CompactTable[]>;
   getConstraints: (
     dataSource: DataSourceName,
-    connectionInfo: WREN_AI_CONNECTION_INFO,
+    connectionInfo: ANALYTICS_AI_CONNECTION_INFO,
   ) => Promise<RecommendConstraint[]>;
 
   getNativeSql: (options: IbisDryPlanOptions) => Promise<string>;
   validate: (
     dataSource: DataSourceName,
     rule: ValidationRules,
-    connectionInfo: WREN_AI_CONNECTION_INFO,
+    connectionInfo: ANALYTICS_AI_CONNECTION_INFO,
     mdl: Manifest,
     parameters: Record<string, any>,
   ) => Promise<ValidationResponse>;
@@ -188,7 +188,7 @@ export interface IIbisAdaptor {
     sql: DialectSQL,
     options: {
       dataSource: DataSourceName;
-      connectionInfo: WREN_AI_CONNECTION_INFO;
+      connectionInfo: ANALYTICS_AI_CONNECTION_INFO;
       mdl: Manifest;
       catalog?: string;
       schema?: string;
@@ -196,7 +196,7 @@ export interface IIbisAdaptor {
   ) => Promise<AnalyticsSQL>;
   getVersion: (
     dataSource: DataSourceName,
-    connectionInfo: WREN_AI_CONNECTION_INFO,
+    connectionInfo: ANALYTICS_AI_CONNECTION_INFO,
   ) => Promise<string>;
 }
 
@@ -215,7 +215,7 @@ export interface IbisQueryResponse extends IbisResponse {
   override?: boolean;
 }
 
-export interface DryRunResponse extends IbisResponse {}
+export interface DryRunResponse extends IbisResponse { }
 
 enum IBIS_API_TYPE {
   QUERY = 'QUERY',
@@ -324,7 +324,7 @@ export class IbisAdaptor implements IIbisAdaptor {
 
   public async getTables(
     dataSource: DataSourceName,
-    connectionInfo: WREN_AI_CONNECTION_INFO,
+    connectionInfo: ANALYTICS_AI_CONNECTION_INFO,
   ): Promise<CompactTable[]> {
     try {
       const getTablesByConnectionInfo = async (ibisConnectionInfo) => {
@@ -368,7 +368,7 @@ export class IbisAdaptor implements IIbisAdaptor {
 
   public async getConstraints(
     dataSource: DataSourceName,
-    connectionInfo: WREN_AI_CONNECTION_INFO,
+    connectionInfo: ANALYTICS_AI_CONNECTION_INFO,
   ): Promise<RecommendConstraint[]> {
     connectionInfo = this.updateConnectionInfo(connectionInfo);
     const ibisConnectionInfo = toIbisConnectionInfo(dataSource, connectionInfo);
@@ -391,7 +391,7 @@ export class IbisAdaptor implements IIbisAdaptor {
   public async validate(
     dataSource: DataSourceName,
     validationRule: ValidationRules,
-    connectionInfo: WREN_AI_CONNECTION_INFO,
+    connectionInfo: ANALYTICS_AI_CONNECTION_INFO,
     mdl: Manifest,
     parameters: Record<string, any>,
   ): Promise<ValidationResponse> {
@@ -419,7 +419,7 @@ export class IbisAdaptor implements IIbisAdaptor {
     sql: DialectSQL,
     options: {
       dataSource: DataSourceName;
-      connectionInfo: WREN_AI_CONNECTION_INFO;
+      connectionInfo: ANALYTICS_AI_CONNECTION_INFO;
       mdl: Manifest;
       catalog?: string;
       schema?: string;
@@ -462,7 +462,7 @@ export class IbisAdaptor implements IIbisAdaptor {
 
   public async getVersion(
     dataSource: DataSourceName,
-    connectionInfo: WREN_AI_CONNECTION_INFO,
+    connectionInfo: ANALYTICS_AI_CONNECTION_INFO,
   ): Promise<string> {
     connectionInfo = this.updateConnectionInfo(connectionInfo);
     const ibisConnectionInfo = toIbisConnectionInfo(dataSource, connectionInfo);

@@ -12,7 +12,7 @@ import {
   ThreadResponseAdjustmentType,
 } from '@server/repositories';
 import { IAnalyticsAIAdaptor } from '../adaptors';
-import { TelemetryEvent, WrenService } from '../telemetry/telemetry';
+import { TelemetryEvent, AnalyticsService } from '../telemetry/telemetry';
 import { PostHogTelemetry } from '../telemetry/telemetry';
 
 const logger = getLogger('AdjustmentTaskTracker');
@@ -67,8 +67,7 @@ export interface IAdjustmentBackgroundTaskTracker {
 }
 
 export class AdjustmentBackgroundTaskTracker
-  implements IAdjustmentBackgroundTaskTracker
-{
+  implements IAdjustmentBackgroundTaskTracker {
   private analyticsAIAdaptor: IAnalyticsAIAdaptor;
   private askingTaskRepository: IAskingTaskRepository;
   private trackedTasks: Map<string, TrackedTask> = new Map();
@@ -372,7 +371,7 @@ export class AdjustmentBackgroundTaskTracker
                 this.telemetry.sendEvent(
                   eventName,
                   eventProperties,
-                  WrenService.AI,
+                  AnalyticsService.AI,
                   false,
                 );
               }

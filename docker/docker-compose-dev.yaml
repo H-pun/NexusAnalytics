@@ -4,12 +4,12 @@ volumes:
   data:
 
 networks:
-  wren:
+  analytics:
     driver: bridge
 
 services:
   bootstrap:
-    image: ghcr.io/canner/wren-bootstrap:${WREN_BOOTSTRAP_VERSION}
+    image: ghcr.io/canner/analytics-bootstrap:${ANALYTICS_BOOTSTRAP_VERSION}
     pull_policy: always
     platform: ${PLATFORM}
     environment:
@@ -18,29 +18,29 @@ services:
       - data:/app/data
     command: /bin/sh /app/init.sh
 
-  wren-engine:
-    image: ghcr.io/canner/wren-engine:${WREN_ENGINE_VERSION}
+  analytics-engine:
+    image: ghcr.io/canner/analytics-engine:${ANALYTICS_ENGINE_VERSION}
     pull_policy: always
     platform: ${PLATFORM}
     expose:
-      - ${WREN_ENGINE_SQL_PORT}
+      - ${ANALYTICS_ENGINE_SQL_PORT}
     ports:
-      - ${WREN_ENGINE_PORT}:${WREN_ENGINE_PORT}
+      - ${ANALYTICS_ENGINE_PORT}:${ANALYTICS_ENGINE_PORT}
     volumes:
       - data:/usr/src/app/etc
     networks:
-      - wren
+      - analytics
     depends_on:
       - bootstrap
 
-  wren-ai-service:
-    image: ghcr.io/canner/wren-ai-service:${WREN_AI_SERVICE_VERSION}
+  analytics-ai-service:
+    image: ghcr.io/canner/analytics-ai-service:${ANALYTICS_AI_SERVICE_VERSION}
     pull_policy: always
     platform: ${PLATFORM}
     ports:
-      - ${AI_SERVICE_FORWARD_PORT}:${WREN_AI_SERVICE_PORT}
+      - ${AI_SERVICE_FORWARD_PORT}:${ANALYTICS_AI_SERVICE_PORT}
     environment:
-      WREN_UI_ENDPOINT: http://host.docker.internal:${WREN_UI_PORT}
+      ANALYTICS_UI_ENDPOINT: http://host.docker.internal:${ANALYTICS_UI_PORT}
       # sometimes the console won't show print messages,
       # using PYTHONUNBUFFERED: 1 can fix this
       PYTHONUNBUFFERED: 1
@@ -51,12 +51,12 @@ services:
       - ${PROJECT_DIR}/config.yaml:/app/config.yaml:ro
       - ${PROJECT_DIR}/data:/app/data:ro
     networks:
-      - wren
+      - analytics
     depends_on:
       - qdrant
 
   ibis-server:
-    image: ghcr.io/canner/wren-engine-ibis:${IBIS_SERVER_VERSION}
+    image: ghcr.io/canner/analytics-engine-ibis:${IBIS_SERVER_VERSION}
     pull_policy: always
     platform: ${PLATFORM}
     expose:
@@ -64,10 +64,10 @@ services:
     ports:
       - ${IBIS_SERVER_PORT}:8000
     environment:
-      WREN_ENGINE_ENDPOINT: http://wren-engine:${WREN_ENGINE_PORT}
+      ANALYTICS_ENGINE_ENDPOINT: http://analytics-engine:${ANALYTICS_ENGINE_PORT}
       LOG_LEVEL: DEBUG
     networks:
-      - wren
+      - analytics
 
   qdrant:
     image: qdrant/qdrant:v1.11.0
@@ -76,7 +76,7 @@ services:
       - 6333:6333
       - 6334:6334
     networks:
-      - wren
+      - analytics
 
   # If you want to use postgres for testing purpose, uncomment the following block
   # postgres:
@@ -92,4 +92,4 @@ services:
   #     - POSTGRES_DB=test
   #     - PGDATA=/var/lib/postgresql/data/pgdata
   #   networks:
-  #     - wren
+  #     - analytics

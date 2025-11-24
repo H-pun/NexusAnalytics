@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Nexus Analytics Demo Startup Script
-# This script sets up and starts the rebranded Wren AI system for demo purposes
+# This script sets up and starts the rebranded Analytics AI system for demo purposes
 
 set -e
 
@@ -69,16 +69,16 @@ if [ ! -d "data" ]; then
     mkdir -p data
 fi
 
-# Check if wren-ui has been built locally
-if [ ! -f "wren-ui/Dockerfile" ]; then
-    echo -e "${RED}❌ wren-ui Dockerfile not found. Make sure you're running this from the project root.${NC}"
+# Check if analytics-ui has been built locally
+if [ ! -f "analytics-ui/Dockerfile" ]; then
+    echo -e "${RED}❌ analytics-ui Dockerfile not found. Make sure you're running this from the project root.${NC}"
     exit 1
 fi
 
-echo -e "${BLUE}🏗️  Building custom wren-ui with your branding...${NC}"
-cd wren-ui
+echo -e "${BLUE}🏗️  Building custom analytics-ui with your branding...${NC}"
+cd analytics-ui
 if [ ! -f "package.json" ]; then
-    echo -e "${RED}❌ package.json not found in wren-ui directory${NC}"
+    echo -e "${RED}❌ package.json not found in analytics-ui directory${NC}"
     exit 1
 fi
 

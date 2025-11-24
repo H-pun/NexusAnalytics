@@ -1,20 +1,20 @@
 # Evaluation Framework
 
-This document describes the evaluation framework for the Wren AI service. The evaluation framework is designed to assess the performance of the Wren AI service based on the following components:
+This document describes the evaluation framework for the Analytics AI service. The evaluation framework is designed to assess the performance of the Analytics AI service based on the following components:
 
 ## Requirements
 
 1. **Install Just**: Download and install [Just](https://github.com/casey/just?tab=readme-ov-file#packages) to run the evaluation framework commands.
 2. **Set up Langfuse**: Create an account on [Langfuse](https://cloud.langfuse.com) and obtain the API key and secret. Populate the `.env.dev` file with these credentials.
 3. **Start Development Services**: Run `just up` to initiate the necessary development services.
-4. **Configuration File**: Ensure you have a copy of `config.yaml` located in the `wren-ai-service/eval/` directory.
+4. **Configuration File**: Ensure you have a copy of `config.yaml` located in the `analytics-ai-service/eval/` directory.
 
 ## Dataset Curation
 
-The dataset curation process is used to prepare the evaluation dataset for the Wren AI service on evaluation purpose. You can follow the steps below to start the curation app:
+The dataset curation process is used to prepare the evaluation dataset for the Analytics AI service on evaluation purpose. You can follow the steps below to start the curation app:
 
 - copy `.env.example` to `.env` and fill in the environment variables
-- execute the command under the `wren-ai-service` folder: `just curate_eval_data`
+- execute the command under the `analytics-ai-service` folder: `just curate_eval_data`
 
 ## Eval Dataset Preparation(If using Spider 1.0 dataset, or Bird dataset)
 
@@ -32,13 +32,13 @@ The command performs two main steps:
 1. Downloads the specified dataset to:
 
    ```txt
-   wren-ai-service/tools/dev/etc/<dataset-name>
+   analytics-ai-service/tools/dev/etc/<dataset-name>
    ```
 
 2. Prepares and saves evaluation datasets to:
 
    ```txt
-   wren-ai-service/eval/dataset
+   analytics-ai-service/eval/dataset
    ```
 
    The output files follow these naming conventions:
@@ -103,7 +103,7 @@ BIGQUERY_CREDENTIALS="your_credentials" # this is a base64 encoded string of the
 
 ## Prediction Process
 
-The prediction process is used to produce the results of the evaluation data using the Wren AI service. It will create traces and a session on Langfuse to make the results available to the user. You can use the following command to predict the evaluation dataset under the `eval/dataset` directory:
+The prediction process is used to produce the results of the evaluation data using the Analytics AI service. It will create traces and a session on Langfuse to make the results available to the user. You can use the following command to predict the evaluation dataset under the `eval/dataset` directory:
 
 ```cli
 just predict <evaluation-dataset>
@@ -119,13 +119,13 @@ Currently, we support the following pipelines: 'ask', 'generation', and 'retriev
 
 ## Evaluation Process
 
-The evaluation process is used to assess the prediction results of the Wren AI service. It compares the prediction results with the ground truth and calculates the evaluation metrics. This process will also add a trace in the same session on Langfuse to make the evaluation results available to the user. You can use the following command to evaluate the prediction results under the `outputs/predictions` directory:
+The evaluation process is used to assess the prediction results of the Analytics AI service. It compares the prediction results with the ground truth and calculates the evaluation metrics. This process will also add a trace in the same session on Langfuse to make the evaluation results available to the user. You can use the following command to evaluate the prediction results under the `outputs/predictions` directory:
 
 ```cli
 just eval <prediction-result>
 ```
 
-Note: If you would like to enable semantics comparison between SQLs by LLM in order to improve the accuracy metric, please fill in Open AI API key in `.env` file in `wren-ai-service/eval` and add `--semantics` to the end of the command like following:
+Note: If you would like to enable semantics comparison between SQLs by LLM in order to improve the accuracy metric, please fill in Open AI API key in `.env` file in `analytics-ai-service/eval` and add `--semantics` to the end of the command like following:
 
 ```cli
 just eval <prediction-result> --semantics
@@ -139,7 +139,7 @@ The evaluation results will be presented on Langfuse as follows:
 
 This section describes the terms used in the evaluation framework:
 
-- **input**: The user query used as input to the Wren AI service (e.g., "What is the total number of COVID-19 cases in the US?").
+- **input**: The user query used as input to the Analytics AI service (e.g., "What is the total number of COVID-19 cases in the US?").
 - **actual_output**: The actual SQL query generated to retrieve the answer to the user query (e.g., "SELECT SUM(cases) FROM covid19 WHERE country='US'").
 - **expected_output**: The expected SQL query that should retrieve the answer to the user query (e.g., "SELECT SUM(cases) FROM covid19 WHERE country='US'").
 - **retrieval_context**: The relevant context that helps the LLM generate the SQL query (e.g., "covid19.country", "covid19.cases").

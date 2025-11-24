@@ -1,21 +1,21 @@
 # Dependancy https://external-dns.io
-# You may want to add a DNS record for wren-ui.myhost.net host for your k8s Service instead of Ingress. 
+# You may want to add a DNS record for analytics-ui.myhost.net host for your k8s Service instead of Ingress. 
 # Note: without authentication, enyone can acess your app, see your data and modify your settings!
-# If this is the case, make sure to comment the ingress-wren_example.yaml manifest in the `kustomization.yaml` file to exclude it
+# If this is the case, make sure to comment the ingress-analytics_example.yaml manifest in the `kustomization.yaml` file to exclude it
 # And uncomment external-dns in the Service manifest here below:
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: wren-ui-svc
+  name: analytics-ui-svc
   #annotations:
     ### Dependancy external-dns
     #external-dns.alpha.kubernetes.io/filter: 'include'
     #external-dns.alpha.kubernetes.io/cloudflare-proxied: 'false'
-    #external-dns.alpha.kubernetes.io/target: wren-ui.myhost.net
+    #external-dns.alpha.kubernetes.io/target: analytics-ui.myhost.net
 spec:
   selector:
-    app: wren-ui
+    app: analytics-ui
   ports:
     - protocol: TCP
       port: 3000
@@ -25,42 +25,42 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: wren-engine-svc
+  name: analytics-engine-svc
 spec:
   selector:
-    app: wren-engine
+    app: analytics-engine
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 8080
-      name: wren-engine
+      name: analytics-engine
     - protocol: TCP
       port: 7432
       targetPort: 7432
-      name: wren-engine-sql
+      name: analytics-engine-sql
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: wren-ai-service-svc
+  name: analytics-ai-service-svc
 spec:
   selector:
-    app: wren-ai-service
+    app: analytics-ai-service
   ports:
     - protocol: TCP
       port: 5555
       targetPort: 5555
-      name: wren-ai-service
+      name: analytics-ai-service
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: wren-ibis-server-svc
+  name: analytics-ibis-server-svc
 spec:
   selector:
-    app: wren-ibis
+    app: analytics-ibis
   ports:
     - protocol: TCP
       port: 8000
       targetPort: 8000
-      name: wren-ibis
+      name: analytics-ibis

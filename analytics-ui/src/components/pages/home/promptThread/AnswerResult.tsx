@@ -42,7 +42,7 @@ const knowledgeTooltip = (
     <br />
     <Typography.Link
       className="gray-1 underline"
-      href="https://docs.getwren.ai/oss/guide/knowledge/question-sql-pairs#save-to-knowledge"
+      href="https://docs.getanalytics.ai/oss/guide/knowledge/question-sql-pairs#save-to-knowledge"
       target="_blank"
       rel="noopener noreferrer"
     >

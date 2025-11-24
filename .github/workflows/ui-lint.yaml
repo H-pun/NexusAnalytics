@@ -1,7 +1,7 @@
 # create the github action to run the yarn lint when PR created or pushed to main branch
 #
 
-name: Wren-UI Lint
+name: Analytics-UI Lint
 
 on:
   pull_request:
@@ -17,7 +17,7 @@ concurrency:
 
 defaults:
   run:
-    working-directory: wren-ui
+    working-directory: analytics-ui
 
 jobs:
   eslint:

@@ -168,7 +168,7 @@ pipes:
 
 ---
 settings:
-  doc_endpoint: https://docs.getwren.ai
+  doc_endpoint: https://docs.getanalytics.ai
   is_oss: true
   engine_timeout: 30
   column_indexing_batch_size: 50

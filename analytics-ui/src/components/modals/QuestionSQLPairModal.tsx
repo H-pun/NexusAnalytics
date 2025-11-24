@@ -218,7 +218,7 @@ export default function QuestionSQLPairModal(props: Props) {
                 based on ANSI SQL and optimized for NQRust - Analytics.{` `}
                 <Typography.Link
                   type="secondary"
-                  href="https://docs.getwren.ai/oss/guide/home/wren_sql"
+                  href="https://docs.getanalytics.ai/oss/guide/home/analytics_sql"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

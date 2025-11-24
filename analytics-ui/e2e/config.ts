@@ -11,9 +11,9 @@ export const testDbConfig = {
 // Replace the default test config with your own e2e.config.json
 const defaultTestConfig = {
   bigQuery: {
-    projectId: 'wrenai',
-    datasetId: 'wrenai.tpch_sf1',
-    // The credential file should be under "wren-ui" folder
+    projectId: 'analyticsai',
+    datasetId: 'analyticsai.tpch_sf1',
+    // The credential file should be under "analytics-ui" folder
     credentialPath: 'bigquery-credential-path',
   },
   duckDb: {

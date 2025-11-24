@@ -16,8 +16,8 @@ from dotenv import load_dotenv
 
 load_dotenv(".env.dev", override=True)
 
-WREN_AI_SERVICE_BASE_URL = "http://localhost:5556"
-WREN_ENGINE_API_URL = "http://localhost:8080"
+ANALYTICS_AI_SERVICE_BASE_URL = "http://localhost:5556"
+ANALYTICS_ENGINE_API_URL = "http://localhost:8080"
 
 
 def _get_connection_info(data_source: str):
@@ -42,23 +42,23 @@ def _prepare_duckdb(dataset_name: str):
 
     init_sqls = {
         "ecommerce": """
-CREATE TABLE olist_customers_dataset AS FROM read_parquet('https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_customers_dataset.parquet');
-CREATE TABLE olist_order_items_dataset AS FROM read_parquet('https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_order_items_dataset.parquet');
-CREATE TABLE olist_orders_dataset AS FROM read_parquet('https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_orders_dataset.parquet');
-CREATE TABLE olist_order_payments_dataset AS FROM read_parquet('https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_order_payments_dataset.parquet');
-CREATE TABLE olist_products_dataset AS FROM read_parquet('https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_products_dataset.parquet');
-CREATE TABLE olist_order_reviews_dataset AS FROM read_parquet('https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_order_reviews_dataset.parquet');
-CREATE TABLE olist_geolocation_dataset AS FROM read_parquet('https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_geolocation_dataset.parquet');
-CREATE TABLE olist_sellers_dataset AS FROM read_parquet('https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_sellers_dataset.parquet');
-CREATE TABLE product_category_name_translation AS FROM read_parquet('https://assets.getwren.ai/sample_data/brazilian-ecommerce/product_category_name_translation.parquet');
+CREATE TABLE olist_customers_dataset AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_customers_dataset.parquet');
+CREATE TABLE olist_order_items_dataset AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_order_items_dataset.parquet');
+CREATE TABLE olist_orders_dataset AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_orders_dataset.parquet');
+CREATE TABLE olist_order_payments_dataset AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_order_payments_dataset.parquet');
+CREATE TABLE olist_products_dataset AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_products_dataset.parquet');
+CREATE TABLE olist_order_reviews_dataset AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_order_reviews_dataset.parquet');
+CREATE TABLE olist_geolocation_dataset AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_geolocation_dataset.parquet');
+CREATE TABLE olist_sellers_dataset AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_sellers_dataset.parquet');
+CREATE TABLE product_category_name_translation AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/product_category_name_translation.parquet');
 """,
         "hr": """
-CREATE TABLE salaries AS FROM read_parquet('https://assets.getwren.ai/sample_data/employees/salaries.parquet');
-CREATE TABLE titles AS FROM read_parquet('https://assets.getwren.ai/sample_data/employees/titles.parquet');
-CREATE TABLE dept_emp AS FROM read_parquet('https://assets.getwren.ai/sample_data/employees/dept_emp.parquet');
-CREATE TABLE departments AS FROM read_parquet('https://assets.getwren.ai/sample_data/employees/departments.parquet');
-CREATE TABLE employees AS FROM read_parquet('https://assets.getwren.ai/sample_data/employees/employees.parquet');
-CREATE TABLE dept_manager AS FROM read_parquet('https://assets.getwren.ai/sample_data/employees/dept_manager.parquet');
+CREATE TABLE salaries AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/employees/salaries.parquet');
+CREATE TABLE titles AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/employees/titles.parquet');
+CREATE TABLE dept_emp AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/employees/dept_emp.parquet');
+CREATE TABLE departments AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/employees/departments.parquet');
+CREATE TABLE employees AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/employees/employees.parquet');
+CREATE TABLE dept_manager AS FROM read_parquet('https://assets.getanalytics.ai/sample_data/employees/dept_manager.parquet');
 """,
     }
 
@@ -66,24 +66,24 @@ CREATE TABLE dept_manager AS FROM read_parquet('https://assets.getwren.ai/sample
         f.write("")
 
     response = requests.put(
-        f"{WREN_ENGINE_API_URL}/v1/data-source/duckdb/settings/init-sql",
+        f"{ANALYTICS_ENGINE_API_URL}/v1/data-source/duckdb/settings/init-sql",
         data=init_sqls[dataset_name],
     )
 
     assert response.status_code == 200, response.text
 
 
-def _update_wren_engine_configs(configs: list[dict]):
+def _update_analytics_engine_configs(configs: list[dict]):
     response = requests.patch(
-        f"{WREN_ENGINE_API_URL}/v1/config",
+        f"{ANALYTICS_ENGINE_API_URL}/v1/config",
         json=configs,
     )
 
     assert response.status_code == 200
 
 
-def _replace_wren_engine_env_variables(engine_type: str, data: dict):
-    assert engine_type in ("wren_engine", "wren_ibis")
+def _replace_analytics_engine_env_variables(engine_type: str, data: dict):
+    assert engine_type in ("analytics_engine", "analytics_ibis")
 
     with open("config.yaml", "r") as f:
         configs = list(yaml.safe_load_all(f))
@@ -137,8 +137,8 @@ def setup_datasource(mdl_str: str, dataset: str, dataset_type: str, url: str):
     manifest = base64.b64encode(mdl_str.encode("utf-8")).decode("utf-8")
     if dataset_type == "bigquery":
         connection_info = _get_connection_info(dataset_type)
-        _replace_wren_engine_env_variables(
-            "wren_ibis",
+        _replace_analytics_engine_env_variables(
+            "analytics_ibis",
             {
                 "manifest": manifest,
                 "source": dataset_type,
@@ -148,7 +148,7 @@ def setup_datasource(mdl_str: str, dataset: str, dataset_type: str, url: str):
             },
         )
     elif dataset_type == "duckdb":
-        _update_wren_engine_configs(
+        _update_analytics_engine_configs(
             [
                 {
                     "name": "duckdb.connector.init-sql-path",
@@ -157,7 +157,7 @@ def setup_datasource(mdl_str: str, dataset: str, dataset_type: str, url: str):
             ]
         )
         _prepare_duckdb(dataset)
-        _replace_wren_engine_env_variables("wren_engine", {"manifest": manifest})
+        _replace_analytics_engine_env_variables("analytics_engine", {"manifest": manifest})
 
     ready = False
     while not ready:
@@ -281,8 +281,8 @@ if __name__ == "__main__":
     }[args.lang]
 
     assert is_ai_service_ready(
-        WREN_AI_SERVICE_BASE_URL
-    ), "WrenAI AI service is not running, please start it first via 'just up && just start'"
+        ANALYTICS_AI_SERVICE_BASE_URL
+    ), "AnalyticsAI AI service is not running, please start it first via 'just up && just start'"
 
     mdls_and_questions_by_usecase = test_load_mdl_and_questions(usecases)
 
@@ -294,16 +294,16 @@ if __name__ == "__main__":
             data["mdl_str"],
             usecase,
             usecase_to_dataset_type[usecase],
-            WREN_AI_SERVICE_BASE_URL,
+            ANALYTICS_AI_SERVICE_BASE_URL,
         )
 
-        semantics_preperation_id = deploy_mdl(data["mdl_str"], WREN_AI_SERVICE_BASE_URL)
+        semantics_preperation_id = deploy_mdl(data["mdl_str"], ANALYTICS_AI_SERVICE_BASE_URL)
 
         # ask questions
         results = asyncio.run(
             ask_questions(
                 data["questions"],
-                WREN_AI_SERVICE_BASE_URL,
+                ANALYTICS_AI_SERVICE_BASE_URL,
                 semantics_preperation_id,
                 lang,
             )

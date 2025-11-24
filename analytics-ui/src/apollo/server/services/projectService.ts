@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import * as fs from 'fs';
 import path from 'path';
 import { getLogger } from '@server/utils';
-import { IProjectRepository, WREN_AI_CONNECTION_INFO } from '../repositories';
+import { IProjectRepository, ANALYTICS_AI_CONNECTION_INFO } from '../repositories';
 import { Project } from '../repositories';
 import {
   CompactTable,
@@ -38,7 +38,7 @@ const SENSITIVE_PROPERTY_NAME = new Set([
 export interface ProjectData {
   displayName: string;
   type: DataSourceName;
-  connectionInfo: WREN_AI_CONNECTION_INFO;
+  connectionInfo: ANALYTICS_AI_CONNECTION_INFO;
 }
 
 export interface ProjectRecommendationQuestionsResult {
@@ -214,7 +214,7 @@ export class ProjectService implements IProjectService {
     const projectValue = {
       displayName: projectData.displayName,
       type: projectData.type,
-      catalog: 'wrenai',
+      catalog: 'analyticsai',
       schema: 'public',
       connectionInfo: encryptConnectionInfo(
         projectData.type,

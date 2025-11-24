@@ -29,29 +29,29 @@ jobs:
 
       - name: Setup Git Identity
         run: |
-          git config --global user.name "wren-ai[bot]"
+          git config --global user.name "analytics-ai[bot]"
           git config --global user.email "dev@cannerdata.com"
 
       - name: Update docker.go
         run: |
-          FILE_PATH="wren-launcher/utils/docker.go"
+          FILE_PATH="analytics-launcher/utils/docker.go"
 
-          # Replace the WREN_PRODUCT_VERSION value with the new release version
-          sed -i "s/WREN_PRODUCT_VERSION\s*string = \"[^\"]*\"/WREN_PRODUCT_VERSION\tstring = \"${{ github.event.inputs.release_version }}\"/" $FILE_PATH
+          # Replace the ANALYTICS_PRODUCT_VERSION value with the new release version
+          sed -i "s/ANALYTICS_PRODUCT_VERSION\s*string = \"[^\"]*\"/ANALYTICS_PRODUCT_VERSION\tstring = \"${{ github.event.inputs.release_version }}\"/" $FILE_PATH
 
           # Verify the changes
-          grep "WREN_PRODUCT_VERSION" $FILE_PATH
+          grep "ANALYTICS_PRODUCT_VERSION" $FILE_PATH
 
       - name: Update .env.example
         run: |
           FILE_PATH="docker/.env.example"
 
           # Update all versions in the .env.example file
-          sed -i "s/WREN_PRODUCT_VERSION=.*/WREN_PRODUCT_VERSION=${{ github.event.inputs.release_version }}/" $FILE_PATH
-          sed -i "s/WREN_ENGINE_VERSION=.*/WREN_ENGINE_VERSION=${{ github.event.inputs.engine_version }}/" $FILE_PATH
+          sed -i "s/ANALYTICS_PRODUCT_VERSION=.*/ANALYTICS_PRODUCT_VERSION=${{ github.event.inputs.release_version }}/" $FILE_PATH
+          sed -i "s/ANALYTICS_ENGINE_VERSION=.*/ANALYTICS_ENGINE_VERSION=${{ github.event.inputs.engine_version }}/" $FILE_PATH
           sed -i "s/IBIS_SERVER_VERSION=.*/IBIS_SERVER_VERSION=${{ github.event.inputs.engine_version }}/" $FILE_PATH
-          sed -i "s/WREN_AI_SERVICE_VERSION=.*/WREN_AI_SERVICE_VERSION=${{ github.event.inputs.ai_version }}/" $FILE_PATH
-          sed -i "s/WREN_UI_VERSION=.*/WREN_UI_VERSION=${{ github.event.inputs.ui_version }}/" $FILE_PATH
+          sed -i "s/ANALYTICS_AI_SERVICE_VERSION=.*/ANALYTICS_AI_SERVICE_VERSION=${{ github.event.inputs.ai_version }}/" $FILE_PATH
+          sed -i "s/ANALYTICS_UI_VERSION=.*/ANALYTICS_UI_VERSION=${{ github.event.inputs.ui_version }}/" $FILE_PATH
 
           # Verify the changes
           grep "VERSION" $FILE_PATH
