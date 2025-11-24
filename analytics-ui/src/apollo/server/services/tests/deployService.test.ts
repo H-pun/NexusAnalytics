@@ -2,7 +2,7 @@ import { DeployService } from '../deployService';
 import { DeployStatusEnum } from '@server/repositories/deployLogRepository';
 
 describe('DeployService', () => {
-  let mockWrenAIAdaptor;
+  let mockAnalyticsAIAdaptor;
 
   let mockDeployLogRepository;
   let deployService;
@@ -10,7 +10,7 @@ describe('DeployService', () => {
 
   beforeEach(() => {
     mockTelemetry = { sendEvent: jest.fn() };
-    mockWrenAIAdaptor = { deploy: jest.fn() };
+    mockAnalyticsAIAdaptor = { deploy: jest.fn() };
     mockDeployLogRepository = {
       findLastProjectDeployLog: jest.fn(),
       createOne: jest.fn(),
@@ -19,7 +19,7 @@ describe('DeployService', () => {
 
     deployService = new DeployService({
       telemetry: mockTelemetry,
-      analyticsAIAdaptor: mockWrenAIAdaptor,
+      analyticsAIAdaptor: mockAnalyticsAIAdaptor,
       deployLogRepository: mockDeployLogRepository,
     });
   });
@@ -29,7 +29,7 @@ describe('DeployService', () => {
     const projectId = 1;
 
     mockDeployLogRepository.findLastProjectDeployLog.mockResolvedValue(null);
-    mockWrenAIAdaptor.deploy.mockResolvedValue({ status: 'SUCCESS' });
+    mockAnalyticsAIAdaptor.deploy.mockResolvedValue({ status: 'SUCCESS' });
     mockDeployLogRepository.createOne.mockResolvedValue({ id: 123 });
 
     const response = await deployService.deploy(manifest, projectId);
@@ -46,7 +46,7 @@ describe('DeployService', () => {
     const projectId = 1;
 
     mockDeployLogRepository.findLastProjectDeployLog.mockResolvedValue(null);
-    mockWrenAIAdaptor.deploy.mockResolvedValue({
+    mockAnalyticsAIAdaptor.deploy.mockResolvedValue({
       status: 'FAILED',
       error: 'AI error',
     });
@@ -69,7 +69,7 @@ describe('DeployService', () => {
     const response = await deployService.deploy(manifest, projectId);
 
     expect(response.status).toEqual(DeployStatusEnum.SUCCESS);
-    expect(mockWrenAIAdaptor.deploy).not.toHaveBeenCalled();
+    expect(mockAnalyticsAIAdaptor.deploy).not.toHaveBeenCalled();
   });
 
   // Add more tests here to cover other scenarios and error handling

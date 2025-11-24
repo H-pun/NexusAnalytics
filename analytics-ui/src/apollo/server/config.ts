@@ -1,7 +1,7 @@
 import { pickBy } from 'lodash';
 
 export interface IConfig {
-  // wren ui
+  // analytics ui
   otherServiceUsingDocker: boolean;
 
   // database
@@ -36,10 +36,10 @@ export interface IConfig {
   userUUID?: string;
 
   // versions
-  wrenUIVersion?: string;
-  wrenEngineVersion?: string;
-  wrenAIVersion?: string;
-  wrenProductVersion?: string;
+  analyticsUIVersion?: string;
+  analyticsEngineVersion?: string;
+  analyticsAIVersion?: string;
+  analyticsProductVersion?: string;
 
   // generate recommendation questions max categories
   projectRecommendationQuestionMaxCategories?: number;
@@ -49,7 +49,7 @@ export interface IConfig {
 }
 
 const defaultConfig = {
-  // wren ui
+  // analytics ui
   otherServiceUsingDocker: false,
 
   // database
@@ -126,10 +126,10 @@ const config = {
   userUUID: process.env.USER_UUID,
 
   // versions
-  wrenUIVersion: process.env.WREN_UI_VERSION,
-  wrenEngineVersion: process.env.WREN_ENGINE_VERSION,
-  wrenAIVersion: process.env.WREN_AI_SERVICE_VERSION,
-  wrenProductVersion: process.env.WREN_PRODUCT_VERSION,
+  analyticsUIVersion: process.env.ANALYTICS_UI_VERSION,
+  analyticsEngineVersion: process.env.ANALYTICS_ENGINE_VERSION,
+  analyticsAIVersion: process.env.ANALYTICS_AI_SERVICE_VERSION,
+  analyticsProductVersion: process.env.ANALYTICS_PRODUCT_VERSION,
 
   // generate recommendation questions max questions
   projectRecommendationQuestionMaxCategories: process.env

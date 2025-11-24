@@ -187,7 +187,7 @@ export default function ManageInstructions() {
             query accuracy and reducing the need for manual refinements.{' '}
             <Link
               className="gray-8 underline"
-              href="https://docs.getwren.ai/oss/guide/knowledge/instructions"
+              href="https://docs.getanalytics.ai/oss/guide/knowledge/instructions"
               rel="noopener noreferrer"
               target="_blank"
             >

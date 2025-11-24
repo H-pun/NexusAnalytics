@@ -14,11 +14,11 @@ import streamlit as st
 from dotenv import load_dotenv
 from openai import AsyncClient
 
-# add wren-ai-service to sys.path
+# add analytics-ai-service to sys.path
 sys.path.append(f"{Path().parent.parent.resolve()}")
 from eval.utils import (
     get_contexts_from_sql,
-    get_data_from_wren_engine,
+    get_data_from_analytics_engine,
     get_ddl_commands,
     get_documents_given_contexts,
 )
@@ -27,8 +27,8 @@ from src.pipelines.indexing.db_schema import DDLChunker
 
 load_dotenv()
 
-WREN_IBIS_ENDPOINT = os.getenv("WREN_IBIS_ENDPOINT", "http://localhost:8000")
-WREN_ENGINE_ENDPOINT = os.getenv("WREN_ENGINE_ENDPOINT", "http://localhost:8080")
+ANALYTICS_IBIS_ENDPOINT = os.getenv("ANALYTICS_IBIS_ENDPOINT", "http://localhost:8000")
+ANALYTICS_ENGINE_ENDPOINT = os.getenv("ANALYTICS_ENGINE_ENDPOINT", "http://localhost:8080")
 DATA_SOURCES = ["bigquery", "duckdb"]
 TIMEOUT_SECONDS = 60
 ddl_converter = DDLChunker()
@@ -97,9 +97,9 @@ async def get_validated_question_sql_pairs(
                     data_source,
                     mdl_json,
                     connection_info,
-                    WREN_ENGINE_ENDPOINT
+                    ANALYTICS_ENGINE_ENDPOINT
                     if data_source == "duckdb"
-                    else WREN_IBIS_ENDPOINT,
+                    else ANALYTICS_IBIS_ENDPOINT,
                 )
             )
             tasks.append(task)
@@ -119,7 +119,7 @@ async def get_validated_question_sql_pairs(
 async def get_contexts_from_sqls(
     sqls: list[str],
     mdl_json: dict,
-    api_endpoint: str = WREN_ENGINE_ENDPOINT,
+    api_endpoint: str = ANALYTICS_ENGINE_ENDPOINT,
     timeout: float = TIMEOUT_SECONDS,
 ) -> list[list[str]]:
     async with aiohttp.ClientSession():
@@ -207,14 +207,14 @@ Think step by step
         sqls = [question_sql_pair["sql"] for question_sql_pair in question_sql_pairs]
         contexts = await get_contexts_from_sqls(sqls, mdl_json)
         documents = get_documents_given_contexts(contexts, mdl_json)
-        sqls_data = await get_data_from_wren_engine_with_sqls(
+        sqls_data = await get_data_from_analytics_engine_with_sqls(
             sqls,
             data_source,
             mdl_json,
             connection_info,
-            WREN_ENGINE_ENDPOINT
+            ANALYTICS_ENGINE_ENDPOINT
             if st.session_state["data_source"] == "duckdb"
-            else WREN_IBIS_ENDPOINT,
+            else ANALYTICS_IBIS_ENDPOINT,
         )
         return [
             {
@@ -241,7 +241,7 @@ def prettify_sql(sql: str) -> str:
     )
 
 
-async def get_data_from_wren_engine_with_sqls(
+async def get_data_from_analytics_engine_with_sqls(
     sqls: List[str],
     data_source: str,
     mdl_json: dict,
@@ -255,7 +255,7 @@ async def get_data_from_wren_engine_with_sqls(
         tasks = []
         for sql in sqls:
             task = asyncio.ensure_future(
-                get_data_from_wren_engine(
+                get_data_from_analytics_engine(
                     sql=sql,
                     mdl_json=mdl_json,
                     api_endpoint=api_endpoint,

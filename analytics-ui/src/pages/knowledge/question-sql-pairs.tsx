@@ -149,7 +149,7 @@ export default function ManageQuestionSQLPairs() {
             it to generate queries that better align with your expectations.{' '}
             <Link
               className="gray-8 underline"
-              href="https://docs.getwren.ai/oss/guide/knowledge/question-sql-pairs"
+              href="https://docs.getanalytics.ai/oss/guide/knowledge/question-sql-pairs"
               rel="noopener noreferrer"
               target="_blank"
             >

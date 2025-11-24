@@ -19,7 +19,7 @@ done
 echo "qdrant has started."
 
 # Start analytics-service in the background
-uvicorn src.__main__:app --host 0.0.0.0 --port $WREN_AI_SERVICE_PORT --loop uvloop --http httptools &
+uvicorn src.__main__:app --host 0.0.0.0 --port $ANALYTICS_AI_SERVICE_PORT --loop uvloop --http httptools &
 
 if [[ -n "$SHOULD_FORCE_DEPLOY" ]]; then
 
@@ -27,7 +27,7 @@ if [[ -n "$SHOULD_FORCE_DEPLOY" ]]; then
     echo "Waiting for analytics-service to start..."
     current=0
 
-    while ! nc -z localhost $WREN_AI_SERVICE_PORT; do
+    while ! nc -z localhost $ANALYTICS_AI_SERVICE_PORT; do
         sleep $INTERVAL
         current=$((current + INTERVAL))
         if [ $current -eq $TIMEOUT ]; then
@@ -41,7 +41,7 @@ if [[ -n "$SHOULD_FORCE_DEPLOY" ]]; then
     echo "Waiting for analytics-ui to start..."
     current=0
 
-    while ! nc -z analytics-ui $WREN_UI_PORT && ! nc -z host.docker.internal $WREN_UI_PORT; do
+    while ! nc -z analytics-ui $ANALYTICS_UI_PORT && ! nc -z host.docker.internal $ANALYTICS_UI_PORT; do
         sleep $INTERVAL
         current=$((current + INTERVAL))
         if [ $current -eq $TIMEOUT ]; then
@@ -55,5 +55,5 @@ if [[ -n "$SHOULD_FORCE_DEPLOY" ]]; then
     python -m src.force_deploy
 fi
 
-# Bring wren-ai-service to the foreground
+# Bring analytics-ai-service to the foreground
 wait

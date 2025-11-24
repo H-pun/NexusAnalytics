@@ -1,6 +1,6 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Start wren-ui from source code
+## Start analytics-ui from source code
 
 Step 1. Make sure your node version is 18
 ```bash
@@ -15,7 +15,7 @@ yarn
 
 Step 3(Optional). Switching database
 
-Wren-ui uses SQLite as our default database. To use Postgres as the database of wren-ui, you need to set the two environment variable below.
+Analytics-ui uses SQLite as our default database. To use Postgres as the database of analytics-ui, you need to set the two environment variable below.
 
 ```bash
 # windows
@@ -51,13 +51,13 @@ npm run migrate
 Step 5. Run the development server:
 
 ```bash
-# Execute this if you start wren-engine and ibis-server via docker
+# Execute this if you start analytics-engine and ibis-server via docker
 # Linux or MacOS
 export OTHER_SERVICE_USING_DOCKER=true
-export EXPERIMENTAL_ENGINE_RUST_VERSION=false # set to true if you want to use the experimental Rust version of the Wren Engine
+export EXPERIMENTAL_ENGINE_RUST_VERSION=false # set to true if you want to use the experimental Rust version of the Analytics Engine
 # Windows
 SET OTHER_SERVICE_USING_DOCKER=true
-SET EXPERIMENTAL_ENGINE_RUST_VERSION=false # set to true if you want to use the experimental Rust version of the Wren Engine
+SET EXPERIMENTAL_ENGINE_RUST_VERSION=false # set to true if you want to use the experimental Rust version of the Analytics Engine
 
 # Run the development server
 yarn dev
@@ -68,28 +68,28 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 
-## Development wren-ui module on local
-There are many modules in Wren AI, to develop wren-ui, you can start other modules(services) via docker-compose.
-In the [Start wren-ui from source code](#Start-wren-ui-from-source-code) section, you've know how to start wren-ui from the source code to develop.
+## Development analytics-ui module on local
+There are many modules in Analytics AI, to develop analytics-ui, you can start other modules(services) via docker-compose.
+In the [Start analytics-ui from source code](#Start-analytics-ui-from-source-code) section, you've know how to start analytics-ui from the source code to develop.
 To start other modules via docker-compose, you can follow the steps below.
 
 Step 1. Prepare you .env file
-In the WrenAI/docker folder, you can find the .env.example file. You can copy this file to .env.local file.
+In the AnalyticsAI/docker folder, you can find the .env.example file. You can copy this file to .env.local file.
 
 ```bash
-# assume current directory is wren-ui
+# assume current directory is analytics-ui
 cd ../docker
 cp .env.example .env.local
 ```
 Step 2. Modify your .env.local file
 You need to fill the `OPENAI_API_KEY` with your OPENAI api key before starting.
 
-You can also change the `WREN_ENGINE_VERSION`, `WREN_AI_SERVICE_VERSION`, `IBIS_SERVER_VERSION` to the version you want to use.
+You can also change the `ANALYTICS_ENGINE_VERSION`, `ANALYTICS_AI_SERVICE_VERSION`, `IBIS_SERVER_VERSION` to the version you want to use.
 
 
 Step 3. Start the services via docker-compose
 ```bash
-# current directory is WrenAI/docker
+# current directory is AnalyticsAI/docker
 docker-compose -f docker-compose-dev.yaml --env-file .env.example up
 
 # you can add a -d flag to run the services in the background
@@ -98,41 +98,41 @@ docker-compose -f docker-compose-dev.yaml --env-file .env.example up -d
 docker-compose -f docker-compose-dev.yaml --env-file .env.example down
 ```
 
-Step 4. Start wren-ui from source code
-refer to [Start wren-ui from source code](#Start-wren-ui-from-source-code) section to start wren-ui from source code.
+Step 4. Start analytics-ui from source code
+refer to [Start analytics-ui from source code](#Start-analytics-ui-from-source-code) section to start analytics-ui from source code.
 
-Step 5. (Optional) Develop other modules along with wren-ui
+Step 5. (Optional) Develop other modules along with analytics-ui
 
 As mentioned above, you can use docker-compose to start other modules. The same applies when developing other modules.
-From the perspective of wren-ui, if you want to develop other modules at the same time, you can stop the container then spin up the module from the source code.
+From the perspective of analytics-ui, if you want to develop other modules at the same time, you can stop the container then spin up the module from the source code.
 
 eg: If you want to develop ai-service module, you can stop the ai-service container then start the ai-service from the source code.
 ```yaml
 # docker/docker-compose-dev.yaml
-wren-engine:
-    image: ghcr.io/canner/wren-engine:${WREN_ENGINE_VERSION}
+analytics-engine:
+    image: ghcr.io/canner/analytics-engine:${ANALYTICS_ENGINE_VERSION}
     pull_policy: always
     platform: ${PLATFORM}
     expose:
-      - ${WREN_ENGINE_SQL_PORT}
+      - ${ANALYTICS_ENGINE_SQL_PORT}
     ports:
-      - ${WREN_ENGINE_PORT}:${WREN_ENGINE_PORT}
+      - ${ANALYTICS_ENGINE_PORT}:${ANALYTICS_ENGINE_PORT}
     volumes:
       - data:/usr/src/app/etc
     networks:
-      - wren
+      - analytics
     depends_on:
       - bootstrap
     ...
 # comment out the ai-service service
-wren-ai-service:
-    image: ghcr.io/canner/wren-ai-service:${WREN_AI_SERVICE_VERSION}
+analytics-ai-service:
+    image: ghcr.io/canner/analytics-ai-service:${ANALYTICS_AI_SERVICE_VERSION}
     pull_policy: always
     platform: ${PLATFORM}
     ports:
-      - ${AI_SERVICE_FORWARD_PORT}:${WREN_AI_SERVICE_PORT}
+      - ${AI_SERVICE_FORWARD_PORT}:${ANALYTICS_AI_SERVICE_PORT}
     environment:
-      WREN_UI_ENDPOINT: http://host.docker.internal:${WREN_UI_PORT}
+      ANALYTICS_UI_ENDPOINT: http://host.docker.internal:${ANALYTICS_UI_PORT}
       # sometimes the console won't show print messages,
       # using PYTHONUNBUFFERED: 1 can fix this
       PYTHONUNBUFFERED: 1
@@ -142,24 +142,24 @@ wren-ai-service:
     volumes:
       - ${PROJECT_DIR}/config.yaml:/app/data/config.yaml
     networks:
-      - wren
+      - analytics
     depends_on:
       - qdrant
 
 ibis-server:
-    image: ghcr.io/canner/wren-engine-ibis:${IBIS_SERVER_VERSION}
+    image: ghcr.io/canner/analytics-engine-ibis:${IBIS_SERVER_VERSION}
     ...
 ```
 Then refer to the README.md or CONTRIBUTION.md file the module for starting the module from the source code. 
 
-eg: refer to the [ai-service README](https://github.com/Canner/WrenAI/blob/main/wren-ai-service/README.md#start-the-service-for-development) to start the ai-service from the source code.
+eg: refer to the [ai-service README](https://github.com/Canner/AnalyticsAI/blob/main/analytics-ai-service/README.md#start-the-service-for-development) to start the ai-service from the source code.
 
 
 
 ## FAQ
-### Can I have multiple project at the same time in Wren AI?
-We currently do not support multiple projects in Wren AI. You can only have one project at a time.
-But there is a workaround for this. Since Wren Engine is stateless and we store your semantic model in the database(Sqlite or Postgres), 
+### Can I have multiple project at the same time in Analytics AI?
+We currently do not support multiple projects in Analytics AI. You can only have one project at a time.
+But there is a workaround for this. Since Analytics Engine is stateless and we store your semantic model in the database(Sqlite or Postgres), 
 you can switch between projects by switching the database and make sure you deploying after server started.
 
 > Tip: Define the `DB_TYPE` and `SQLITE_FILE` or `PG_URL` variable to specify which database you intend to use.
@@ -184,8 +184,8 @@ export SQLITE_FILE=./first_project.sqlite
 
 yarn dev  # no need to do migration again
 
-# in the modeling page, click the deploy button to deploy the project to the wren-ai-service.
-# your Wren AI is ready to answer your question.
+# in the modeling page, click the deploy button to deploy the project to the analytics-ai-service.
+# your Analytics AI is ready to answer your question.
 ```
 
 ## Learn More

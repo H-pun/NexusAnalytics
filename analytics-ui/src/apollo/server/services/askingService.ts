@@ -24,7 +24,7 @@ import { safeFormatSQL } from '@server/utils/sqlFormat';
 import {
   PostHogTelemetry,
   TelemetryEvent,
-  WrenService,
+  AnalyticsService,
 } from '../telemetry/telemetry';
 import {
   IAskingTaskRepository,
@@ -364,7 +364,7 @@ class BreakdownBackgroundTracker {
               this.telemetry.sendEvent(
                 TelemetryEvent.HOME_ANSWER_BREAKDOWN,
                 eventProperties,
-                WrenService.AI,
+                AnalyticsService.AI,
                 false,
               );
             }

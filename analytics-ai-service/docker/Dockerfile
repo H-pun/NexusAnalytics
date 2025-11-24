@@ -21,7 +21,7 @@ RUN apt-get update && apt install -y netcat-traditional && rm -rf /var/lib/apt/l
 ENV VIRTUAL_ENV=/app/.venv \
     PATH="/app/.venv/bin:$PATH" \
     QDRANT_HOST=qdrant \
-    WREN_AI_SERVICE_PORT=5555
+    ANALYTICS_AI_SERVICE_PORT=5555
 
 WORKDIR /app
 

@@ -69,7 +69,7 @@ connection_info: "" # base64 encoded string of the connection info
 ---
 type: engine
 provider: analytics_engine
-endpoint: http://wren-engine:8080
+endpoint: http://analytics-engine:8080
 manifest: ""
 
 ---

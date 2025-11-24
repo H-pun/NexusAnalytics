@@ -26,7 +26,7 @@ import {
   SampleDatasetName,
   getSampleAskQuestions,
 } from '../data';
-import { TelemetryEvent, WrenService } from '../telemetry/telemetry';
+import { TelemetryEvent, AnalyticsService } from '../telemetry/telemetry';
 import { TrackedAskingResult } from '../services';
 
 const logger = getLogger('AskingResolver');
@@ -233,7 +233,7 @@ export class AskingResolver {
           status: askResult.status,
           error: askResult.error,
         },
-        WrenService.AI,
+        AnalyticsService.AI,
         false,
       );
     }

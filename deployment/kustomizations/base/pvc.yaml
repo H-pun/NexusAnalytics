@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: wren-data-pvc
+  name: analytics-data-pvc
 spec:
   accessModes:
   - ReadWriteOnce

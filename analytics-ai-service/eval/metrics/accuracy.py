@@ -9,7 +9,7 @@ from deepeval.metrics import BaseMetric
 from deepeval.test_case import LLMTestCase
 from deprecated import deprecated
 
-from eval.utils import get_data_from_wren_engine, get_openai_client
+from eval.utils import get_data_from_analytics_engine, get_openai_client
 
 
 class AccuracyMetric(BaseMetric):
@@ -83,7 +83,7 @@ class AccuracyMetric(BaseMetric):
         return sql
 
     async def _retrieve_data(self, sql: str) -> pd.DataFrame:
-        response = await get_data_from_wren_engine(sql=sql, **self.engine_info)
+        response = await get_data_from_analytics_engine(sql=sql, **self.engine_info)
 
         df = pd.DataFrame(**response)
         sorted_columns = sorted(df.columns)

@@ -78,7 +78,7 @@ def test_generate_components(mocker: MockerFixture):
             "models": [{"model": "text-embedding-ada-002", "dimension": 1536}],
         },
         {"type": "document_store", "provider": "qdrant", "kwargs": {}},
-        {"type": "engine", "provider": "wren_ui", "kwargs": {}},
+        {"type": "engine", "provider": "analytics_ui", "kwargs": {}},
         {
             "type": "pipeline",
             "pipes": [

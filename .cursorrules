@@ -1,13 +1,13 @@
-# Wren AI - Cursor Rules & Project Guidelines
+# Analytics AI - Cursor Rules & Project Guidelines
 
 ## 🎯 Project Overview
-Wren AI is an AI-powered text-to-SQL system that helps users query databases using natural language.
+Analytics AI is an AI-powered text-to-SQL system that helps users query databases using natural language.
 This project uses Python 3.12, FastAPI, and LangChain for RAG (Retrieval-Augmented Generation) pipelines.
 
 ## 📁 Project Structure
 
 ```
-wren-ai-service/
+analytics-ai-service/
 ├── src/
 │   ├── __main__.py           # FastAPI entry point
 │   ├── core/                 # Core abstractions (Pipeline, Provider, Engine)
@@ -197,7 +197,7 @@ poetry install
 poetry shell
 
 # 3. Start dependencies
-cd wren-ai-service
+cd analytics-ai-service
 just up
 
 # 4. Run in dev mode
@@ -255,8 +255,8 @@ docs(readme): update setup instructions
 
 ### Project Specific
 - Architecture diagram: See root README.md
-- Code design: `wren-ai-service/docs/code_design.md`
-- Configuration: `wren-ai-service/docs/configuration.md`
+- Code design: `analytics-ai-service/docs/code_design.md`
+- Configuration: `analytics-ai-service/docs/configuration.md`
 
 ### Frameworks Used
 - **FastAPI**: https://fastapi.tiangolo.com/

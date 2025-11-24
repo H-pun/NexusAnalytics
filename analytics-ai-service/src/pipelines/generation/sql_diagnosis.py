@@ -15,7 +15,7 @@ from src.core.provider import LLMProvider
 from src.pipelines.common import clean_up_new_lines
 from src.utils import trace_cost
 
-logger = logging.getLogger("wren-ai-service")
+logger = logging.getLogger("analytics-ai-service")
 
 
 sql_diagnosis_system_prompt = """

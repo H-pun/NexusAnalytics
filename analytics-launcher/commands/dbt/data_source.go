@@ -108,7 +108,7 @@ func convertConnectionToDataSource(conn DbtConnection, dbtHomePath, profileName,
 }
 
 // convertToPostgresDataSource converts to PostgreSQL data source
-func convertToPostgresDataSource(conn DbtConnection) (*WrenPostgresDataSource, error) {
+func convertToPostgresDataSource(conn DbtConnection) (*AnalyticsPostgresDataSource, error) {
 	// For PostgreSQL, prefer dbname over database field
 	dbName := conn.DbName
 	if dbName == "" {
@@ -121,7 +121,7 @@ func convertToPostgresDataSource(conn DbtConnection) (*WrenPostgresDataSource, e
 		port = "5432"
 	}
 
-	ds := &WrenPostgresDataSource{
+	ds := &AnalyticsPostgresDataSource{
 		Host:     conn.Host,
 		Port:     port,
 		Database: dbName,
@@ -132,20 +132,20 @@ func convertToPostgresDataSource(conn DbtConnection) (*WrenPostgresDataSource, e
 	return ds, nil
 }
 
-func convertToMSSQLDataSource(conn DbtConnection) (*WrenMSSQLDataSource, error) {
+func convertToMSSQLDataSource(conn DbtConnection) (*AnalyticsMSSQLDataSource, error) {
 	port := strconv.Itoa(conn.Port)
 	if conn.Port == 0 {
 		port = "1433"
 	}
 
-	ds := &WrenMSSQLDataSource{
+	ds := &AnalyticsMSSQLDataSource{
 		Database:   conn.Database,
 		Host:       conn.Server,
 		Port:       port,
 		User:       conn.User,
 		Password:   conn.Password,
-		TdsVersion: "8.0",                           // the default tds version for Wren engine image
-		Driver:     "ODBC Driver 18 for SQL Server", // the driver used by Wren engine image
+		TdsVersion: "8.0",                           // the default tds version for Analytics engine image
+		Driver:     "ODBC Driver 18 for SQL Server", // the driver used by Analytics engine image
 		Kwargs:     map[string]interface{}{"TrustServerCertificate": "YES"},
 	}
 
@@ -153,7 +153,7 @@ func convertToMSSQLDataSource(conn DbtConnection) (*WrenMSSQLDataSource, error) 
 }
 
 // convertToLocalFileDataSource converts to local file data source
-func convertToLocalFileDataSource(conn DbtConnection, dbtHome string) (*WrenLocalFileDataSource, error) {
+func convertToLocalFileDataSource(conn DbtConnection, dbtHome string) (*AnalyticsLocalFileDataSource, error) {
 	// For file types, we need to get URL and format info from Additional fields
 	// or use some conventional field names
 
@@ -186,13 +186,13 @@ func convertToLocalFileDataSource(conn DbtConnection, dbtHome string) (*WrenLoca
 		return nil, fmt.Errorf("file path not found in connection configuration")
 	}
 
-	return &WrenLocalFileDataSource{
+	return &AnalyticsLocalFileDataSource{
 		Url:    url,
 		Format: format,
 	}, nil
 }
 
-func convertToMysqlDataSource(conn DbtConnection) (*WrenMysqlDataSource, error) {
+func convertToMysqlDataSource(conn DbtConnection) (*AnalyticsMysqlDataSource, error) {
 	pterm.Info.Printf("Converting MySQL data source: %s:%d/%s\n", conn.Host, conn.Port, conn.Database)
 
 	sslMode := "ENABLED" // Default SSL mode
@@ -204,7 +204,7 @@ func convertToMysqlDataSource(conn DbtConnection) (*WrenMysqlDataSource, error) 
 		port = "3306"
 	}
 
-	ds := &WrenMysqlDataSource{
+	ds := &AnalyticsMysqlDataSource{
 		Host:     conn.Host,
 		Port:     port,
 		Database: conn.Database,
@@ -217,7 +217,7 @@ func convertToMysqlDataSource(conn DbtConnection) (*WrenMysqlDataSource, error) 
 }
 
 // convertToBigQueryDataSource converts to BigQuery data source
-func convertToBigQueryDataSource(conn DbtConnection, dbtHomePath string) (*WrenBigQueryDataSource, error) {
+func convertToBigQueryDataSource(conn DbtConnection, dbtHomePath string) (*AnalyticsBigQueryDataSource, error) {
 	method := strings.ToLower(strings.TrimSpace(conn.Method))
 	var credentials string
 
@@ -299,7 +299,7 @@ func convertToBigQueryDataSource(conn DbtConnection, dbtHomePath string) (*WrenB
 		return nil, nil
 	}
 
-	ds := &WrenBigQueryDataSource{
+	ds := &AnalyticsBigQueryDataSource{
 		Project:     conn.Project,
 		Dataset:     conn.Dataset,
 		Credentials: credentials,
@@ -307,18 +307,18 @@ func convertToBigQueryDataSource(conn DbtConnection, dbtHomePath string) (*WrenB
 	return ds, nil
 }
 
-type WrenLocalFileDataSource struct {
+type AnalyticsLocalFileDataSource struct {
 	Url    string `json:"url"`
 	Format string `json:"format"`
 }
 
 // GetType implements DataSource interface
-func (ds *WrenLocalFileDataSource) GetType() string {
+func (ds *AnalyticsLocalFileDataSource) GetType() string {
 	return "local_file"
 }
 
 // Validate implements DataSource interface
-func (ds *WrenLocalFileDataSource) Validate() error {
+func (ds *AnalyticsLocalFileDataSource) Validate() error {
 	if ds.Url == "" {
 		return fmt.Errorf("file URL cannot be empty")
 	}
@@ -328,7 +328,7 @@ func (ds *WrenLocalFileDataSource) Validate() error {
 	return nil
 }
 
-func (ds *WrenLocalFileDataSource) MapType(sourceType string) string {
+func (ds *AnalyticsLocalFileDataSource) MapType(sourceType string) string {
 	// Convert to uppercase for consistent mapping
 	sourceType = strings.ToUpper(sourceType)
 
@@ -351,7 +351,7 @@ func (ds *WrenLocalFileDataSource) MapType(sourceType string) string {
 	}
 }
 
-type WrenPostgresDataSource struct {
+type AnalyticsPostgresDataSource struct {
 	Host     string `json:"host"`
 	Port     string `json:"port"`
 	Database string `json:"database"`
@@ -360,12 +360,12 @@ type WrenPostgresDataSource struct {
 }
 
 // GetType implements DataSource interface
-func (ds *WrenPostgresDataSource) GetType() string {
+func (ds *AnalyticsPostgresDataSource) GetType() string {
 	return postgresType
 }
 
 // Validate implements DataSource interface
-func (ds *WrenPostgresDataSource) Validate() error {
+func (ds *AnalyticsPostgresDataSource) Validate() error {
 	if ds.Host == "" {
 		return fmt.Errorf("host cannot be empty")
 	}
@@ -388,12 +388,12 @@ func (ds *WrenPostgresDataSource) Validate() error {
 	return nil
 }
 
-func (ds *WrenPostgresDataSource) MapType(sourceType string) string {
-	// This method is not used in WrenPostgresDataSource, but required by DataSource interface
+func (ds *AnalyticsPostgresDataSource) MapType(sourceType string) string {
+	// This method is not used in AnalyticsPostgresDataSource, but required by DataSource interface
 	return sourceType
 }
 
-type WrenMSSQLDataSource struct {
+type AnalyticsMSSQLDataSource struct {
 	Database   string                 `json:"database"`
 	Host       string                 `json:"host"`
 	Port       string                 `json:"port"`
@@ -404,11 +404,11 @@ type WrenMSSQLDataSource struct {
 	Kwargs     map[string]interface{} `json:"kwargs"`
 }
 
-func (ds *WrenMSSQLDataSource) GetType() string {
+func (ds *AnalyticsMSSQLDataSource) GetType() string {
 	return "mssql"
 }
 
-func (ds *WrenMSSQLDataSource) Validate() error {
+func (ds *AnalyticsMSSQLDataSource) Validate() error {
 	if ds.Host == "" {
 		return fmt.Errorf("host cannot be empty")
 	}
@@ -434,8 +434,8 @@ func (ds *WrenMSSQLDataSource) Validate() error {
 	return nil
 }
 
-func (ds *WrenMSSQLDataSource) MapType(sourceType string) string {
-	// This method is not used in WrenMSSQLDataSource, but required by DataSource interface
+func (ds *AnalyticsMSSQLDataSource) MapType(sourceType string) string {
+	// This method is not used in AnalyticsMSSQLDataSource, but required by DataSource interface
 	switch strings.ToLower(sourceType) {
 	case charType, "nchar":
 		return charType
@@ -472,7 +472,7 @@ func (ds *WrenMSSQLDataSource) MapType(sourceType string) string {
 	}
 }
 
-type WrenMysqlDataSource struct {
+type AnalyticsMysqlDataSource struct {
 	Database string `json:"database"`
 	Host     string `json:"host"`
 	Password string `json:"password"`
@@ -483,12 +483,12 @@ type WrenMysqlDataSource struct {
 }
 
 // GetType implements DataSource interface
-func (ds *WrenMysqlDataSource) GetType() string {
+func (ds *AnalyticsMysqlDataSource) GetType() string {
 	return "mysql"
 }
 
 // Validate implements DataSource interface
-func (ds *WrenMysqlDataSource) Validate() error {
+func (ds *AnalyticsMysqlDataSource) Validate() error {
 	if ds.Host == "" {
 		return fmt.Errorf("host cannot be empty")
 	}
@@ -511,8 +511,8 @@ func (ds *WrenMysqlDataSource) Validate() error {
 	return nil
 }
 
-func (ds *WrenMysqlDataSource) MapType(sourceType string) string {
-	// This method is not used in WrenMysqlDataSource, but required by DataSource interface
+func (ds *AnalyticsMysqlDataSource) MapType(sourceType string) string {
+	// This method is not used in AnalyticsMysqlDataSource, but required by DataSource interface
 	sourceType = strings.ToUpper(sourceType)
 	switch sourceType {
 	case "CHAR":
@@ -549,19 +549,19 @@ func (ds *WrenMysqlDataSource) MapType(sourceType string) string {
 	}
 }
 
-type WrenBigQueryDataSource struct {
+type AnalyticsBigQueryDataSource struct {
 	Project     string `json:"project_id"`
 	Dataset     string `json:"dataset_id"`
 	Credentials string `json:"credentials"`
 }
 
 // GetType implements DataSource interface
-func (ds *WrenBigQueryDataSource) GetType() string {
+func (ds *AnalyticsBigQueryDataSource) GetType() string {
 	return "bigquery"
 }
 
 // Validate implements DataSource interface
-func (ds *WrenBigQueryDataSource) Validate() error {
+func (ds *AnalyticsBigQueryDataSource) Validate() error {
 	if strings.TrimSpace(ds.Project) == "" {
 		return fmt.Errorf("project_id cannot be empty")
 	}
@@ -575,7 +575,7 @@ func (ds *WrenBigQueryDataSource) Validate() error {
 }
 
 // MapType implements DataSource interface
-func (ds *WrenBigQueryDataSource) MapType(sourceType string) string {
+func (ds *AnalyticsBigQueryDataSource) MapType(sourceType string) string {
 	switch strings.ToUpper(sourceType) {
 	case "INT64", "INTEGER":
 		return integerType

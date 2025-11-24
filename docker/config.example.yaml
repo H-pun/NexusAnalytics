@@ -55,12 +55,12 @@ models:
 
 ---
 type: engine
-provider: wren_ui
-endpoint: http://wren-ui:3000
+provider: analytics_ui
+endpoint: http://analytics-ui:3000
 
 ---
 type: engine
-provider: wren_ibis
+provider: analytics_ibis
 endpoint: http://ibis-server:8000
 
 ---
@@ -92,15 +92,15 @@ pipes:
     document_store: qdrant
   - name: sql_generation
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
     document_store: qdrant
   - name: sql_correction
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
     document_store: qdrant
   - name: followup_sql_generation
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
     document_store: qdrant
   - name: sql_answer
     llm: litellm_llm.default
@@ -112,7 +112,7 @@ pipes:
     llm: litellm_llm.default
   - name: question_recommendation_sql_generation
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
     document_store: qdrant
   - name: intent_classification
     llm: litellm_llm.default
@@ -132,7 +132,7 @@ pipes:
   - name: preprocess_sql_data
     llm: litellm_llm.default
   - name: sql_executor
-    engine: wren_ui
+    engine: analytics_ui
   - name: chart_generation
     llm: litellm_llm.default
   - name: chart_adjustment
@@ -147,7 +147,7 @@ pipes:
     llm: litellm_llm.default
   - name: sql_regeneration
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
   - name: instructions_indexing
     embedder: litellm_embedder.default
     document_store: qdrant
@@ -155,7 +155,7 @@ pipes:
     embedder: litellm_embedder.default
     document_store: qdrant
   - name: sql_functions_retrieval
-    engine: wren_ibis
+    engine: analytics_ibis
     document_store: qdrant
   - name: project_meta_indexing
     document_store: qdrant
@@ -166,7 +166,7 @@ pipes:
 
 ---
 settings:
-  doc_endpoint: https://docs.getwren.ai
+  doc_endpoint: https://docs.getanalytics.ai
   is_oss: true
   engine_timeout: 30
   column_indexing_batch_size: 50

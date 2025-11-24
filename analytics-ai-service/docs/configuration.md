@@ -21,7 +21,7 @@ The AI service uses a hierarchical approach to load settings, ensuring flexibili
 
 1. **Default Values**: These are defined as class attributes in the `Settings` class within [`config.py`](../src/config.py). They serve as the base configuration.
 
-2. **Environment Variables**: Using [pydantic-settings](https://fastapi.tiangolo.com/advanced/settings/#pydantic-settings), the service checks for environment variables that match the setting names. If found, these override the default values. For example, `WREN_AI_SERVICE_HOST` can override the default `host` value.
+2. **Environment Variables**: Using [pydantic-settings](https://fastapi.tiangolo.com/advanced/settings/#pydantic-settings), the service checks for environment variables that match the setting names. If found, these override the default values. For example, `ANALYTICS_AI_SERVICE_HOST` can override the default `host` value.
 
 3. **.env.dev File**: The service loads additional settings or overrides existing ones from a `.env.dev` file if present. This is particularly useful for development environments.
 
@@ -86,7 +86,7 @@ The configuration file (`config.yaml`) is structured into several sections, each
    endpoint: <engine_endpoint>
    ```
 
-   This component configures the engine responsible for generating SQL queries. The `provider` specifies the engine service (e.g., Wren UI).
+   This component configures the engine responsible for generating SQL queries. The `provider` specifies the engine service (e.g., Analytics UI).
 
 4. **Document Store Configuration**:
 
@@ -118,7 +118,7 @@ The configuration file (`config.yaml`) is structured into several sections, each
    pipes:
      - name: sql_generation
        llm: openai_llm.gpt-4o-mini
-       engine: wren_ui
+       engine: analytics_ui
    ```
 
 6. **Settings**:

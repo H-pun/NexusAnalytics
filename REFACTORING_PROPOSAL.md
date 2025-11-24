@@ -1,4 +1,4 @@
-# 🔧 Wren AI Service - Refactoring Proposal
+# 🔧 Analytics AI Service - Refactoring Proposal
 
 **Document Version**: 1.0  
 **Date**: October 3, 2025  
@@ -24,7 +24,7 @@
 ## 📊 Executive Summary
 
 ### Purpose
-This document outlines a comprehensive refactoring plan for `wren-ai-service` to improve code maintainability, testability, and extensibility **without changing any business logic or behavior**.
+This document outlines a comprehensive refactoring plan for `analytics-ai-service` to improve code maintainability, testability, and extensibility **without changing any business logic or behavior**.
 
 ### Key Principles
 1. ✅ **No Logic Changes**: All refactoring must preserve existing behavior
@@ -165,7 +165,7 @@ settings:
   max_retries: 3
 
 # .env.dev  
-WREN_AI_SERVICE_PORT=5555
+ANALYTICS_AI_SERVICE_PORT=5555
 
 # Hardcoded
 max_sql_correction_retries = 3
@@ -647,8 +647,8 @@ class SQLGeneration(BasicPipeline[SQLGenerationInput, SQLGenerationOutput]):
 ```python
 # src/core/exceptions.py
 
-class WrenAIException(Exception):
-    """Base exception for all Wren AI errors."""
+class AnalyticsAIException(Exception):
+    """Base exception for all Analytics AI errors."""
     
     def __init__(self, message: str, code: str = None, details: dict = None):
         self.message = message
@@ -665,7 +665,7 @@ class WrenAIException(Exception):
 
 
 # Pipeline exceptions
-class PipelineException(WrenAIException):
+class PipelineException(AnalyticsAIException):
     """Base for pipeline errors."""
     pass
 
@@ -679,7 +679,7 @@ class TimeoutException(PipelineException):
 
 
 # Retrieval exceptions
-class RetrievalException(WrenAIException):
+class RetrievalException(AnalyticsAIException):
     """Base for retrieval errors."""
     pass
 
@@ -693,7 +693,7 @@ class NoRelevantSQLException(RetrievalException):
 
 
 # Generation exceptions
-class GenerationException(WrenAIException):
+class GenerationException(AnalyticsAIException):
     """Base for generation errors."""
     pass
 
@@ -707,7 +707,7 @@ class SQLSyntaxException(GenerationException):
 
 
 # Provider exceptions
-class ProviderException(WrenAIException):
+class ProviderException(AnalyticsAIException):
     """Base for provider errors."""
     pass
 
@@ -721,8 +721,8 @@ class DocumentStoreException(ProviderException):
 
 
 # Exception handler
-@app.exception_handler(WrenAIException)
-async def wren_exception_handler(request: Request, exc: WrenAIException):
+@app.exception_handler(AnalyticsAIException)
+async def analytics_exception_handler(request: Request, exc: AnalyticsAIException):
     return ORJSONResponse(
         status_code=400 if isinstance(exc, ValidationException) else 500,
         content={
@@ -1001,12 +1001,12 @@ radon cc src/web/v1/services/ask.py -s
 
 - `REFACTORING_TODO.md` - Detailed task tracking
 - `.cursorrules` - Project guidelines
-- `wren-ai-service/docs/code_design.md` - Architecture documentation
+- `analytics-ai-service/docs/code_design.md` - Architecture documentation
 
 ---
 
 **Document Status**: ✅ Approved for Implementation  
 **Next Review**: After Week 3  
-**Contact**: development-team@wrenai.com
+**Contact**: development-team@analyticsai.com
 
 

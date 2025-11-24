@@ -42,7 +42,7 @@ export default function APIManagement() {
       label: (
         <Link
           className="gray-8 d-inline-flex align-center"
-          href="https://wrenai.readme.io/reference/sql-generation"
+          href="https://analyticsai.readme.io/reference/sql-generation"
           target="_blank"
           rel="noopener noreferrer"
         >

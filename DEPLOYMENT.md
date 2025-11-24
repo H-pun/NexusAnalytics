@@ -1,14 +1,14 @@
 # Nexus Analytics Deployment Guide
 
 ## Overview
-I've successfully rebranded your Wren AI system to "Nexus Analytics" with your new logo. Here's what was changed:
+I've successfully rebranded your Analytics AI system to "Nexus Analytics" with your new logo. Here's what was changed:
 
 ## Changes Made
 
 ### 1. Logo and Branding
 - ✅ Replaced the logo with your `newlogo.png` (Nexus Quantum branding)
 - ✅ Updated `Logo.tsx` and `LogoBar.tsx` components to use the new logo
-- ✅ Changed app title from "Wren AI" to "Nexus Analytics" in `_app.tsx`
+- ✅ Changed app title from "Analytics AI" to "Nexus Analytics" in `_app.tsx`
 
 ### 2. Configuration Setup
 - ✅ Created `.env` file from `docker/.env.example`
@@ -44,7 +44,7 @@ I've successfully rebranded your Wren AI system to "Nexus Analytics" with your n
 If you want to develop the UI only:
 
 ```bash
-cd wren-ui
+cd analytics-ui
 yarn install
 yarn dev
 ```
@@ -53,25 +53,25 @@ Then access at http://localhost:3000
 
 ## What You'll See
 
-- **Brand Name**: "Nexus Analytics" instead of "Wren AI"
+- **Brand Name**: "Nexus Analytics" instead of "Analytics AI"
 - **Logo**: Your Nexus Quantum logo in the header and sidebar
 - **Same Functionality**: All the NL2SQL and GenBI features work the same
 
 ## Architecture
 
 The system has 5 main components that will run in Docker:
-- **wren-ui**: Next.js frontend (your rebranded interface)
-- **wren-ai-service**: Python AI service (handles NL2SQL conversion)
-- **wren-engine**: Data processing engine
+- **analytics-ui**: Next.js frontend (your rebranded interface)
+- **analytics-ai-service**: Python AI service (handles NL2SQL conversion)
+- **analytics-engine**: Data processing engine
 - **ibis-server**: Data transformation service
 - **qdrant**: Vector database for semantic search
 
 ## Customization
 
 If you want to make additional branding changes:
-- Logo files: `wren-ui/public/images/nexus-analytics-logo.png`
-- App title: `wren-ui/src/pages/_app.tsx`
-- Colors/styling: `wren-ui/src/styles/` directory
+- Logo files: `analytics-ui/public/images/nexus-analytics-logo.png`
+- App title: `analytics-ui/src/pages/_app.tsx`
+- Colors/styling: `analytics-ui/src/styles/` directory
 
 ## Troubleshooting
 

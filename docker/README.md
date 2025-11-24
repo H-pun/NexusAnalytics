@@ -1,10 +1,10 @@
 ## Service
 
-- `wren-engine`: the engine service. check out example here: [wren-engine
-  /example](https://github.com/Canner/wren-engine/tree/main/example)
-- `wren-ai-service`: the AI service.
+- `analytics-engine`: the engine service. check out example here: [analytics-engine
+  /example](https://github.com/Canner/analytics-engine/tree/main/example)
+- `analytics-ai-service`: the AI service.
 - `qdrant`: the vector store ai service is using.
-- `wren-ui`: the UI service.
+- `analytics-ui`: the UI service.
 - `bootstrap`: put required files to volume for engine service.
 
 ## Volume
@@ -36,7 +36,7 @@ Path structure as following:
 ## How to start with custom LLM
 
 To start with a custom LLM, the process is similar to starting with OpenAI. The main difference is that you need to modify the `config.yaml` file
-that we created on the previous step. After modifying the file, you can restart the services by running `docker-compose --env-file .env up -d --force-recreate wren-ai-service`.
+that we created on the previous step. After modifying the file, you can restart the services by running `docker-compose --env-file .env up -d --force-recreate analytics-ai-service`.
 
-For detailed information on how to modify the configuration for different LLM providers and models, please refer to the [AI Service Configuration](../wren-ai-service/docs/configuration.md).
+For detailed information on how to modify the configuration for different LLM providers and models, please refer to the [AI Service Configuration](../analytics-ai-service/docs/configuration.md).
 This guide provides comprehensive instructions on setting up various LLM providers, embedders, and other components of the AI service.

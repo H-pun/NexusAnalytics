@@ -1,4 +1,4 @@
-module github.com/Canner/WrenAI/wren-launcher
+module github.com/Canner/AnalyticsAI/analytics-launcher
 
 go 1.24
 

@@ -74,7 +74,7 @@ export class ProjectResolver {
     const dataSourceType = project.type;
 
     return {
-      productVersion: ctx.config.wrenProductVersion || '',
+      productVersion: ctx.config.analyticsProductVersion || '',
       dataSource: {
         type: dataSourceType,
         properties: {
@@ -347,7 +347,7 @@ export class ProjectResolver {
     );
 
     if (dataSourceType === DataSourceName.DUCKDB) {
-      // prepare duckdb environment in wren-engine
+      // prepare duckdb environment in analytics-engine
       const { initSql, extensions, configurations } =
         toUpdateConnectionInfo as DUCKDB_CONNECTION_INFO;
       await this.buildDuckDbEnvironment(ctx, {
@@ -410,7 +410,7 @@ export class ProjectResolver {
         columnsCount: columns.length,
       });
 
-      // async deploy to wren-engine and ai service
+      // async deploy to analytics-engine and ai service
       this.deploy(ctx);
       return { models: models, columns };
     } catch (err: any) {
@@ -788,9 +788,9 @@ export class ProjectResolver {
     // check can list dataset table
     await ctx.analyticsEngineAdaptor.listTables();
 
-    // patch wren-engine config
+    // patch analytics-engine config
     const config = {
-      'wren.datasource.type': 'duckdb',
+      'analytics.datasource.type': 'duckdb',
     };
     await ctx.analyticsEngineAdaptor.patchConfig(config);
   }

@@ -110,7 +110,7 @@ export default function Sidebar(props: Props) {
         <StyledButton type="text" block>
           <Link
             className="d-flex align-center"
-            href="https://github.com/Canner/WrenAI"
+            href="https://github.com/Canner/AnalyticsAI"
             target="_blank"
             rel="noopener noreferrer"
             data-ph-capture="true"
