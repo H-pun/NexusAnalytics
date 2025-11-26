@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, Button, Skeleton, Typography } from 'antd';
+import { Alert, Button, Skeleton, Tooltip, Typography } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import { RefreshCw, ChevronDown, Pencil, Binoculars } from 'lucide-react';
+import { RefreshCw, ChevronDown, Pencil, Brain, View } from 'lucide-react';
 import styled from 'styled-components';
 import { nextTick } from '@/utils/time';
 import { MORE_ACTION } from '@/utils/enum';
@@ -14,6 +14,7 @@ import PreviewData from '@/components/dataPreview/PreviewData';
 import { AdjustAnswerDropdown } from '@/components/diagram/CustomDropdown';
 import { usePreviewDataMutation } from '@/apollo/client/graphql/home.generated';
 import { ThreadResponseAnswerStatus } from '@/apollo/client/graphql/__types__';
+import ViewBlock from '@/components/pages/home/promptThread/ViewBlock';
 
 const { Text } = Typography;
 
@@ -40,9 +41,11 @@ export default function TextBasedAnswer(props: AnswerResultProps) {
     onGenerateTextBasedAnswer,
     onOpenAdjustReasoningStepsModal,
     onOpenAdjustSQLModal,
+    onOpenSaveToKnowledgeModal,
+    onOpenSaveAsViewModal,
   } = usePromptThreadStore();
   const { isLastThreadResponse, onInitPreviewDone, threadResponse } = props;
-  const { id } = threadResponse;
+  const { id, question, sql, view } = threadResponse;
   const { content, error, numRowsUsedInLLM, status } =
     threadResponse?.answerDetail || {};
 
@@ -163,24 +166,23 @@ export default function TextBasedAnswer(props: AnswerResultProps) {
       data={adjustAnswerDropdownData}
       onDropdownVisibleChange={adjustResultsDropdown.onVisibleChange}
     >
-      <Button
-        className="px-0 d-flex align-center"
-        type="link"
-        size="small"
-        icon={<Pencil className="mr-1" size={14} />}
-        onClick={(event) => event.stopPropagation()}
-      >
-        Adjust the answer
-        <ChevronDown
-          className="ml-1"
-          style={{
-            transform: adjustResultsDropdown.visible
-              ? 'rotate(180deg)'
-              : 'rotate(0deg)',
-          }}
-          size={16}
-        />
-      </Button>
+      <Tooltip title="Adjust the answer">
+        <Button
+          className="d-flex align-center"
+          size="small"
+          icon={<Pencil size={16} />}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <ChevronDown
+            style={{
+              transform: adjustResultsDropdown.visible
+                ? 'rotate(180deg)'
+                : 'rotate(0deg)',
+            }}
+            size={16}
+          />
+        </Button>
+      </Tooltip>
     </AdjustAnswerDropdown>
   );
 
@@ -208,8 +210,32 @@ export default function TextBasedAnswer(props: AnswerResultProps) {
       paragraph={{ rows: 4 }}
       title={false}
     >
-      <div className="text-md gray-10 py-4 px-6">
-        <div className="text-right mb-4 d-flex justify-end">
+      <div className="text-md gray-10">
+        <div className="text-right mb-4 d-flex justify-end align-center">
+          <Tooltip title="Save to knowledge">
+            <Button
+              type="ghost"
+              size="small"
+              className="d-flex justify-center align-center mr-1"
+              onClick={() =>
+                onOpenSaveToKnowledgeModal(
+                  {
+                    question:
+                      threadResponse?.askingTask?.rephrasedQuestion || question,
+                    sql,
+                  },
+                  { isCreateMode: true },
+                )
+              }
+              data-guideid="save-to-knowledge"
+            >
+              <Brain size={16} />
+            </Button>
+          </Tooltip>
+          <ViewBlock
+            view={view}
+            onClick={() => onOpenSaveAsViewModal({ sql, responseId: id })}
+          />
           {adjustAnswerDropdown}
         </div>
         <MarkdownBlock content={textAnswer} />
@@ -233,13 +259,13 @@ export default function TextBasedAnswer(props: AnswerResultProps) {
             <Button
               size="small"
               className="d-flex align-center"
-              icon={<Binoculars size={16} className="mr-1" />}
+              icon={<View size={16} className="mr-1" />}
               loading={previewDataResult.loading}
               onClick={onPreviewData}
               data-ph-capture="true"
               data-ph-capture-attribute-name="cta_text-answer_preview_data"
             >
-              View results
+              View tables
             </Button>
 
             <div className="mt-2 mb-3" data-guideid="text-answer-preview-data">

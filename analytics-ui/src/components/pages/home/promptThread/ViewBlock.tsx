@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { FileCheck, Save } from 'lucide-react';
 import { Path } from '@/utils/enum';
 import { ViewInfo } from '@/apollo/client/graphql/__types__';
@@ -30,14 +30,14 @@ export default function ViewBlock({ view, onClick }: Props) {
   }
 
   return (
-    <Button
-      className="gray-6 d-flex align-center"
-      type="text"
-      size="small"
-      icon={<Save className="mr-1" size={16} />}
-      onClick={onClick}
-    >
-      Store as View
-    </Button>
+    <Tooltip title="Store as View">
+      <Button
+        className="d-flex justify-center align-center mr-1"
+        size="small"
+        onClick={onClick}
+      >
+        <Save size={16} />
+      </Button>
+    </Tooltip>
   );
 }

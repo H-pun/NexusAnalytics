@@ -1,9 +1,13 @@
 import { useEffect, useMemo } from 'react';
 import { isEmpty, debounce } from 'lodash';
-import { Button, Typography, Tabs, Tag, Tooltip } from 'antd';
+import { Typography, Tabs, Tag } from 'antd';
 import styled from 'styled-components';
-import { Share2 } from 'lucide-react';
-import { RobotSVG } from '@/utils/svgs';
+import {
+  ChartNoAxesCombined,
+  MessagesSquare,
+  Share2,
+  Table2,
+} from 'lucide-react';
 import { ANSWER_TAB_KEYS } from '@/utils/enum';
 import { canGenerateAnswer } from '@/hooks/useAskPrompt';
 import usePromptThreadStore from './store';
@@ -11,7 +15,6 @@ import { RecommendedQuestionsProps } from '@/components/pages/home/promptThread'
 import RecommendedQuestions, {
   getRecommendedQuestionProps,
 } from '@/components/pages/home/RecommendedQuestions';
-import ViewBlock from '@/components/pages/home/promptThread/ViewBlock';
 import ViewSQLTabContent from '@/components/pages/home/promptThread/ViewSQLTabContent';
 import TextBasedAnswer, {
   getAnswerIsFinished,
@@ -26,7 +29,6 @@ import {
   ThreadResponseAdjustment,
   ThreadResponseAdjustmentType,
 } from '@/apollo/client/graphql/__types__';
-import { ChartPie, Code, MessageSquareText } from 'lucide-react';
 
 const { Text } = Typography;
 
@@ -35,85 +37,69 @@ const adjustmentType = {
   [ThreadResponseAdjustmentType.REASONING]: 'Reasoning steps adjusted',
 };
 
-const knowledgeTooltip = (
-  <>
-    Store this answer as a Question-SQL pair to help NQRust - Analytics improve
-    SQL generation.
-    <br />
-    <Typography.Link
-      className="gray-1 underline"
-      href="https://docs.getwren.ai/oss/guide/knowledge/question-sql-pairs#save-to-knowledge"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Learn more
-    </Typography.Link>
-  </>
-);
-
 const StyledTabs = styled(Tabs)`
-  .ant-tabs-nav {
-    margin-bottom: 0px;
-    background-color: white;
-  }
+  // .ant-tabs-nav {
+  //   margin-bottom: 0px;
+  //   background-color: white;
+  // }
 
-  .ant-tabs-content-holder {
-    border-left: 1px var(--gray-4) solid;
-    border-right: 1px var(--gray-4) solid;
-    border-bottom: 1px var(--gray-4) solid;
-    border-radius: 0 0 16px 16px;
-  }
+  // .ant-tabs-content-holder {
+  //   border-left: 1px var(--gray-4) solid;
+  //   border-right: 1px var(--gray-4) solid;
+  //   border-bottom: 1px var(--gray-4) solid;
+  //   border-radius: 0 0 16px 16px;
+  // }
 
-  .ant-tabs-tab {
-    .ant-typography {
-      color: var(--gray-6);
-    }
+  // .ant-tabs-tab {
+  //   .ant-typography {
+  //     color: var(--gray-6);
+  //   }
 
-    [aria-label='message-square-text'] {
-      color: var(--gray-5);
-    }
+  //   [aria-label='message-square-text'] {
+  //     color: var(--gray-5);
+  //   }
 
-    [aria-label='code'] {
-      color: var(--gray-5);
-    }
+  //   [aria-label='code'] {
+  //     color: var(--gray-5);
+  //   }
 
-    [aria-label='pie-chart'] {
-      color: var(--gray-5);
-    }
+  //   [aria-label='pie-chart'] {
+  //     color: var(--gray-5);
+  //   }
 
-    &.ant-tabs-tab-active {
-      .ant-typography {
-        color: var(--gray-8);
-      }
+  //   &.ant-tabs-tab-active {
+  //     .ant-typography {
+  //       color: var(--gray-8);
+  //     }
 
-      [aria-label='message-square-text'] {
-        color: var(--rust-orange-5);
-      }
+  //     [aria-label='message-square-text'] {
+  //       color: var(--rust-orange-5);
+  //     }
 
-      [aria-label='code'] {
-        color: var(--rust-orange-5);
-      }
+  //     [aria-label='code'] {
+  //       color: var(--rust-orange-5);
+  //     }
 
-      [aria-label='pie-chart'] {
-        color: var(--rust-orange-5);
-      }
+  //     [aria-label='pie-chart'] {
+  //       color: var(--rust-orange-5);
+  //     }
 
-      .adm-beta-tag {
-        background-color: var(--rust-orange-2);
-        color: var(--rust-orange-5);
-      }
-    }
+  //     .adm-beta-tag {
+  //       background-color: var(--rust-orange-2);
+  //       color: var(--rust-orange-5);
+  //     }
+  //   }
 
-    .adm-beta-tag {
-      padding: 0 4px;
-      line-height: 18px;
-      margin: 0 0 0 6px;
-      border-radius: 2px;
-      background-color: var(--gray-5);
-      color: white;
-      border: none;
-    }
-  }
+  //   .adm-beta-tag {
+  //     padding: 0 4px;
+  //     line-height: 18px;
+  //     margin: 0 0 0 6px;
+  //     border-radius: 2px;
+  //     background-color: var(--gray-5);
+  //     color: white;
+  //     border: none;
+  //   }
+  // }
 `;
 
 export interface Props {
@@ -205,11 +191,9 @@ export default function AnswerResult(props: Props) {
   const { threadResponse, isLastThreadResponse } = props;
 
   const {
-    onOpenSaveAsViewModal,
     onGenerateThreadRecommendedQuestions,
     onGenerateTextBasedAnswer,
     onGenerateChartAnswer,
-    onOpenSaveToKnowledgeModal,
     // recommend questions
     recommendedQuestions,
     showRecommendedQuestions,
@@ -224,8 +208,6 @@ export default function AnswerResult(props: Props) {
     breakdownDetail,
     id,
     question,
-    sql,
-    view,
     adjustment,
   } = threadResponse;
 
@@ -298,13 +280,13 @@ export default function AnswerResult(props: Props) {
       />
       {showAnswerTabs && (
         <>
-          <StyledTabs type="card" size="small" onTabClick={onTabClick}>
+          <StyledTabs size="small" onTabClick={onTabClick}>
             {!isBreakdownOnly && (
               <Tabs.TabPane
                 key={ANSWER_TAB_KEYS.ANSWER}
                 tab={
                   <div className="select-none d-flex align-center">
-                    <MessageSquareText
+                    <MessagesSquare
                       className="mr-1"
                       aria-label="message-square-text"
                       size={16}
@@ -320,7 +302,7 @@ export default function AnswerResult(props: Props) {
               key={ANSWER_TAB_KEYS.VIEW_SQL}
               tab={
                 <div className="select-none d-flex align-center">
-                  <Code className="mr-1" aria-label="code" size={16} />
+                  <Table2 className="mr-1" aria-label="code" size={16} />
                   <Text>View SQL</Text>
                 </div>
               }
@@ -331,9 +313,14 @@ export default function AnswerResult(props: Props) {
               key="chart"
               tab={
                 <div className="select-none d-flex align-center">
-                  <ChartPie className="mr-1" aria-label="pie-chart" size={16} />
+                  <ChartNoAxesCombined
+                    className="mr-1"
+                    aria-label="pie-chart"
+                    size={16}
+                  />
                   <Text>
-                    Chart<Tag className="adm-beta-tag">Beta</Tag>
+                    Chart
+                    {/* <Tag className="adm-beta-tag">Beta</Tag> */}
                   </Text>
                 </div>
               }
@@ -341,40 +328,6 @@ export default function AnswerResult(props: Props) {
               <ChartAnswer {...props} />
             </Tabs.TabPane>
           </StyledTabs>
-          <div className="mt-2 d-flex align-center">
-            <Tooltip
-              overlayInnerStyle={{ width: 'max-content' }}
-              placement="topLeft"
-              title={knowledgeTooltip}
-            >
-              <Button
-                type="link"
-                size="small"
-                className="mr-2"
-                onClick={() =>
-                  onOpenSaveToKnowledgeModal(
-                    {
-                      question:
-                        threadResponse?.askingTask?.rephrasedQuestion ||
-                        question,
-                      sql,
-                    },
-                    { isCreateMode: true },
-                  )
-                }
-                data-guideid="save-to-knowledge"
-              >
-                <div className="d-flex align-center">
-                  <RobotSVG className="mr-1" />
-                  Save to knowledge
-                </div>
-              </Button>
-            </Tooltip>
-            <ViewBlock
-              view={view}
-              onClick={() => onOpenSaveAsViewModal({ sql, responseId: id })}
-            />
-          </div>
           {renderRecommendedQuestions(
             isLastThreadResponse,
             recommendedQuestionProps,

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { Dropdown, Menu } from 'antd';
-import { Pencil, EllipsisVertical } from 'lucide-react';
+import MoreOutlined from '@ant-design/icons/MoreOutlined';
+import { Pencil } from 'lucide-react';
 import LabelTitle from '@/components/sidebar/LabelTitle';
 import TreeTitleInput from '@/components/sidebar/home/TreeTitleInput';
 import { DeleteThreadModal } from '@/components/modals/DeleteModal';
@@ -87,10 +88,7 @@ export default function TreeTitle(props: TreeTitleProps) {
             />
           }
         >
-          <EllipsisVertical
-            onClick={(event) => event.stopPropagation()}
-            size={16}
-          />
+          <MoreOutlined onClick={(event) => event.stopPropagation()} />
         </Dropdown>
       }
     />

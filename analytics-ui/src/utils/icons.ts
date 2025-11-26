@@ -20,7 +20,6 @@ import {
   Eye,
   Compass,
   Sparkles,
-  Binoculars,
   Languages,
   ExternalLink,
   Database,
@@ -29,6 +28,7 @@ import {
   Binary,
   EllipsisVertical,
   Component,
+  View,
 } from 'lucide-react';
 import { Discord, Github } from '@styled-icons/fa-brands';
 
@@ -101,7 +101,7 @@ export const SparklesIcon = styled(Sparkles)`
   height: 1em;
 `;
 
-export const BinocularsIcon = styled(Binoculars)`
+export const BinocularsIcon = styled(View)`
   height: 16px;
   width: 14px;
 `;

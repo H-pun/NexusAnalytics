@@ -12,7 +12,7 @@ import {
   Switch,
   Typography,
 } from 'antd';
-import { Code, Binoculars } from 'lucide-react';
+import { Code, View } from 'lucide-react';
 import { nextTick } from '@/utils/time';
 import useNativeSQL from '@/hooks/useNativeSQL';
 import { DATA_SOURCE_OPTIONS } from '@/components/pages/setup/utils';
@@ -120,14 +120,14 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
   };
 
   return (
-    <div className="text-md gray-10 p-6 pb-4">
+    <div className="text-md gray-10">
       <Alert
-        banner
-        className="mb-3 adm-alert-info"
+        className="mb-3 rounded-md"
+        type="info"
         message={
           <>
-            You're viewing original SQL by default. If you want to see the
-            NQRust SQL version, toggle the switch above.
+            The original SQL is displayed by default. To view the NQRust SQL
+            format, use the toggle above.
             <Typography.Link
               className="underline ml-1"
               href="https://docs.getwren.ai/oss/guide/home/wren_sql"
@@ -138,7 +138,6 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
             </Typography.Link>
           </>
         }
-        type="info"
       />
       <StyledPre className="p-0 mb-3">
         <StyledToolBar className="d-flex align-center justify-space-between text-family-base">
@@ -204,7 +203,7 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
         <Button
           size="small"
           className="d-flex align-center"
-          icon={<Binoculars size={16} className="mr-1" />}
+          icon={<View size={16} className="mr-1" />}
           loading={previewDataResult.loading}
           onClick={onPreviewData}
           data-ph-capture="true"
