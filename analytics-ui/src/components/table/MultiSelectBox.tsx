@@ -10,25 +10,24 @@ import {
 } from 'antd/lib/form/context';
 
 const StyledBox = styled.div`
-  border: 1px solid var(--gray-5);
-  border-radius: 4px;
+  // border: 1px solid var(--gray-5);
+  // border-radius: 4px;
 
-  &.multiSelectBox-input-error {
-    border-color: var(--red-5);
-  }
+  // &.multiSelectBox-input-error {
+  //   border-color: var(--red-5);
+  // }
 
-  .ant-table {
-    border: 0;
-  }
-  .ant-table-body,
-  .ant-table-placeholder {
-    height: 195px;
-  }
+  // .ant-table {
+  //   border: 0;
+  // }
+  // .ant-table-body,
+  // .ant-table-placeholder {
+  //   height: 195px;
+  // }
 `;
 
 const StyledTotal = styled.div`
-  padding: 8px 12px;
-  border-bottom: 1px var(--gray-3) solid;
+  padding: 8px 0px;
 `;
 
 interface Props {
@@ -78,20 +77,20 @@ export default function MultiSelectBox(props: Props) {
 
   const total =
     selectedRowKeys.size === 0
-      ? items.length
-      : `${selectedRowKeys.size}/${items.length}`;
+      ? `${items.length} tables`
+      : `${selectedRowKeys.size}/${items.length} tables selected`;
 
   return (
     <StyledBox
       className={status ? `multiSelectBox-input-${status}` : undefined}
     >
-      <StyledTotal>{total} table(s)</StyledTotal>
-      <div className="p-2">
+      <div className="py-2">
         <Input
           prefix={<Search size={16} />}
           onChange={onSearchChange}
-          placeholder="Search here"
+          placeholder="Search tables"
           allowClear
+          className="rounded-lg"
         />
       </div>
       <Table
@@ -131,6 +130,7 @@ export default function MultiSelectBox(props: Props) {
         pagination={false}
         loading={loading}
       />
+      <StyledTotal>{total}</StyledTotal>
     </StyledBox>
   );
 }

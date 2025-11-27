@@ -243,7 +243,7 @@ export default function ChartAnswer(props: AnswerResultProps) {
       paragraph={{ rows: 4 }}
       title={false}
     >
-      <div className="text-md gray-10 p-6">
+      <div className="text-md gray-10">
         {chartDetail?.description}
         {chartSpec ? (
           <ChartWrapper

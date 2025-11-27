@@ -4,7 +4,6 @@ import {
   Calendar,
   Type,
   Info,
-  Box,
   TrendingUp,
   CreditCard,
   Braces,
@@ -21,7 +20,6 @@ import {
   Eye,
   Compass,
   Sparkles,
-  Binoculars,
   Languages,
   ExternalLink,
   Database,
@@ -29,6 +27,8 @@ import {
   CaseUpper,
   Binary,
   EllipsisVertical,
+  Component,
+  View,
 } from 'lucide-react';
 import { Discord, Github } from '@styled-icons/fa-brands';
 
@@ -65,7 +65,7 @@ export const InfoIcon = styled(Info)`
 export const PrimaryKeyIcon = styled(Key)`
   height: 1em;
 `;
-export const ModelIcon = styled(Box)`
+export const ModelIcon = styled(Component)`
   height: 1em;
 `;
 export const FocusIcon = styled(Focus)`
@@ -101,7 +101,7 @@ export const SparklesIcon = styled(Sparkles)`
   height: 1em;
 `;
 
-export const BinocularsIcon = styled(Binoculars)`
+export const BinocularsIcon = styled(View)`
   height: 16px;
   width: 14px;
 `;
