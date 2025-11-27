@@ -974,7 +974,7 @@ export class ModelResolver {
     // construct cte sql and format it
     let nativeSql: string;
     if (project.type === DataSourceName.DUCKDB) {
-      logger.info(`Getting native sql from wren engine`);
+      logger.info(`Getting native sql from analytics engine`);
       nativeSql = await ctx.analyticsEngineAdaptor.getNativeSQL(response.sql, {
         manifest,
         modelingOnly: false,

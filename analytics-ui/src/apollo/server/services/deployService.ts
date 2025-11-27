@@ -11,7 +11,7 @@ import { getLogger } from '@server/utils';
 import {
   PostHogTelemetry,
   TelemetryEvent,
-  WrenService,
+  AnalyticsService,
 } from '../telemetry/telemetry';
 
 const logger = getLogger('DeployService');
@@ -121,7 +121,7 @@ export class DeployService implements IDeployService {
         this.telemetry.sendEvent(
           eventName,
           { mdl: manifest, error: aiError },
-          WrenService.AI,
+          AnalyticsService.AI,
           false,
         );
       }

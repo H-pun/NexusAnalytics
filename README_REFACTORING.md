@@ -8,7 +8,7 @@ Dokumentasi refactoring ini terdiri dari beberapa file yang saling melengkapi:
 **📖 Baca Ini Pertama Kali!**
 
 Berisi:
-- Overview project Wren AI
+- Overview project Analytics AI
 - Code style & standards
 - Architecture patterns
 - Anti-patterns yang harus dihindari
@@ -117,7 +117,7 @@ cat .cursorrules
 cat REFACTORING_PROPOSAL.md
 
 # 4. Setup environment (ikuti REFACTORING_GUIDE)
-cd wren-ai-service
+cd analytics-ai-service
 just init
 just install-dev
 just up
@@ -212,7 +212,7 @@ User Query
     ↓
 ┌─────────────────────────────────┐
 │  3. OUTPUT PROCESSING           │
-│  ├─ Validation (Wren Engine)   │
+│  ├─ Validation (Analytics Engine)   │
 │  └─ Correction (Feedback Loop)  │
 └─────────────────────────────────┘
     ↓
@@ -325,11 +325,11 @@ Docker Compose sekarang menggunakan local build:
 
 ```yaml
 # docker-compose-demo.yaml
-wren-ai-service:
+analytics-ai-service:
   build:
-    context: ./wren-ai-service
+    context: ./analytics-ai-service
     dockerfile: docker/Dockerfile
-  # image: ghcr.io/canner/wren-ai-service:0.27.1  # OLD - commented out
+  # image: ghcr.io/canner/analytics-ai-service:0.27.1  # OLD - commented out
 ```
 
 **Build dan run**:
@@ -338,7 +338,7 @@ wren-ai-service:
 docker-compose -f docker-compose-demo.yaml up --build
 
 # Atau gunakan Justfile
-cd wren-ai-service
+cd analytics-ai-service
 just build        # Build Docker image
 just run-docker   # Run container
 ```
@@ -364,7 +364,7 @@ Refactoring ini menambahkan/memodifikasi file berikut:
 ### 🔧 Modified Files (Setup)
 - `docker-compose-demo.yaml` - Local build setup
 - `docker/docker-compose.yaml` - Local build setup
-- `wren-ai-service/Justfile` - Enhanced commands
+- `analytics-ai-service/Justfile` - Enhanced commands
 - `.gitignore` - Add refactoring reports
 
 ### 📦 Future Files (Akan dibuat saat refactoring)
@@ -446,7 +446,7 @@ Track these in `REFACTORING_TODO.md`:
 - 📋 [REFACTORING_PROPOSAL.md](REFACTORING_PROPOSAL.md) - Full Proposal
 - ✅ [REFACTORING_TODO.md](REFACTORING_TODO.md) - Task Tracking ⭐ **Update This Daily!**
 - 🚀 [REFACTORING_GUIDE.md](REFACTORING_GUIDE.md) - Practical Guide
-- 🏗️ [wren-ai-service/docs/code_design.md](wren-ai-service/docs/code_design.md) - Architecture
+- 🏗️ [analytics-ai-service/docs/code_design.md](analytics-ai-service/docs/code_design.md) - Architecture
 
 ---
 

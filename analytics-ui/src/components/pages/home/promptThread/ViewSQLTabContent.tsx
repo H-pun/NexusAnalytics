@@ -130,7 +130,7 @@ export default function ViewSQLTabContent(props: AnswerResultProps) {
             format, use the toggle above.
             <Typography.Link
               className="underline ml-1"
-              href="https://docs.getwren.ai/oss/guide/home/wren_sql"
+              href="https://docs.getanalytics.ai/oss/guide/home/analytics_sql"
               target="_blank"
               rel="noopener noreferrer"
             >

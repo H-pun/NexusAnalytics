@@ -12,10 +12,10 @@ const config = getConfig();
 const {
   userUUID,
   telemetryEnabled,
-  wrenAIVersion,
+  analyticsAIVersion,
   generationModel,
-  wrenEngineVersion,
-  wrenUIVersion,
+  analyticsEngineVersion,
+  analyticsUIVersion,
   posthogApiKey,
   posthogHost,
 } = config;
@@ -85,7 +85,7 @@ export enum TelemetryEvent {
   KNOWLEDGE_DELETE_SQL_PAIR = 'knowledge_delete_sql_pair',
 }
 
-export enum WrenService {
+export enum AnalyticsService {
   BE = 'BE',
   AI = 'AI',
   ENGINE = 'ENGINE',
@@ -96,7 +96,7 @@ export interface ITelemetry {
   sendEvent: (
     event: TelemetryEvent,
     properties: Record<string, any>,
-    service?: WrenService | any,
+    service?: AnalyticsService | any,
     actionSuccess?: boolean,
   ) => void;
 }
@@ -125,7 +125,7 @@ export class PostHogTelemetry {
   public async sendEvent(
     event: TelemetryEvent,
     properties: Record<string, any> = {},
-    service: WrenService | any = WrenService.UNKNOWN,
+    service: AnalyticsService | any = AnalyticsService.UNKNOWN,
     actionSuccess: boolean = true,
   ) {
     if (!this.posthog) {
@@ -141,7 +141,7 @@ export class PostHogTelemetry {
         properties: {
           ...systemInfo,
           ...properties,
-          wren_service: service,
+          analytics_service: service,
         },
       });
     } catch (e) {
@@ -152,9 +152,9 @@ export class PostHogTelemetry {
   private collectSystemInfo(): Record<string, any> {
     return {
       // collect services version
-      'wren-ui-version': wrenUIVersion || null,
-      'wren-engine-version': wrenEngineVersion || null,
-      'wren-ai-service-version': wrenAIVersion || null,
+      'analytics-ui-version': analyticsUIVersion || null,
+      'analytics-engine-version': analyticsEngineVersion || null,
+      'analytics-ai-service-version': analyticsAIVersion || null,
 
       // collect AI model info
       'generation-model': generationModel || null,

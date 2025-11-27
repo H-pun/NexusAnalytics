@@ -19,7 +19,7 @@ from eval import (
     BIRD_DESTINATION_PATH,
     EVAL_DATASET_DESTINATION_PATH,
     SPIDER_DESTINATION_PATH,
-    WREN_ENGINE_API_URL,
+    ANALYTICS_ENGINE_API_URL,
 )
 from eval.utils import (
     get_contexts_from_sql,
@@ -410,7 +410,7 @@ if __name__ == "__main__":
                 get_contexts_from_sql(
                     ground_truth["sql"],
                     values["mdl"],
-                    WREN_ENGINE_API_URL,
+                    ANALYTICS_ENGINE_API_URL,
                 )
             )
 

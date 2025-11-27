@@ -35,4 +35,4 @@ The `config.qwen3.yaml` file provides an example configuration for using Qwen3 m
 "What is the capital of France? /no_think"
 ```
 
-**Note**: You need to set `OPENROUTER_API_KEY` in your `~/.wrenai/.env` file to use OpenRouter as the provider for Qwen3 models.
+**Note**: You need to set `OPENROUTER_API_KEY` in your `~/.analyticsai/.env` file to use OpenRouter as the provider for Qwen3 models.

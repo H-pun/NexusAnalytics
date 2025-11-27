@@ -25,7 +25,7 @@ Saya telah membuat **5 dokumen lengkap** untuk memandu refactoring:
 
 ### ✅ 2. Docker Setup - Local Build
 
-**Problem**: wren-ai-service menggunakan image online `ghcr.io/canner/wren-ai-service:0.27.1`
+**Problem**: analytics-ai-service menggunakan image online `ghcr.io/canner/analytics-ai-service:0.27.1`
 
 **Solution**: ✅ Updated to build from local source!
 
@@ -36,13 +36,13 @@ Saya telah membuat **5 dokumen lengkap** untuk memandu refactoring:
 **Changes**:
 ```yaml
 # BEFORE (online image)
-wren-ai-service:
-  image: ghcr.io/canner/wren-ai-service:0.27.1
+analytics-ai-service:
+  image: ghcr.io/canner/analytics-ai-service:0.27.1
 
 # AFTER (local build)
-wren-ai-service:
+analytics-ai-service:
   build:
-    context: ./wren-ai-service
+    context: ./analytics-ai-service
     dockerfile: docker/Dockerfile
 ```
 
@@ -52,7 +52,7 @@ wren-ai-service:
 docker-compose -f docker-compose-demo.yaml up --build
 
 # Or just AI service
-cd wren-ai-service
+cd analytics-ai-service
 just build
 just run-docker
 ```
@@ -61,7 +61,7 @@ just run-docker
 
 ### ✅ 3. Enhanced Justfile with Helper Commands
 
-**Created**: `wren-ai-service/Justfile` with 30+ commands
+**Created**: `analytics-ai-service/Justfile` with 30+ commands
 
 **Key Commands**:
 ```bash
@@ -188,7 +188,7 @@ cat REFACTORING_PROPOSAL.md | less
 ### Step 2: Setup Environment (30 minutes)
 
 ```bash
-cd wren-ai-service
+cd analytics-ai-service
 
 # Initialize
 just init
@@ -264,7 +264,7 @@ Root Project
 ├── REFACTORING_GUIDE.md     ← Practical Guide (Patterns)
 └── REFACTORING_SUMMARY.md   ← This file (Summary)
 
-wren-ai-service/
+analytics-ai-service/
 ├── Justfile                 ← Development Commands
 ├── src/
 │   ├── web/v1/services/ask.py  ← PRIORITY 1.1 (656 lines!)
@@ -311,7 +311,7 @@ wren-ai-service/
 
 ```bash
 # Setup
-cd wren-ai-service
+cd analytics-ai-service
 just init
 just install-dev
 just up
@@ -460,7 +460,7 @@ cat REFACTORING_GUIDE.md
 - 📖 Check documentation first
 - 💬 Ask in team channel
 - 🐛 Create GitHub issue
-- 📧 Contact: development-team@wrenai.com
+- 📧 Contact: development-team@analyticsai.com
 
 ---
 
@@ -503,7 +503,7 @@ Everything is ready. The refactoring journey is mapped out. Now it's time to exe
 cat README_REFACTORING.md
 
 # 2. Setup environment
-cd wren-ai-service && just init
+cd analytics-ai-service && just init
 
 # 3. Check first task
 cat REFACTORING_TODO.md | grep "TASK-001"

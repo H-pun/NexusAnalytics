@@ -1,4 +1,4 @@
-name: Wren-UI Release stable image
+name: Analytics-UI Release stable image
 
 on:
   workflow_dispatch:
@@ -9,11 +9,11 @@ on:
         required: true
 
 env:
-  WREN_UI_IMAGE: ghcr.io/canner/wren-ui
+  ANALYTICS_UI_IMAGE: ghcr.io/canner/analytics-ui
 
 defaults:
   run:
-    working-directory: wren-ui
+    working-directory: analytics-ui
 
 jobs:
   build-image:
@@ -45,9 +45,9 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: ${{ matrix.arch.platform }}
-          labels: ${{ env.WREN_UI_IMAGE }}
-          context: ./wren-ui
-          outputs: type=image,name=${{ env.WREN_UI_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          labels: ${{ env.ANALYTICS_UI_IMAGE }}
+          context: ./analytics-ui
+          outputs: type=image,name=${{ env.ANALYTICS_UI_IMAGE }},push-by-digest=true,name-canonical=true,push=true
       - name: Export digest
         run: |
           mkdir -p /tmp/digests
@@ -76,7 +76,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.WREN_UI_IMAGE }}
+          images: ${{ env.ANALYTICS_UI_IMAGE }}
           tags: |
             ${{ github.event.inputs.version }}
       - name: Login to GitHub Container Registry
@@ -91,7 +91,7 @@ jobs:
         run: |
           TAGS=$(echo "${{ steps.meta.outputs.tags }}" | awk '{printf "--tag %s ", $0}')
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.WREN_UI_IMAGE }}@sha256:%s ' *) \
+            $(printf '${{ env.ANALYTICS_UI_IMAGE }}@sha256:%s ' *) \
             $TAGS
   tag-ui-version:
     runs-on: ubuntu-latest
@@ -109,7 +109,7 @@ jobs:
           fetch-depth: 0
       - name: Set up Git
         run: |
-          git config --global user.name "wren-ai[bot]"
+          git config --global user.name "analytics-ai[bot]"
           git config --global user.email "dev@cannerdata.com"
       - name: Generate and Save Change Log
         id: changelog
@@ -118,7 +118,7 @@ jobs:
           PREVIOUS_VERSION=release/ui/$(jq -r '.version' package.json)
           echo "Previous version: $PREVIOUS_VERSION"
           echo "================ change log ================"
-          CHANGE_LOG=$(git log --pretty=format:"%s" $PREVIOUS_VERSION..HEAD | grep wren-ui)
+          CHANGE_LOG=$(git log --pretty=format:"%s" $PREVIOUS_VERSION..HEAD | grep analytics-ui)
           echo "================ change log ================"
 
           # Separate the change log into categories
@@ -139,12 +139,12 @@ jobs:
             echo -e "$FULL_CHANGE_LOG"
             echo EOF
           } >> $GITHUB_ENV
-      - name: Update Wren-UI version
+      - name: Update Analytics-UI version
         run: |
           version=${{ github.event.inputs.version }}
           sed -i 's/"version": "[^"]*"/"version": "'"$version"'"/' package.json
           git add package.json
-          git commit -m "update wren-ui version to $version"
+          git commit -m "update analytics-ui version to $version"
           git push
           git tag -a "release/ui/$version" -m "${{ env.CHANGE_LOG }}"
           git push origin "release/ui/$version"

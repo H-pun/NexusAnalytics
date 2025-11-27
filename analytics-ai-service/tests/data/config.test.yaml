@@ -20,7 +20,7 @@ models:
 
 ---
 type: engine
-provider: wren_ui
+provider: analytics_ui
 endpoint: http://localhost:3000
 
 ---
@@ -45,29 +45,29 @@ pipes:
     document_store: qdrant
   - name: sql_generation
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
     document_store: qdrant
   - name: sql_correction
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
     document_store: qdrant
   - name: followup_sql_generation
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
     document_store: qdrant
   - name: sql_answer
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
   - name: sql_explanation
     llm: litellm_llm.default
   - name: sql_regeneration
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
   - name: semantics_description
     llm: litellm_llm.default
   - name: relationship_recommendation
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
   - name: user_guide_assistance
     llm: litellm_llm.default
   - name: data_assistance
@@ -78,7 +78,7 @@ settings:
   host: 127.0.0.1
   port: 5556
   column_indexing_batch_size: 50
-  doc_endpoint: https://docs.getwren.ai
+  doc_endpoint: https://docs.getanalytics.ai
   is_oss: true
   table_retrieval_size: 10
   table_column_retrieval_size: 1000

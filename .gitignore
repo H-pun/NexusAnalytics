@@ -1,31 +1,31 @@
-# wren-ai-service
-wren-ai-service/.env.*
-wren-ai-service/config.yaml*
-!wren-ai-service/.env.*.example
-!wren-ai-service/src/eval/wren-engine/.env
-wren-ai-service/src/eval/wren-engine/**/config.properties
-wren-ai-service/src/eval/wren-engine/etc/mdl/*
-wren-ai-service/src/eval/wren-engine/etc/duckdb
-wren-ai-service/src/eval/wren-engine/etc/archived
-wren-ai-service/src/eval/data
-wren-ai-service/**/outputs/
-wren-ai-service/**/spider/
-wren-ai-service/tests/data/usecases/
-!wren-ai-service/**/metrics/spider/
-!wren-ai-service/tests/data
-!wren-ai-service/src/eval/data/book_2*.json
-!wren-ai-service/src/eval/data/baseball_1*.json
-!wren-ai-service/src/eval/data/college_3*.json
-!wren-ai-service/src/eval/data/college_3_optimal_ddl.json
-wren-ai-service/*.csv
-wren-ai-service/*.json
-wren-ai-service/assertion.log
-wren-ai-service/redis.*
-wren-ai-service/demo/spider
-wren-ai-service/demo/poetry.lock
-wren-ai-service/demo/custom_dataset
-wren-ai-service/demo/.env
-wren-ai-service/tools/dev/etc/**
+# analytics-ai-service
+analytics-ai-service/.env.*
+analytics-ai-service/config.yaml*
+!analytics-ai-service/.env.*.example
+!analytics-ai-service/src/eval/analytics-engine/.env
+analytics-ai-service/src/eval/analytics-engine/**/config.properties
+analytics-ai-service/src/eval/analytics-engine/etc/mdl/*
+analytics-ai-service/src/eval/analytics-engine/etc/duckdb
+analytics-ai-service/src/eval/analytics-engine/etc/archived
+analytics-ai-service/src/eval/data
+analytics-ai-service/**/outputs/
+analytics-ai-service/**/spider/
+analytics-ai-service/tests/data/usecases/
+!analytics-ai-service/**/metrics/spider/
+!analytics-ai-service/tests/data
+!analytics-ai-service/src/eval/data/book_2*.json
+!analytics-ai-service/src/eval/data/baseball_1*.json
+!analytics-ai-service/src/eval/data/college_3*.json
+!analytics-ai-service/src/eval/data/college_3_optimal_ddl.json
+analytics-ai-service/*.csv
+analytics-ai-service/*.json
+analytics-ai-service/assertion.log
+analytics-ai-service/redis.*
+analytics-ai-service/demo/spider
+analytics-ai-service/demo/poetry.lock
+analytics-ai-service/demo/custom_dataset
+analytics-ai-service/demo/.env
+analytics-ai-service/tools/dev/etc/**
 .deepeval-cache.json
 .deepeval_telemtry.txt
 docker/config.yaml
@@ -61,19 +61,19 @@ node_modules
 .pnp.js
 
 ## testing
-wren-ui/coverage
-wren-ui/test-results
-wren-ui/playwright-report
-wren-ui/e2e/e2e.config.json
+analytics-ui/coverage
+analytics-ui/test-results
+analytics-ui/playwright-report
+analytics-ui/e2e/e2e.config.json
 
 ## next.js
-wren-ui/.next
-wren-ui/out
+analytics-ui/.next
+analytics-ui/out
 
-wren-ui/.yarn/install-state.gz
+analytics-ui/.yarn/install-state.gz
 
 ## production
-wren-ui/build
+analytics-ui/build
 
 ## debug
 npm-debug.log*
@@ -93,9 +93,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# wren-launcher
-wren-launcher/dist
-wren-launcher/main
+# analytics-launcher
+analytics-launcher/dist
+analytics-launcher/main
 
 ## temporary files
 .tmp
@@ -107,4 +107,4 @@ htmlcov/
 .coverage
 *.coverage.*
 
-!wren-ai-service/tools/.env.example
+!analytics-ai-service/tools/.env.example

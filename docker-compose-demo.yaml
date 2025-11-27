@@ -2,8 +2,9 @@ volumes:
   data:
   northwind_data:
 
+
 networks:
-  wren:
+  analytics:
     driver: bridge
 
 services:
@@ -20,8 +21,8 @@ services:
   #     - data:/app/data
   #   command: /bin/sh /app/init.sh
 
-  # wren-engine:
-  #   image: ghcr.io/canner/wren-engine:0.18.3
+  # analytics-engine:
+  #   image: ghcr.io/canner/analytics-engine:0.18.3
   #   restart: on-failure
   #   platform: linux/amd64
   #   expose:
@@ -31,29 +32,29 @@ services:
   #     - data:/usr/src/app/etc
   #     - ./data:/usr/src/app/data
   #   networks:
-  #     - wren
+  #     - analytics
   #   depends_on:
   #     - bootstrap
 
   # ibis-server:
-  #   image: ghcr.io/canner/wren-engine-ibis:0.18.3
+  #   image: ghcr.io/canner/analytics-engine-ibis:0.18.3
   #   restart: on-failure
   #   platform: linux/amd64
   #   expose:
   #     - 8000
   #   environment:
-  #     WREN_ENGINE_ENDPOINT: http://wren-engine:8080
+  #     ANALYTICS_ENGINE_ENDPOINT: http://analytics-engine:8080
   #   volumes:
   #     - .:/usr/src/app/data
   #   networks:
-  #     - wren
+  #     - analytics
 
   analytics-service:
     # Build from local source instead of using online image
     build:
       context: ./analytics-ai-service
       dockerfile: docker/Dockerfile
-    # image: ghcr.io/canner/wren-ai-service:0.27.1  # Commented out - using local build
+    # image: ghcr.io/canner/analytics-ai-service:0.27.1  # Commented out - using local build
     restart: on-failure
     platform: linux/amd64
     image: analytics-service:local
@@ -71,7 +72,7 @@ services:
       - ./config.yaml:/app/config.yaml:ro
       - ./data:/app/data:ro
     networks:
-      - wren
+      - analytics
     depends_on:
       - qdrant
 
@@ -84,7 +85,7 @@ services:
     volumes:
       - data:/qdrant/storage
     networks:
-      - wren
+      - analytics
 
   # Northwind PostgreSQL Demo Database
   northwind-db:
@@ -100,7 +101,7 @@ services:
       - ./northwind.sql:/docker-entrypoint-initdb.d/northwind.sql:ro
       - northwind_data:/var/lib/postgresql/data
     networks:
-      - wren
+      - analytics
 
   analytics-ui:
     build:
@@ -112,25 +113,25 @@ services:
     environment:
       DB_TYPE: sqlite
       SQLITE_FILE: /app/data/db.sqlite3
-      ANALYTICS_ENGINE_ENDPOINT: http://192.168.18.118:8080
+      ANALYTICS_ENGINE_ENDPOINT: http://host.docker.internal:8080
       ANALYTICS_AI_ENDPOINT: http://analytics-service:5555
-      IBIS_SERVER_ENDPOINT: http://192.168.18.118:8000
+      IBIS_SERVER_ENDPOINT: http://host.docker.internal:8000
       GENERATION_MODEL: gpt-4o-mini
-      WREN_ENGINE_PORT: 8080
-      WREN_AI_SERVICE_VERSION: 0.27.1
-      WREN_UI_VERSION: 0.31.1
-      WREN_ENGINE_VERSION: 0.18.3
+      ANALYTICS_ENGINE_PORT: 8080
+      ANALYTICS_AI_SERVICE_VERSION: 0.27.1
+      ANALYTICS_UI_VERSION: 0.31.1
+      ANALYTICS_ENGINE_VERSION: 0.18.3
       USER_UUID: demo-user-123
       TELEMETRY_ENABLED: false
       NEXT_PUBLIC_TELEMETRY_ENABLED: false
       EXPERIMENTAL_ENGINE_RUST_VERSION: false
-      WREN_PRODUCT_VERSION: 0.27.0
+      ANALYTICS_PRODUCT_VERSION: 0.27.0
     ports:
       - "3000:3000"
     volumes:
       - data:/app/data
     networks:
-      - wren
+      - analytics
     depends_on:
       - analytics-service
-      # - wren-engine
+      # - analytics-engine

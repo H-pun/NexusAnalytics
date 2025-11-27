@@ -17,14 +17,14 @@ from openai import AsyncClient
 from tomlkit import parse
 
 import docker
-from eval import WREN_ENGINE_API_URL, EvalSettings
+from eval import ANALYTICS_ENGINE_API_URL, EvalSettings
 from src.core.engine import add_quotes
 from src.providers.engine.analytics import AnalyticsEngine
 
 load_dotenv(".env", override=True)
 
 
-async def get_data_from_wren_engine(
+async def get_data_from_analytics_engine(
     sql: str,
     mdl_json: dict,
     api_endpoint: str,
@@ -80,7 +80,7 @@ async def get_data_from_wren_engine(
 async def get_contexts_from_sql(
     sql: str,
     mdl_json: dict,
-    api_endpoint: str = WREN_ENGINE_API_URL,
+    api_endpoint: str = ANALYTICS_ENGINE_API_URL,
     timeout: float = 300,
     **kwargs,
 ) -> list[str]:
@@ -588,7 +588,7 @@ def load_eval_data_db_to_postgres(db: str, path: str):
         name="pgloader",
         volumes={abs_path: {"bind": "/data", "mode": "ro"}},
         command=f'pgloader --with "quote identifiers" sqlite:///data/{db}/{db}.sqlite pgsql://{postgres_info["user"]}:{postgres_info["password"]}@{postgres_info["host"]}:{postgres_info["port"]}/{postgres_info["database"]}',
-        network="wren_wren",
+        network="analytics_analytics",
         remove=True,
     )
 
@@ -609,8 +609,8 @@ def get_openai_client(
     )
 
 
-def replace_wren_engine_env_variables(engine_type: str, data: dict, config_path: str):
-    assert engine_type in ("wren_engine", "wren_ibis")
+def replace_analytics_engine_env_variables(engine_type: str, data: dict, config_path: str):
+    assert engine_type in ("analytics_engine", "analytics_ibis")
 
     with open(config_path, "r") as f:
         configs = list(yaml.safe_load_all(f))

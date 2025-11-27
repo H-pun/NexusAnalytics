@@ -43,20 +43,20 @@ type StoryPayload = {
 
 export const makeStoriesPlayer =
   (...args: [DriverObj, NextRouter, StoryPayload]) =>
-  (id: string, dispatcher: Dispatcher) => {
-    const action =
-      {
-        [LEARNING.DATA_MODELING_GUIDE]: () =>
-          playDataModelingGuide(...args, dispatcher),
-        [LEARNING.SWITCH_PROJECT_LANGUAGE]: () =>
-          playSwitchProjectLanguageGuide(...args, dispatcher),
-        [LEARNING.KNOWLEDGE_GUIDE]: () =>
-          playKnowledgeGuide(...args, dispatcher),
-        [LEARNING.SAVE_TO_KNOWLEDGE]: () =>
-          playSaveToKnowledgeGuide(...args, dispatcher),
-      }[id] || null;
-    return action && action();
-  };
+    (id: string, dispatcher: Dispatcher) => {
+      const action =
+        {
+          [LEARNING.DATA_MODELING_GUIDE]: () =>
+            playDataModelingGuide(...args, dispatcher),
+          [LEARNING.SWITCH_PROJECT_LANGUAGE]: () =>
+            playSwitchProjectLanguageGuide(...args, dispatcher),
+          [LEARNING.KNOWLEDGE_GUIDE]: () =>
+            playKnowledgeGuide(...args, dispatcher),
+          [LEARNING.SAVE_TO_KNOWLEDGE]: () =>
+            playSaveToKnowledgeGuide(...args, dispatcher),
+        }[id] || null;
+      return action && action();
+    };
 
 const resetPopoverStyle = (popoverDom: DriverPopoverDOM, width: number) => {
   const wrapper = popoverDom.wrapper;
@@ -102,7 +102,7 @@ const playDataModelingGuide = (
             align with business logic, retrieve precise data, and generate
             meaningful insights.{' '}
             <a
-              href="https://docs.getwren.ai/oss/guide/modeling/overview"
+              href="https://docs.getanalytics.ai/oss/guide/modeling/overview"
               target="_blank"
               rel="noopener noreferrer"
             >

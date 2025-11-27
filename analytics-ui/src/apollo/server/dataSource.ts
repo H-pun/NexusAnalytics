@@ -16,7 +16,7 @@ import {
   MYSQL_CONNECTION_INFO,
   POSTGRES_CONNECTION_INFO,
   MS_SQL_CONNECTION_INFO,
-  WREN_AI_CONNECTION_INFO,
+  ANALYTICS_AI_CONNECTION_INFO,
   CLICK_HOUSE_CONNECTION_INFO,
   TRINO_CONNECTION_INFO,
   SNOWFLAKE_CONNECTION_INFO,
@@ -34,7 +34,7 @@ const encryptor = new Encryptor(config);
 
 export function encryptConnectionInfo(
   dataSourceType: DataSourceName,
-  connectionInfo: WREN_AI_CONNECTION_INFO,
+  connectionInfo: ANALYTICS_AI_CONNECTION_INFO,
 ) {
   return dataSource[dataSourceType].sensitiveProps.reduce(
     (acc, prop: string) => {
@@ -415,8 +415,8 @@ const dataSource = {
 
 function decryptConnectionInfo(
   dataSourceType: DataSourceName,
-  connectionInfo: WREN_AI_CONNECTION_INFO,
-): WREN_AI_CONNECTION_INFO {
+  connectionInfo: ANALYTICS_AI_CONNECTION_INFO,
+): ANALYTICS_AI_CONNECTION_INFO {
   return dataSource[dataSourceType].sensitiveProps.reduce(
     (acc, prop: string) => {
       const value = connectionInfo[prop];

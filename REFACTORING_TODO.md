@@ -1,4 +1,4 @@
-# 🎯 Wren AI Service - Refactoring TODO List
+# 🎯 Analytics AI Service - Refactoring TODO List
 
 **Last Updated**: October 10, 2025  
 **Status**: 🚀 In Progress  
@@ -267,14 +267,14 @@
 
 - [ ] **TASK-031**: Create exception hierarchy
   - Create `src/core/exceptions.py`
-  - Define `WrenAIException` base class
+  - Define `AnalyticsAIException` base class
   - Define category exceptions (Pipeline, Retrieval, Generation, Provider)
   - Define specific exceptions (NoRelevantData, LLMError, etc.)
   - **Deliverable**: Complete exception hierarchy
   - **Acceptance**: All exceptions defined
 
 - [ ] **TASK-032**: Implement exception handler
-  - Add `@app.exception_handler` for `WrenAIException`
+  - Add `@app.exception_handler` for `AnalyticsAIException`
   - Return consistent error format
   - **Acceptance**: Handler works correctly
 
@@ -577,7 +577,7 @@ None yet.
 **Related Documents**:
 - `REFACTORING_PROPOSAL.md` - Detailed proposal
 - `.cursorrules` - Project guidelines
-- `wren-ai-service/docs/code_design.md` - Architecture docs
+- `analytics-ai-service/docs/code_design.md` - Architecture docs
 
 ---
 
@@ -599,7 +599,7 @@ None yet.
 - **Changes**:
   - ✅ Added `yarl == 1.21.0` to avoid missing wheel error on Python 3.12 slim
   - ✅ `poetry install --without dev,eval,test` succeeds
-- **Result**: `docker-compose ... build wren-ai-service` no longer fails on yarl
+- **Result**: `docker-compose ... build analytics-ai-service` no longer fails on yarl
 
 ### October 5, 2025
 

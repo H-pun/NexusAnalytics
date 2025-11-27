@@ -1,14 +1,14 @@
-# you should rename this file to config.yaml and put it in ~/.wrenai
+# you should rename this file to config.yaml and put it in ~/.analyticsai
 # please pay attention to the comments starting with # and adjust the config accordingly, 3 steps basically:
 # 1. you need to use your own llm and embedding models
 # 2. fill in embedding model dimension in the document_store section
-# 3. you need to use the correct pipe definitions based on https://raw.githubusercontent.com/canner/WrenAI/<WRENAI_VERSION_NUMBER>/docker/config.example.yaml
+# 3. you need to use the correct pipe definitions based on https://raw.githubusercontent.com/canner/AnalyticsAI/<ANALYTICSAI_VERSION_NUMBER>/docker/config.example.yaml
 # 4. you need to fill in correct llm and embedding models in the pipe definitions
 
 type: llm
 provider: litellm_llm
 models:
-  # put LM_STUDIO_API_KEY=<random_string> in ~/.wrenai/.env
+  # put LM_STUDIO_API_KEY=<random_string> in ~/.analyticsai/.env
   - api_base: http://host.docker.internal:1234/v1
     model: openai/phi-4 # openai/<lm_studio_model_name>
     alias: default
@@ -21,7 +21,7 @@ models:
 type: embedder
 provider: litellm_embedder
 models:
-  # put LM_STUDIO_API_KEY=<random_string> in ~/.wrenai/.env
+  # put LM_STUDIO_API_KEY=<random_string> in ~/.analyticsai/.env
   - model: openai/text-embedding-nomic-embed-text-v1.5 # put your lm_studio embedder model name here, openai/<lm_studio_model_name>
     alias: default
     api_base: http://host.docker.internal:1234/v1
@@ -29,12 +29,12 @@ models:
 
 ---
 type: engine
-provider: wren_ui
-endpoint: http://wren-ui:3000
+provider: analytics_ui
+endpoint: http://analytics-ui:3000
 
 ---
 type: engine
-provider: wren_ibis
+provider: analytics_ibis
 endpoint: http://ibis-server:8000
 
 ---
@@ -48,7 +48,7 @@ recreate_index: true
 ---
 # please change the llm and embedder names to the ones you want to use
 # the format of llm and embedder should be <provider>.<model_name> such as litellm_llm.gpt-4o-2024-08-06
-# the pipes may be not the latest version, please refer to the latest version: https://raw.githubusercontent.com/canner/WrenAI/<WRENAI_VERSION_NUMBER>/docker/config.example.yaml
+# the pipes may be not the latest version, please refer to the latest version: https://raw.githubusercontent.com/canner/AnalyticsAI/<ANALYTICSAI_VERSION_NUMBER>/docker/config.example.yaml
 type: pipeline
 pipes:
   - name: db_schema_indexing
@@ -69,15 +69,15 @@ pipes:
     document_store: qdrant
   - name: sql_generation
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
     document_store: qdrant
   - name: sql_correction
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
     document_store: qdrant
   - name: followup_sql_generation
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
     document_store: qdrant
   - name: sql_answer
     llm: litellm_llm.default
@@ -85,7 +85,7 @@ pipes:
     llm: litellm_llm.default
   - name: relationship_recommendation
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
   - name: question_recommendation
     llm: litellm_llm.default
   - name: question_recommendation_db_schema_retrieval
@@ -94,7 +94,7 @@ pipes:
     document_store: qdrant
   - name: question_recommendation_sql_generation
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
     document_store: qdrant
   - name: chart_generation
     llm: litellm_llm.default
@@ -118,7 +118,7 @@ pipes:
   - name: preprocess_sql_data
     llm: litellm_llm.default
   - name: sql_executor
-    engine: wren_ui
+    engine: analytics_ui
   - name: user_guide_assistance
     llm: litellm_llm.default
   - name: sql_question_generation
@@ -129,7 +129,7 @@ pipes:
     llm: litellm_llm.default
   - name: sql_regeneration
     llm: litellm_llm.default
-    engine: wren_ui
+    engine: analytics_ui
   - name: instructions_indexing
     embedder: litellm_embedder.default
     document_store: qdrant
@@ -137,7 +137,7 @@ pipes:
     embedder: litellm_embedder.default
     document_store: qdrant
   - name: sql_functions_retrieval
-    engine: wren_ibis
+    engine: analytics_ibis
     document_store: qdrant
   - name: project_meta_indexing
     document_store: qdrant

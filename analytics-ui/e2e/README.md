@@ -1,16 +1,16 @@
 ## How to run e2e test locally
 
-1. Make sure you have start all Wren AI services. ([How to start](https://github.com/Canner/WrenAI/blob/main/docker/README.md#how-to-start))
+1. Make sure you have start all Analytics AI services. ([How to start](https://github.com/Nexus/Analytics/blob/main/docker/README.md#how-to-start))
 
-2. Create a `e2e.config.json` file under `wren-ui/e2e` folder and replace all data sources needed values in `./config.ts`.
+2. Create a `e2e.config.json` file under `analytics-ui/e2e` folder and replace all data sources needed values in `./config.ts`.
 
    ```ts
    // Replace the default test config with your own e2e.config.json
    const defaultTestConfig = {
      bigQuery: {
-       projectId: 'wrenai',
-       datasetId: 'wrenai.tpch_sf1',
-       // The credential file should be under "wren-ui" folder
+       projectId: 'analyticsai',
+       datasetId: 'analyticsai.tpch_sf1',
+       // The credential file should be under "analytics-ui" folder
        // For example: .tmp/credential.json
        credentialPath: 'bigquery-credential-path',
      },
@@ -56,7 +56,7 @@
    yarn build
    ```
 
-   > Ensure port 3000 is available for E2E testing. The AI service needs WREN_UI_ENDPOINT to connect to this port for accurate and reliable test results.
+   > Ensure port 3000 is available for E2E testing. The AI service needs ANALYTICS_UI_ENDPOINT to connect to this port for accurate and reliable test results.
 
 4. Run test
 

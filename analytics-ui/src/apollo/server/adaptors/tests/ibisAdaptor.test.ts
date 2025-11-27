@@ -94,14 +94,14 @@ describe('IbisAdaptor', () => {
   };
 
   const mockManifest: Manifest = {
-    catalog: 'wrenai', // eg: "test-catalog"
-    schema: 'wrenai', // eg: "test-schema"
+    catalog: 'analyticsai', // eg: "test-catalog"
+    schema: 'analyticsai', // eg: "test-schema"
     models: [
       {
         name: 'test_table',
         tableReference: {
-          catalog: 'wrenai',
-          schema: 'wrenai',
+          catalog: 'analyticsai',
+          schema: 'analyticsai',
           table: 'test_table',
         },
         properties: {

@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths:
-      - "wren-ai-service/**"
+      - "analytics-ai-service/**"
   pull_request:
     types: [synchronize, labeled]
   workflow_dispatch:
@@ -23,7 +23,7 @@ concurrency:
 
 defaults:
   run:
-    working-directory: wren-ai-service
+    working-directory: analytics-ai-service
 
 jobs:
   pytest:
@@ -39,7 +39,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version-file: ./wren-ai-service/pyproject.toml
+          python-version-file: ./analytics-ai-service/pyproject.toml
           cache: "poetry"
       - name: Install the project dependencies
         run: poetry install --without eval

@@ -1,14 +1,14 @@
 version: 2
 updates:
   - package-ecosystem: "pip"
-    directory: "/wren-ai-service"
+    directory: "/analytics-ai-service"
     schedule:
       interval: "weekly"
     groups:
       all:
         patterns: ["*"]
     commit-message:
-      prefix: "chore(wren-ai-service)"
+      prefix: "chore(analytics-ai-service)"
     labels:
       - "dependencies"
       - "python"

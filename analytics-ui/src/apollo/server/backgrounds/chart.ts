@@ -8,7 +8,7 @@ import { getLogger } from '@server/utils/logger';
 import {
   PostHogTelemetry,
   TelemetryEvent,
-  WrenService,
+  AnalyticsService,
 } from '@server/telemetry/telemetry';
 
 const logger = getLogger('ChartBackgroundTracker');
@@ -108,7 +108,7 @@ export class ChartBackgroundTracker {
               this.telemetry.sendEvent(
                 TelemetryEvent.HOME_ANSWER_CHART,
                 eventProperties,
-                WrenService.AI,
+                AnalyticsService.AI,
                 false,
               );
             }
@@ -231,7 +231,7 @@ export class ChartAdjustmentBackgroundTracker {
               this.telemetry.sendEvent(
                 TelemetryEvent.HOME_ANSWER_ADJUST_CHART,
                 eventProperties,
-                WrenService.AI,
+                AnalyticsService.AI,
                 false,
               );
             }

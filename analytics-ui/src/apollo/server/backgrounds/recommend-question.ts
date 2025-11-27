@@ -5,7 +5,7 @@ import { IThreadRepository, Project, Thread } from '../repositories';
 import {
   ITelemetry,
   TelemetryEvent,
-  WrenService,
+  AnalyticsService,
 } from '../telemetry/telemetry';
 import { getLogger } from '../utils/logger';
 import { Logger } from 'log4js';
@@ -115,7 +115,7 @@ export class ProjectRecommendQuestionBackgroundTracker {
             this.telemetry.sendEvent(
               TelemetryEvent.HOME_GENERATE_PROJECT_RECOMMENDATION_QUESTIONS,
               eventProperties,
-              WrenService.AI,
+              AnalyticsService.AI,
               false,
             );
           }
@@ -264,7 +264,7 @@ export class ThreadRecommendQuestionBackgroundTracker {
             this.telemetry.sendEvent(
               TelemetryEvent.HOME_GENERATE_THREAD_RECOMMENDATION_QUESTIONS,
               eventProperties,
-              WrenService.AI,
+              AnalyticsService.AI,
               false,
             );
           }

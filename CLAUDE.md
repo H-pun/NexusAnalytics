@@ -4,18 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Wren AI is an open-source GenBI (Generative Business Intelligence) agent that allows users to query databases with natural language to get accurate SQL, charts, and AI-generated insights. The system consists of multiple components working together:
+Analytics AI is an open-source GenBI (Generative Business Intelligence) agent that allows users to query databases with natural language to get accurate SQL, charts, and AI-generated insights. The system consists of multiple components working together:
 
-- **wren-ai-service**: Python FastAPI backend service that handles NLP to SQL conversion using RAG pipelines
-- **wren-ui**: Next.js frontend application providing the user interface
-- **wren-engine**: Data processing engine (separate component)
-- **wren-launcher**: Go-based launcher utility
+- **analytics-ai-service**: Python FastAPI backend service that handles NLP to SQL conversion using RAG pipelines
+- **analytics-ui**: Next.js frontend application providing the user interface
+- **analytics-engine**: Data processing engine (separate component)
+- **analytics-launcher**: Go-based launcher utility
 
 ## Development Commands
 
-### wren-ai-service (Python/FastAPI)
+### analytics-ai-service (Python/FastAPI)
 ```bash
-cd wren-ai-service
+cd analytics-ai-service
 
 # Setup (requires Python >=3.12, <3.13)
 poetry install
@@ -37,9 +37,9 @@ ruff format                 # Format Python code
 ruff check --fix           # Auto-fix linting issues
 ```
 
-### wren-ui (Next.js/TypeScript)
+### analytics-ui (Next.js/TypeScript)
 ```bash
-cd wren-ui
+cd analytics-ui
 
 # Setup
 yarn install
@@ -65,9 +65,9 @@ yarn rollback             # Rollback migrations
 yarn generate-gql         # Generate GraphQL types
 ```
 
-### wren-launcher (Go)
+### analytics-launcher (Go)
 ```bash
-cd wren-launcher
+cd analytics-launcher
 
 # Development
 make build                 # Build for all platforms
@@ -86,7 +86,7 @@ docker compose -f docker/docker-compose.yaml up -d
 
 ## Architecture
 
-### wren-ai-service Architecture
+### analytics-ai-service Architecture
 The Python service follows a layered architecture with four main concepts:
 
 1. **API Endpoints** (`src/web/v1/routers/`): FastAPI REST endpoints that serve as entry points
@@ -101,7 +101,7 @@ The Python service follows a layered architecture with four main concepts:
    - `document_store/`: Vector database (Qdrant)
    - `engine/`: Data engine connections
 
-### wren-ui Architecture
+### analytics-ui Architecture
 The frontend is a Next.js application with:
 
 - **Apollo GraphQL**: Client-server communication (`src/apollo/`)
@@ -112,9 +112,9 @@ The frontend is a Next.js application with:
 
 ## Key Configuration Files
 
-- `wren-ai-service/config.yaml`: Main AI service configuration (LLM providers, embedders, etc.)
-- `wren-ai-service/.env.dev`: Development environment variables  
-- `wren-ui/knexfile.js`: Database configuration
+- `analytics-ai-service/config.yaml`: Main AI service configuration (LLM providers, embedders, etc.)
+- `analytics-ai-service/.env.dev`: Development environment variables  
+- `analytics-ui/knexfile.js`: Database configuration
 - `docker/config.example.yaml`: Docker configuration template
 
 ## Testing Strategy
@@ -126,10 +126,10 @@ The frontend is a Next.js application with:
 
 ## Data Flow
 
-1. User submits natural language query through wren-ui
-2. Frontend sends GraphQL request to wren-ui backend
-3. wren-ui makes REST API calls to wren-ai-service
-4. wren-ai-service processes query through RAG pipelines:
+1. User submits natural language query through analytics-ui
+2. Frontend sends GraphQL request to analytics-ui backend
+3. analytics-ui makes REST API calls to analytics-ai-service
+4. analytics-ai-service processes query through RAG pipelines:
    - Retrieves relevant schema/context from vector store
    - Generates SQL using LLM with retrieved context
    - Validates SQL against target database

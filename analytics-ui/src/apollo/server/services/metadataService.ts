@@ -1,6 +1,6 @@
 /** 
     This class is responsible for handling the retrieval of metadata from the data source.
-    For DuckDB, we control the access logic and directly query the WrenEngine.
+    For DuckDB, we control the access logic and directly query the AnalyticsEngine.
     For PostgreSQL and BigQuery, we will use the Ibis server API.
  */
 

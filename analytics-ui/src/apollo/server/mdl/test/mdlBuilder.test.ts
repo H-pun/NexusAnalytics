@@ -43,7 +43,7 @@ describe('MDLBuilder', () => {
           datasetId: 'bq-project-id.my-dataset',
           credentials: 'my-credential',
         } as BIG_QUERY_CONNECTION_INFO,
-        catalog: 'wrenai',
+        catalog: 'analyticsai',
         schema: 'public',
         sampleDataset: null,
       } as Project;
@@ -286,7 +286,7 @@ describe('MDLBuilder', () => {
         datasetId: 'my-dataset',
         credentials: 'my-credential',
       } as BIG_QUERY_CONNECTION_INFO,
-      catalog: 'wrenai',
+      catalog: 'analyticsai',
       schema: 'public',
       sampleDataset: null,
     } as Project;
@@ -736,7 +736,7 @@ describe('MDLBuilder', () => {
     const builderOptions = {
       project: {
         schema: 'public',
-        catalog: 'wrenai',
+        catalog: 'analyticsai',
       },
       models,
       columns,
@@ -770,7 +770,7 @@ describe('MDLBuilder', () => {
           datasetId: 'bq-project-id.my-dataset',
           credentials: 'my-credential',
         } as BIG_QUERY_CONNECTION_INFO,
-        catalog: 'wrenai',
+        catalog: 'analyticsai',
         schema: 'public',
         sampleDataset: null,
       } as Project;

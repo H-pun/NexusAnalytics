@@ -1,23 +1,23 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: wren-config
+  name: analytics-config
 data:
-  # Wren Engine Service Port
-  WREN_ENGINE_PORT: "8080"
-  # Wren AI Service Port
-  WREN_AI_SERVICE_PORT: "5555"
+  # Analytics Engine Service Port
+  ANALYTICS_ENGINE_PORT: "8080"
+  # Analytics AI Service Port
+  ANALYTICS_AI_SERVICE_PORT: "5555"
 
-  WREN_UI_ENDPOINT: http://wren-ui-svc:3000
+  ANALYTICS_UI_ENDPOINT: http://analytics-ui-svc:3000
 
-  #Release version used by wren ui https://github.com/Canner/WrenAI/blob/main/docker/docker-compose.yaml#L85-L88
-  WREN_PRODUCT_VERSION: "0.12.0"
-  WREN_ENGINE_VERSION: "0.12.3"
-  WREN_AI_SERVICE_VERSION: "0.12.1"
-  WREN_UI_VERSION: "0.17.6"
+  #Release version used by analytics ui https://github.com/Canner/AnalyticsAI/blob/main/docker/docker-compose.yaml#L85-L88
+  ANALYTICS_PRODUCT_VERSION: "0.12.0"
+  ANALYTICS_ENGINE_VERSION: "0.12.3"
+  ANALYTICS_AI_SERVICE_VERSION: "0.12.1"
+  ANALYTICS_UI_VERSION: "0.17.6"
 
   # Document store related
-  QDRANT_HOST: "wren-qdrant"
+  QDRANT_HOST: "analytics-qdrant"
 
   # Telemetry
   POSTHOG_HOST: "https://app.posthog.com"
@@ -26,27 +26,27 @@ data:
   GENERATION_MODEL: "gpt-4o-mini-2024-07-18"
 
   # service endpoints of AI service & engine service
-  WREN_ENGINE_ENDPOINT: "http://wren-engine-svc:8080"
-  WREN_AI_ENDPOINT: "http://wren-ai-service-svc:5555"
-  #WREN_AI_ENDPOINT: "http://wren-ai-service-svc.ai-system.svc.cluster.local:5555"
+  ANALYTICS_ENGINE_ENDPOINT: "http://analytics-engine-svc:8080"
+  ANALYTICS_AI_ENDPOINT: "http://analytics-ai-service-svc:5555"
+  #ANALYTICS_AI_ENDPOINT: "http://analytics-ai-service-svc.ai-system.svc.cluster.local:5555"
 
   # "pg" for postgres as UI application database
-  WREN_UI_DB_TYPE: pg
+  ANALYTICS_UI_DB_TYPE: pg
 
   #For bootstrap
-  WREN_ENGINE_DATA_PATH: "/app/data"
+  ANALYTICS_ENGINE_DATA_PATH: "/app/data"
 
-  ### if DB_TYPE = "postgres" you must provide PG_URL string in the *Secret* manifest file (deployment/kustomizations/examples/secret-wren_example.yaml) to connect to postgres
+  ### if DB_TYPE = "postgres" you must provide PG_URL string in the *Secret* manifest file (deployment/kustomizations/examples/secret-analytics_example.yaml) to connect to postgres
 
   #DEBUG, INFO
   LOGGING_LEVEL: INFO
 
-  IBIS_SERVER_ENDPOINT: http://wren-ibis-server-svc:8000
+  IBIS_SERVER_ENDPOINT: http://analytics-ibis-server-svc:8000
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: wren-ai-service-config
+  name: analytics-ai-service-config
 data:
   config.yaml: |
     type: llm
@@ -106,18 +106,18 @@ data:
 
     ---
     type: engine
-    provider: wren_ui
-    endpoint: http://wren-ui-svc:3000
+    provider: analytics_ui
+    endpoint: http://analytics-ui-svc:3000
 
     ---
     type: engine
-    provider: wren_ibis
-    endpoint: http://wren-ibis-server-svc:8000
+    provider: analytics_ibis
+    endpoint: http://analytics-ibis-server-svc:8000
 
     ---
     type: document_store
     provider: qdrant
-    location: http://wren-qdrant:6333
+    location: http://analytics-qdrant:6333
     embedding_model_dim: 3072
     timeout: 120
 
@@ -142,15 +142,15 @@ data:
         document_store: qdrant
       - name: sql_generation
         llm: litellm_llm.default
-        engine: wren_ui
+        engine: analytics_ui
         document_store: qdrant
       - name: sql_correction
         llm: litellm_llm.default
-        engine: wren_ui
+        engine: analytics_ui
         document_store: qdrant
       - name: followup_sql_generation
         llm: litellm_llm.default
-        engine: wren_ui
+        engine: analytics_ui
         document_store: qdrant
       - name: sql_answer
         llm: litellm_llm.default
@@ -162,7 +162,7 @@ data:
         llm: litellm_llm.default
       - name: question_recommendation_sql_generation
         llm: litellm_llm.default
-        engine: wren_ui
+        engine: analytics_ui
         document_store: qdrant
       - name: intent_classification
         llm: litellm_llm.default
@@ -182,7 +182,7 @@ data:
       - name: preprocess_sql_data
         llm: litellm_llm.default
       - name: sql_executor
-        engine: wren_ui
+        engine: analytics_ui
       - name: chart_generation
         llm: litellm_llm.default
       - name: chart_adjustment
@@ -197,7 +197,7 @@ data:
         llm: litellm_llm.default
       - name: sql_regeneration
         llm: litellm_llm.default
-        engine: wren_ui
+        engine: analytics_ui
       - name: instructions_indexing
         embedder: litellm_embedder.default
         document_store: qdrant
@@ -205,7 +205,7 @@ data:
         embedder: litellm_embedder.default
         document_store: qdrant
       - name: sql_functions_retrieval
-        engine: wren_ibis
+        engine: analytics_ibis
         document_store: qdrant
       - name: project_meta_indexing
         document_store: qdrant
@@ -216,7 +216,7 @@ data:
 
     ---
     settings:
-      doc_endpoint: https://docs.getwren.ai
+      doc_endpoint: https://docs.getanalytics.ai
       is_oss: true
       engine_timeout: 30
       column_indexing_batch_size: 50

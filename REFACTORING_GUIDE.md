@@ -1,4 +1,4 @@
-# 🚀 Wren AI Service - Refactoring Guide
+# 🚀 Analytics AI Service - Refactoring Guide
 
 **Quick Reference**: Panduan praktis untuk memulai refactoring
 
@@ -21,7 +21,7 @@
 
 ```bash
 # Clone dan masuk ke project
-cd wren-ai-service
+cd analytics-ai-service
 
 # Install dependencies
 poetry install
@@ -58,8 +58,8 @@ docker-compose -f docker/docker-compose.yaml up --build
 ```
 
 **Perubahan**:
-- ✅ `wren-ai-service` sekarang build dari `./wren-ai-service` (local)
-- ✅ Tidak lagi download image dari `ghcr.io/canner/wren-ai-service`
+- ✅ `analytics-ai-service` sekarang build dari `./analytics-ai-service` (local)
+- ✅ Tidak lagi download image dari `ghcr.io/canner/analytics-ai-service`
 - ✅ Code changes langsung ter-reflect setelah rebuild
 
 ### 3. Verify Setup
@@ -506,11 +506,11 @@ Update `REFACTORING_TODO.md` metrics table:
 ### Project Specific
 
 1. **Code Architecture**
-   - Read: `wren-ai-service/docs/code_design.md`
+   - Read: `analytics-ai-service/docs/code_design.md`
    - Understand: Pipeline → Service → Router flow
 
 2. **Configuration**
-   - Read: `wren-ai-service/docs/configuration.md`
+   - Read: `analytics-ai-service/docs/configuration.md`
    - Learn: How to configure LLM providers
 
 3. **Testing**
@@ -576,6 +576,6 @@ For overall refactoring:
 - 📋 [TODO List](REFACTORING_TODO.md)
 - 📄 [Proposal](REFACTORING_PROPOSAL.md)
 - 📏 [Rules](.cursorrules)
-- 🏗️ [Architecture](wren-ai-service/docs/code_design.md)
+- 🏗️ [Architecture](analytics-ai-service/docs/code_design.md)
 
 

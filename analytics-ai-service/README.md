@@ -1,8 +1,8 @@
-# AI Service of Wren AI
+# AI Service of Analytics AI
 
 ## Concepts
 
-Please read the [documentation](https://docs.getwren.ai/oss/concept/wren_ai_service) here to understand the concepts of Wren AI Service.
+Please read the [documentation](https://docs.getanalytics.ai/oss/concept/analytics_ai_service) here to understand the concepts of Analytics AI Service.
 
 ## Setup for Local Development
 
@@ -80,8 +80,8 @@ Please read the [documentation](https://docs.getwren.ai/oss/concept/wren_ai_serv
 
 3. **Access the Service**:
 
-   - API Documentation: `http://WREN_AI_SERVICE_HOST:WREN_AI_SERVICE_PORT` (default: <http://localhost:5556>)
-   - User Interface: `http://WREN_UI_HOST:WREN_UI_PORT` (default: <http://localhost:3000>)
+   - API Documentation: `http://ANALYTICS_AI_SERVICE_HOST:ANALYTICS_AI_SERVICE_PORT` (default: <http://localhost:5556>)
+   - User Interface: `http://ANALYTICS_UI_HOST:ANALYTICS_UI_PORT` (default: <http://localhost:3000>)
 
 4. **Stop the Service**:
    When finished, stop the containers:
@@ -90,7 +90,7 @@ Please read the [documentation](https://docs.getwren.ai/oss/concept/wren_ai_serv
    just down
    ```
 
-This setup ensures a consistent development environment and helps maintain code quality through pre-commit hooks and tests. Follow these steps to get started with local development of the Wren AI Service.
+This setup ensures a consistent development environment and helps maintain code quality through pre-commit hooks and tests. Follow these steps to get started with local development of the Analytics AI Service.
 
 ## Others
 
@@ -104,8 +104,8 @@ For a comprehensive understanding of how to evaluate the pipelines, please refer
   - setup `DATASET_NAME` in `.env.dev`
   - adjust test config if needed
     - adjust user count in `tests/locust/config_users.json`
-  - in wren-ai-service folder, run `just up` to start the docker containers
-  - in wren-ai-service folder, run `just start` to start the ai service
+  - in analytics-ai-service folder, run `just up` to start the docker containers
+  - in analytics-ai-service folder, run `just start` to start the ai service
   - run `just load-test`
   - check reports in /outputs/locust folder, there are 3 files with filename **locust*report*{test_timestamp}**:
     - .json: test report in json format, including info like llm provider, version

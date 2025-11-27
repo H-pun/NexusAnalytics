@@ -2,7 +2,7 @@
 name = "analytics-service"
 version = "0.27.5"
 description = ""
-authors = ["dev@getwren.ai"]
+authors = ["dev@getanalytics.ai"]
 license = "AGPL-3.0"
 readme = "README.md"
 package-mode = false

@@ -4,8 +4,8 @@ import (
 	"flag"
 	"os"
 
-	"github.com/Canner/WrenAI/wren-launcher/commands"
-	"github.com/Canner/WrenAI/wren-launcher/config"
+	"github.com/Canner/AnalyticsAI/analytics-launcher/commands"
+	"github.com/Canner/AnalyticsAI/analytics-launcher/config"
 	"github.com/pterm/pterm"
 )
 
@@ -39,17 +39,17 @@ func main() {
 }
 
 func showHelp() {
-	pterm.Info.Println("Usage of Wren launcher:")
+	pterm.Info.Println("Usage of Analytics launcher:")
 	pterm.Info.Println("")
 	pterm.Info.Println("Commands:")
-	pterm.Info.Println("  (default)                                        Launch Wren AI service")
-	pterm.Info.Println("  dbt-auto-convert --path --output [--profile] [--target]    Auto-convert dbt project to WrenDataSource and Wren MDL")
+	pterm.Info.Println("  (default)                                        Launch Analytics AI service")
+	pterm.Info.Println("  dbt-auto-convert --path --output [--profile] [--target]    Auto-convert dbt project to AnalyticsDataSource and Analytics MDL")
 	pterm.Info.Println("")
 	pterm.Info.Println("Flags:")
 	flag.PrintDefaults()
 	pterm.Info.Println("")
 	pterm.Info.Println("Examples:")
-	pterm.Info.Println("  wren-launcher                                              # Launch Wren AI")
-	pterm.Info.Println("  wren-launcher dbt-auto-convert --path /path/to/dbt --output ./output    # Auto-convert dbt project")
-	pterm.Info.Println("  wren-launcher dbt-auto-convert --path /path/to/dbt --output ./output --profile my_profile --target dev # Convert with specific profile/target")
+	pterm.Info.Println("  analytics-launcher                                              # Launch Analytics AI")
+	pterm.Info.Println("  analytics-launcher dbt-auto-convert --path /path/to/dbt --output ./output    # Auto-convert dbt project")
+	pterm.Info.Println("  analytics-launcher dbt-auto-convert --path /path/to/dbt --output ./output --profile my_profile --target dev # Convert with specific profile/target")
 }

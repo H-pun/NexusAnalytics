@@ -1,4 +1,4 @@
-# Justfile for Wren AI Service Development
+# Justfile for Analytics AI Service Development
 
 # Variables
 python := "python3"
@@ -191,11 +191,11 @@ docs-serve:
 
 # Build Docker image
 build:
-    docker build -f docker/Dockerfile -t wren-ai-service:local .
+    docker build -f docker/Dockerfile -t analytics-ai-service:local .
 
 # Run Docker container
 run-docker:
-    docker run -p 5555:5555 --env-file .env.dev -v $(pwd)/config.yaml:/app/config.yaml wren-ai-service:local
+    docker run -p 5555:5555 --env-file .env.dev -v $(pwd)/config.yaml:/app/config.yaml analytics-ai-service:local
 
 # Pre-commit
 # ==========
@@ -213,7 +213,7 @@ pre-commit-all:
 
 # Show detailed help
 help:
-    @echo "📖 Wren AI Service - Development Commands"
+    @echo "📖 Analytics AI Service - Development Commands"
     @echo ""
     @echo "Setup:"
     @echo "  just init              - Initialize project"

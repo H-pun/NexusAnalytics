@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql';
-import { WrenService } from '../telemetry/telemetry';
+import { AnalyticsService } from '../telemetry/telemetry';
 
 export enum GeneralErrorCodes {
   INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
@@ -40,7 +40,7 @@ export enum GeneralErrorCodes {
   DEPLOY_SQL_PAIR_ERROR = 'DEPLOY_SQL_PAIR_ERROR',
   GENERATE_QUESTIONS_ERROR = 'GENERATE_QUESTIONS_ERROR',
   INVALID_SQL_ERROR = 'INVALID_SQL_ERROR',
-  WREN_ENGINE_ERROR = 'WREN_ENGINE_ERROR',
+  ANALYTICS_ENGINE_ERROR = 'ANALYTICS_ENGINE_ERROR',
 
   // asking task error
   // when rerun from cancelled, the task is identified as general or misleading query
@@ -166,7 +166,7 @@ export const create = (
   options?: {
     customMessage?: string;
     originalError?: Error;
-    service?: WrenService;
+    service?: AnalyticsService;
     other?: any;
   },
 ): GraphQLError => {

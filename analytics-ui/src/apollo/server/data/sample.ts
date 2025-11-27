@@ -47,7 +47,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
       {
         tableName: 'salaries',
         filePath:
-          'https://assets.getwren.ai/sample_data/employees/salaries.parquet',
+          'https://assets.getanalytics.ai/sample_data/employees/salaries.parquet',
         schema: [
           { columnName: 'emp_no', dataType: 'INTEGER' },
           { columnName: 'salary', dataType: 'INTEGER' },
@@ -93,7 +93,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
       {
         tableName: 'titles',
         filePath:
-          'https://assets.getwren.ai/sample_data/employees/titles.parquet',
+          'https://assets.getanalytics.ai/sample_data/employees/titles.parquet',
         schema: [
           { columnName: 'emp_no', dataType: 'INTEGER' },
           { columnName: 'title', dataType: 'VARCHAR' },
@@ -141,7 +141,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
       {
         tableName: 'dept_emp',
         filePath:
-          'https://assets.getwren.ai/sample_data/employees/dept_emp.parquet',
+          'https://assets.getanalytics.ai/sample_data/employees/dept_emp.parquet',
         schema: [
           { columnName: 'emp_no', dataType: 'INTEGER' },
           { columnName: 'dept_no', dataType: 'VARCHAR' },
@@ -188,7 +188,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
       {
         tableName: 'departments',
         filePath:
-          'https://assets.getwren.ai/sample_data/employees/departments.parquet',
+          'https://assets.getanalytics.ai/sample_data/employees/departments.parquet',
         schema: [
           { columnName: 'dept_name', dataType: 'VARCHAR' },
           { columnName: 'dept_no', dataType: 'VARCHAR' },
@@ -218,7 +218,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
       {
         tableName: 'employees',
         filePath:
-          'https://assets.getwren.ai/sample_data/employees/employees.parquet',
+          'https://assets.getanalytics.ai/sample_data/employees/employees.parquet',
         schema: [
           { columnName: 'birth_date', dataType: 'DATE' },
           { columnName: 'first_name', dataType: 'VARCHAR' },
@@ -284,7 +284,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
       {
         tableName: 'dept_manager',
         filePath:
-          'https://assets.getwren.ai/sample_data/employees/dept_manager.parquet',
+          'https://assets.getanalytics.ai/sample_data/employees/dept_manager.parquet',
         schema: [
           { columnName: 'from_date', dataType: 'DATE' },
           { columnName: 'to_date', dataType: 'DATE' },
@@ -401,7 +401,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
     tables: [
       {
         tableName: 'album',
-        filePath: 'https://wrenai-public.s3.amazonaws.com/demo/Music/Album.csv',
+        filePath: 'https://analyticsai-public.s3.amazonaws.com/demo/Music/Album.csv',
         schema: [
           { columnName: 'AlbumId', dataType: 'INT' },
           { columnName: 'Title', dataType: 'varchar' },
@@ -411,7 +411,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
       {
         tableName: 'artist',
         filePath:
-          'https://wrenai-public.s3.amazonaws.com/demo/Music/Artist.csv',
+          'https://analyticsai-public.s3.amazonaws.com/demo/Music/Artist.csv',
         schema: [
           { columnName: 'ArtistId', dataType: 'INT' },
           { columnName: 'Name', dataType: 'varchar' },
@@ -420,7 +420,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
       {
         tableName: 'customer',
         filePath:
-          'https://wrenai-public.s3.amazonaws.com/demo/Music/Customer.csv',
+          'https://analyticsai-public.s3.amazonaws.com/demo/Music/Customer.csv',
         schema: [
           { columnName: 'CustomerId', dataType: 'BIGINT' },
           { columnName: 'FirstName', dataType: 'VARCHAR' },
@@ -439,7 +439,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
       },
       {
         tableName: 'genre',
-        filePath: 'https://wrenai-public.s3.amazonaws.com/demo/Music/Genre.csv',
+        filePath: 'https://analyticsai-public.s3.amazonaws.com/demo/Music/Genre.csv',
         schema: [
           { columnName: 'GenreId', dataType: 'BIGINT' },
           { columnName: 'Name', dataType: 'VARCHAR' },
@@ -448,7 +448,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
       {
         tableName: 'invoice',
         filePath:
-          'https://wrenai-public.s3.amazonaws.com/demo/Music/Invoice.csv',
+          'https://analyticsai-public.s3.amazonaws.com/demo/Music/Invoice.csv',
         schema: [
           { columnName: 'InvoiceId', dataType: 'BIGINT' },
           { columnName: 'CustomerId', dataType: 'BIGINT' },
@@ -464,7 +464,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
       {
         tableName: 'invoiceLine',
         filePath:
-          'https://wrenai-public.s3.amazonaws.com/demo/Music/InvoiceLine.csv',
+          'https://analyticsai-public.s3.amazonaws.com/demo/Music/InvoiceLine.csv',
         schema: [
           { columnName: 'InvoiceLineId', dataType: 'BIGINT' },
           { columnName: 'InvoiceId', dataType: 'BIGINT' },
@@ -475,7 +475,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
       },
       {
         tableName: 'track',
-        filePath: 'https://wrenai-public.s3.amazonaws.com/demo/Music/Track.csv',
+        filePath: 'https://analyticsai-public.s3.amazonaws.com/demo/Music/Track.csv',
         schema: [
           { columnName: 'TrackId', dataType: 'BIGINT' },
           { columnName: 'Name', dataType: 'VARCHAR' },
@@ -557,7 +557,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'olist_customers_dataset',
         primaryKey: 'customer_id',
         filePath:
-          'https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_customers_dataset.parquet',
+          'https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_customers_dataset.parquet',
         properties: {
           displayName: 'customers',
         },
@@ -610,7 +610,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'olist_order_items_dataset',
         primaryKey: 'order_item_id',
         filePath:
-          'https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_order_items_dataset.parquet',
+          'https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_order_items_dataset.parquet',
         properties: {
           displayName: 'order items',
           description:
@@ -687,7 +687,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'olist_orders_dataset',
         primaryKey: 'order_id',
         filePath:
-          'https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_orders_dataset.parquet',
+          'https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_orders_dataset.parquet',
         properties: {
           displayName: 'orders',
           description:
@@ -778,7 +778,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'olist_order_payments_dataset',
         primaryKey: 'order_id',
         filePath:
-          'https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_order_payments_dataset.parquet',
+          'https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_order_payments_dataset.parquet',
         properties: {
           displayName: 'order payments',
           description:
@@ -837,7 +837,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'olist_products_dataset',
         primaryKey: 'product_id',
         filePath:
-          'https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_products_dataset.parquet',
+          'https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_products_dataset.parquet',
         properties: {
           displayName: 'products',
           description:
@@ -925,7 +925,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'olist_order_reviews_dataset',
         primaryKey: 'review_id',
         filePath:
-          'https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_order_reviews_dataset.parquet',
+          'https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_order_reviews_dataset.parquet',
         properties: {
           displayName: 'order reviews',
           description:
@@ -1001,7 +1001,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'olist_geolocation_dataset',
         primaryKey: '',
         filePath:
-          'https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_geolocation_dataset.parquet',
+          'https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_geolocation_dataset.parquet',
         properties: {
           displayName: 'geolocation',
           description:
@@ -1056,7 +1056,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'olist_sellers_dataset',
         primaryKey: '',
         filePath:
-          'https://assets.getwren.ai/sample_data/brazilian-ecommerce/olist_sellers_dataset.parquet',
+          'https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/olist_sellers_dataset.parquet',
         properties: {
           displayName: 'sellers',
           description:
@@ -1103,7 +1103,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'product_category_name_translation',
         primaryKey: 'product_category_name',
         filePath:
-          'https://assets.getwren.ai/sample_data/brazilian-ecommerce/product_category_name_translation.parquet',
+          'https://assets.getanalytics.ai/sample_data/brazilian-ecommerce/product_category_name_translation.parquet',
         properties: {
           displayName: 'product category name translation',
           description:
@@ -1233,7 +1233,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'game',
         primaryKey: 'Id',
         filePath:
-          'https://wrenai-public.s3.amazonaws.com/demo/v0.3.0/NBA/game.csv',
+          'https://analyticsai-public.s3.amazonaws.com/demo/v0.3.0/NBA/game.csv',
         columns: [
           {
             name: 'Id',
@@ -1488,7 +1488,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'line_score',
         primaryKey: 'GameId',
         filePath:
-          'https://wrenai-public.s3.amazonaws.com/demo/v0.3.0/NBA/line_score.csv',
+          'https://analyticsai-public.s3.amazonaws.com/demo/v0.3.0/NBA/line_score.csv',
         columns: [
           {
             name: 'GameId',
@@ -1612,7 +1612,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'player_games',
         primaryKey: 'Id',
         filePath:
-          'https://wrenai-public.s3.amazonaws.com/demo/v0.3.0/NBA/player_game.csv',
+          'https://analyticsai-public.s3.amazonaws.com/demo/v0.3.0/NBA/player_game.csv',
         columns: [
           {
             name: 'Id',
@@ -1742,7 +1742,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'player',
         primaryKey: 'Id',
         filePath:
-          'https://wrenai-public.s3.amazonaws.com/demo/v0.3.0/NBA/player.csv',
+          'https://analyticsai-public.s3.amazonaws.com/demo/v0.3.0/NBA/player.csv',
         columns: [
           {
             name: 'Id',
@@ -1776,7 +1776,7 @@ export const sampleDatasets: Record<string, SampleDataset> = {
         tableName: 'team',
         primaryKey: 'Id',
         filePath:
-          'https://wrenai-public.s3.amazonaws.com/demo/v0.3.0/NBA/team.csv',
+          'https://analyticsai-public.s3.amazonaws.com/demo/v0.3.0/NBA/team.csv',
         columns: [
           {
             name: 'Id',

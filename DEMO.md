@@ -1,6 +1,6 @@
 # Nexus Analytics Demo Guide
 
-This guide helps you quickly set up and run a demo of your rebranded Nexus Analytics system (based on Wren AI) for client presentations.
+This guide helps you quickly set up and run a demo of your rebranded Nexus Analytics system (based on Analytics AI) for client presentations.
 
 ## Prerequisites
 
@@ -78,7 +78,7 @@ docker-compose -f docker-compose-demo.yaml down
 docker-compose -f docker-compose-demo.yaml logs -f
 
 # Restart specific service
-docker-compose -f docker-compose-demo.yaml restart wren-ui
+docker-compose -f docker-compose-demo.yaml restart analytics-ui
 
 # Check service status
 docker-compose -f docker-compose-demo.yaml ps
@@ -114,7 +114,7 @@ docker-compose -f docker-compose-demo.yaml up -d
 
 **UI Not Loading**
 1. Wait 2-3 minutes for services to fully start
-2. Check logs: `docker-compose -f docker-compose-demo.yaml logs wren-ui`
+2. Check logs: `docker-compose -f docker-compose-demo.yaml logs analytics-ui`
 3. Ensure all dependencies are running
 
 **API Key Issues**
@@ -157,8 +157,8 @@ LANGFUSE_PUBLIC_KEY=your-langfuse-public-key
 
 ### Custom Branding
 Your Nexus Analytics branding is built into the UI through:
-- Logo files in `wren-ui/public/images/`
-- Component modifications in `wren-ui/src/components/`
+- Logo files in `analytics-ui/public/images/`
+- Component modifications in `analytics-ui/src/components/`
 - Color scheme and styling updates
 
 ## Support

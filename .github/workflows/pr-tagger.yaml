@@ -4,10 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - "wren-ui/src/**"
+      - "analytics-ui/src/**"
       - "deployment/**"
-      - "wren-launcher/**"
-      - "wren-ai-service/**"
+      - "analytics-launcher/**"
+      - "analytics-ai-service/**"
       - "docker/**"
 
 jobs:
@@ -36,9 +36,9 @@ jobs:
 
             // Define label colors
             const labelColors = {
-              'wren-ui': 'f29513',        // Orange
-              'launcher': 'f29513',       // Orange (same as wren-ui)
-              'wren-ai-service': 'f29513', // Orange (same as wren-ui)
+              'analytics-ui': 'f29513',        // Orange
+              'launcher': 'f29513',       // Orange (same as analytics-ui)
+              'analytics-ai-service': 'f29513', // Orange (same as analytics-ui)
               'deployment': '0075ca',     // Blue
               'ai-env-changed': 'd73a4a',  // Red
               'ui-env-changed': 'd73a4a'   // Red
@@ -47,19 +47,19 @@ jobs:
 
             // Check for files in specific directories
             for (const file of changedFiles) {
-              if (file.startsWith('wren-ui/src/')) {
-                labels.add('wren-ui');
+              if (file.startsWith('analytics-ui/src/')) {
+                labels.add('analytics-ui');
               } else if (file.startsWith('deployment/')) {
                 labels.add('deployment');
-              } else if (file.startsWith('wren-launcher/')) {
+              } else if (file.startsWith('analytics-launcher/')) {
                 labels.add('launcher');
-              } else if (file.startsWith('wren-ai-service/')) {
-                labels.add('wren-ai-service');
+              } else if (file.startsWith('analytics-ai-service/')) {
+                labels.add('analytics-ai-service');
               } 
               if (file.startsWith('docker/') && file.includes('.example')) {
                 labels.add('ai-env-changed'); 
               }
-              if (file.startsWith('wren-ui/src/apollo/server/config.ts')) {
+              if (file.startsWith('analytics-ui/src/apollo/server/config.ts')) {
                 labels.add('ui-env-changed');
               }
             }

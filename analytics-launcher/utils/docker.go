@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/Canner/WrenAI/wren-launcher/config"
+	"github.com/Canner/AnalyticsAI/analytics-launcher/config"
 	"github.com/docker/cli/cli/command"
 	"github.com/docker/cli/cli/flags"
 	cmdCompose "github.com/docker/compose/v2/cmd/compose"
@@ -23,10 +23,10 @@ import (
 
 const (
 	// please change the version when the version is updated
-	WREN_PRODUCT_VERSION    string = "0.28.0"
-	DOCKER_COMPOSE_YAML_URL string = "https://raw.githubusercontent.com/Canner/WrenAI/" + WREN_PRODUCT_VERSION + "/docker/docker-compose.yaml"
-	DOCKER_COMPOSE_ENV_URL  string = "https://raw.githubusercontent.com/Canner/WrenAI/" + WREN_PRODUCT_VERSION + "/docker/.env.example"
-	AI_SERVICE_CONFIG_URL   string = "https://raw.githubusercontent.com/Canner/WrenAI/" + WREN_PRODUCT_VERSION + "/docker/config.example.yaml"
+	ANALYTICS_PRODUCT_VERSION    string = "0.28.0"
+	DOCKER_COMPOSE_YAML_URL string = "https://raw.githubusercontent.com/Canner/AnalyticsAI/" + ANALYTICS_PRODUCT_VERSION + "/docker/docker-compose.yaml"
+	DOCKER_COMPOSE_ENV_URL  string = "https://raw.githubusercontent.com/Canner/AnalyticsAI/" + ANALYTICS_PRODUCT_VERSION + "/docker/.env.example"
+	AI_SERVICE_CONFIG_URL   string = "https://raw.githubusercontent.com/Canner/AnalyticsAI/" + ANALYTICS_PRODUCT_VERSION + "/docker/config.example.yaml"
 )
 
 var generationModelToModelName = map[string]string{
@@ -131,13 +131,13 @@ func CheckDockerDaemonRunning() (bool, error) {
 }
 
 func prepareUserUUID(projectDir string) (string, error) {
-	wrenRC := WrenRC{projectDir}
-	err := wrenRC.Set("USER_UUID", uuid.New().String(), false)
+	analyticsRC := AnalyticsRC{projectDir}
+	err := analyticsRC.Set("USER_UUID", uuid.New().String(), false)
 	if err != nil {
 		return "", err
 	}
 
-	userUUID, err := wrenRC.Read("USER_UUID")
+	userUUID, err := analyticsRC.Read("USER_UUID")
 	if err != nil {
 		return "", err
 	}
@@ -305,12 +305,12 @@ func PrepareDockerFiles(openaiApiKey string, openaiGenerationModel string, hostP
 	} else if strings.ToLower(llmProvider) == "custom" {
 		// if .env file does not exist, return error
 		if _, err := os.Stat(getEnvFilePath(projectDir)); os.IsNotExist(err) {
-			return fmt.Errorf(".env file does not exist, please download the env file from %s to ~/.wrenai, rename it to .env and fill in the required information", DOCKER_COMPOSE_ENV_URL)
+			return fmt.Errorf(".env file does not exist, please download the env file from %s to ~/.analyticsai, rename it to .env and fill in the required information", DOCKER_COMPOSE_ENV_URL)
 		}
 
 		// if config.yaml file does not exist, return error
 		if _, err := os.Stat(getConfigFilePath(projectDir)); os.IsNotExist(err) {
-			return fmt.Errorf("config.yaml file does not exist, please download the config.yaml file from %s to ~/.wrenai, rename it to config.yaml and fill in the required information", AI_SERVICE_CONFIG_URL)
+			return fmt.Errorf("config.yaml file does not exist, please download the config.yaml file from %s to ~/.analyticsai, rename it to config.yaml and fill in the required information", AI_SERVICE_CONFIG_URL)
 		}
 	}
 
@@ -327,7 +327,7 @@ func getConfigFilePath(projectDir string) string {
 
 // RunDockerCompose starts Docker services for a project using docker-compose.
 // It initializes Docker CLI, checks Docker engine availability, and runs docker-compose up.
-// For custom LLM providers, it specifically recreates the wren-ai-service container.
+// For custom LLM providers, it specifically recreates the analytics-ai-service container.
 //
 // Parameters:
 //   - projectName: Name of the Docker Compose project
@@ -339,7 +339,7 @@ func getConfigFilePath(projectDir string) string {
 //
 // Example:
 //
-//	err := RunDockerCompose("wren", "/path/to/project", "openai")
+//	err := RunDockerCompose("analytics", "/path/to/project", "openai")
 func RunDockerCompose(projectName string, projectDir string, llmProvider string) error {
 	ctx := context.Background()
 	composeFilePath := path.Join(projectDir, "docker-compose.yaml")
@@ -388,15 +388,15 @@ func RunDockerCompose(projectName string, projectDir string, llmProvider string)
 	}
 
 	if strings.ToLower(llmProvider) == "custom" {
-		// Create up options for force recreating only wren-ai-service
+		// Create up options for force recreating only analytics-ai-service
 		upOptions := api.UpOptions{
 			Create: api.CreateOptions{
 				Recreate: api.RecreateForce,
-				Services: []string{"wren-ai-service"},
+				Services: []string{"analytics-ai-service"},
 			},
 		}
 
-		// Run the up command with specific options for wren-ai-service
+		// Run the up command with specific options for analytics-ai-service
 		err = apiService.Up(ctx, projectType, upOptions)
 		if err != nil {
 			return err
@@ -430,20 +430,20 @@ func listProcess() ([]container.Summary, error) {
 	return containers, nil
 }
 
-func findWrenUIContainer() (container.Summary, error) {
+func findAnalyticsUIContainer() (container.Summary, error) {
 	containers, err := listProcess()
 	if err != nil {
 		return container.Summary{}, err
 	}
 
 	for _, cont := range containers {
-		// return if com.docker.compose.project == wrenai && com.docker.compose.service=wren-ui
-		if cont.Labels["com.docker.compose.project"] == "wrenai" && cont.Labels["com.docker.compose.service"] == "wren-ui" {
+		// return if com.docker.compose.project == analyticsai && com.docker.compose.service=analytics-ui
+		if cont.Labels["com.docker.compose.project"] == "analyticsai" && cont.Labels["com.docker.compose.service"] == "analytics-ui" {
 			return cont, nil
 		}
 	}
 
-	return container.Summary{}, fmt.Errorf("WrenUI container not found")
+	return container.Summary{}, fmt.Errorf("AnalyticsUI container not found")
 }
 
 func findAIServiceContainer() (container.Summary, error) {
@@ -453,16 +453,16 @@ func findAIServiceContainer() (container.Summary, error) {
 	}
 
 	for _, cont := range containers {
-		if cont.Labels["com.docker.compose.project"] == "wrenai" && cont.Labels["com.docker.compose.service"] == "wren-ai-service" {
+		if cont.Labels["com.docker.compose.project"] == "analyticsai" && cont.Labels["com.docker.compose.service"] == "analytics-ai-service" {
 			return cont, nil
 		}
 	}
 
-	return container.Summary{}, fmt.Errorf("WrenAI service container not found")
+	return container.Summary{}, fmt.Errorf("AnalyticsAI service container not found")
 }
 
-func IfPortUsedByWrenUI(port int) bool {
-	container, err := findWrenUIContainer()
+func IfPortUsedByAnalyticsUI(port int) bool {
+	container, err := findAnalyticsUIContainer()
 	if err != nil {
 		return false
 	}
@@ -500,7 +500,7 @@ func CheckUIServiceStarted(url string) error {
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != 200 {
-		return fmt.Errorf("wren AI is not started yet")
+		return fmt.Errorf("analytics AI is not started yet")
 	}
 	return nil
 }
